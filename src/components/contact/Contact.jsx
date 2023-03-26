@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { Button } from '@mui/material'
 function Contact() {
     return (
         <section class="contact" id="contact">
@@ -49,9 +49,21 @@ function Contact() {
                             <div class="field textarea">
                                 <textarea cols="30" rows="10" name="message" placeholder="Message.." required></textarea>
                             </div>
-                            <div class="button-area">
-                                <button type="submit">Send message</button>
-                            </div>
+                            {/* <div class="button-area"> */}
+                            <Button sx={{
+                                width: "155px",
+                                backgroundColor: "#242f9b",
+                                height: "43px",
+                                fontSize: "16px",
+                                fontWeight: "500",
+                                color: "white",
+                                textTransform: "capitalize",
+                                m: "20px 0",
+                                "&:hover": {
+                                    backgroundColor: "#242f9b",
+                                }
+                            }}>Send Message</Button>
+                            {/* </div> */}
                         </form>
                     </div>
                 </div>

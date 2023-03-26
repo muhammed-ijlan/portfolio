@@ -45,6 +45,7 @@ function About() {
                         <p>As an experienced Javascript developer with expertise in both Front-end and Back-end web development using the MERN Stack, I have spent several years building high-quality software solutions for various clients. I have gained extensive knowledge in software design, development, and testing, and have a strong track record of delivering projects on time and within budget. <br /> <br />
                             Throughout my career, I have worked with various technologies and frameworks, and I am always eager to learn new ones to stay up-to-date with the latest trends in the industry. My experience has also helped me develop strong problem-solving skills, and I am confident in my ability to tackle complex technical challenges.
                         </p>
+
                         <Button onClick={handleOpen} sx={{
                             width: "125px",
                             backgroundColor: "#242f9b",
