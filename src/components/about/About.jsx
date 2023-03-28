@@ -1,14 +1,58 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import Typed from 'react-typed'
 import aboutBanner from "../../assets/banner-image.png"
 import { Backdrop, Box, Button, Fade, Modal, TextField, Stack } from '@mui/material'
+import myResume from "../../assets/ijlans-resume.pdf"
+
+import emailjs from '@emailjs/browser';
+
+import { toast } from 'react-toastify'
+
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 import useResponsive from '../../utils/useResponsive'
 
-
+const validationSchema = Yup.object().shape({
+    user_name: Yup.string()
+        .required('Name is required'),
+    user_email: Yup.string()
+        .email('Invalid email')
+        .required('Email is required'),
+    subject: Yup.string()
+        .required('Subject is required'),
+    message: Yup.string()
+        .required('Message is required'),
+});
 
 function About() {
     const [open, setOpen] = React.useState(false);
+    const form = useRef();
+
+    const formik = useFormik({
+        initialValues: {
+            user_name: '',
+            user_email: '',
+            subject: '',
+            message: '',
+        },
+        validationSchema: validationSchema,
+        onSubmit: (values, { resetForm }) => {
+            emailjs.sendForm('service_i58se31', 'template_5cxi48t', form.current, 'S8bWs21sBANc18V6_')
+                .then((result) => {
+                    setOpen(false);
+                    toast.success('Email has been sent !');
+                    setTimeout(() => {
+                        window.open(myResume)
+                    }, 2000);
+                    resetForm();
+                }, (error) => {
+                    toast.error('Email is not sent !');
+                    console.log(error)
+                });
+        },
+    });
+
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const smUp = useResponsive("down", "sm")
@@ -78,24 +122,50 @@ function About() {
             >
                 <Fade in={open}>
                     <Box sx={style}>
-                        <Stack gap={1}>
-
-                            <TextField label={"Your Name"} fullWidth />
-                            <TextField label={"Your Email"} fullWidth />
-                            <TextField placeholder='Message' fullWidth minRows={2} multiline />
-                            <Button onClick={handleOpen} sx={{
-                                width: "100%",
-                                backgroundColor: "#242f9b",
-                                height: "43px",
-                                fontSize: "16px",
-                                fontWeight: "500",
-                                color: "white",
-                                textTransform: "capitalize",
-                                "&:hover": {
+                        <form ref={form} className="contact-form" onSubmit={formik.handleSubmit}>
+                            <Stack gap={1}>
+                                <TextField label={"Your Name"} name={"user_name"} fullWidth
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.user_name}
+                                    error={formik.touched.user_name && Boolean(formik.errors.user_name)}
+                                    helperText={formik.touched.user_name && formik.errors.user_name}
+                                />
+                                <TextField label={"Your Email"} name={"user_email"} fullWidth
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.user_email}
+                                    error={formik.touched.user_email && Boolean(formik.errors.user_email)}
+                                    helperText={formik.touched.user_email && formik.errors.user_email}
+                                />
+                                <TextField label={"Subject"} name={"subject"} fullWidth
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.subject}
+                                    error={formik.touched.subject && Boolean(formik.errors.subject)}
+                                    helperText={formik.touched.subject && formik.errors.subject}
+                                />
+                                <TextField placeholder='Message' name={"message"} fullWidth minRows={2} multiline
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.message}
+                                    error={formik.touched.message && Boolean(formik.errors.message)}
+                                    helperText={formik.touched.message && formik.errors.message}
+                                />
+                                <Button type='submit' sx={{
+                                    width: "100%",
                                     backgroundColor: "#242f9b",
-                                }
-                            }}> Download Resume</Button>
-                        </Stack>
+                                    height: "43px",
+                                    fontSize: "16px",
+                                    fontWeight: "500",
+                                    color: "white",
+                                    textTransform: "capitalize",
+                                    "&:hover": {
+                                        backgroundColor: "#242f9b",
+                                    }
+                                }}> Download Resume</Button>
+                            </Stack>
+                        </form>
                     </Box>
                 </Fade>
             </Modal>
