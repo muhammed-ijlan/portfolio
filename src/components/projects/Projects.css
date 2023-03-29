@@ -1,0 +1,56 @@
+.projectImage{
+    height: 500px;
+    width: 350px;
+    transition: 0.5s;
+}
+.projectImage:hover {
+    filter: blur(1px); 
+    backdrop-filter: blur(5px);
+}
+.projectCard{
+    height: 500px;
+    border-radius: 10px;
+    margin: 50px ;
+    box-shadow: 5px 5px 20px black;
+    overflow: hidden;
+    position: relative;
+}
+.projectContent{
+    height: 70px;
+    width: 350px;
+    padding: 6px;
+    box-sizing: border-box;
+    position: absolute;
+    bottom: 0; 
+    left: 0; 
+    background-color: rgb(27,27,27,0.5);
+    transition: .5s;
+    color: white;
+}
+.projectContent h2{
+    margin: 10px;
+    font-size: 28px;
+}
+.projectContent p{
+    margin: 15px;
+    font-size: 14px;
+    visibility: hidden;
+    opacity: 0;
+}
+.projectCard:hover{
+    cursor: pointer;
+    border-radius: 10px;
+}
+.projectCard:hover .projectContent{
+    height: 350px;
+    bottom: 0; 
+    background-color: rgb(27,27,27,.8);
+}
+.projectCard:hover .projectContent p{
+    visibility: visible;
+    opacity: 1;
+}
+.projectCard:hover .projectImage{
+    background-color: #222;
+    transform: scale(1.1) ;
+}
