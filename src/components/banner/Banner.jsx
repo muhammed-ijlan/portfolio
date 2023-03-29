@@ -5,6 +5,17 @@ import programmer from "../../assets/programmer.png"
 import { GitHub, LinkedIn, Twitter, Mail } from '@mui/icons-material'
 
 function Banner() {
+    const socialOpenHandler = (social) => {
+        if (social === "github") {
+            window.open("https://github.com/muhammed-ijlan")
+        } else if (social === "linkedin") {
+            window.open("https://www.linkedin.com/in/ijlan/")
+        } else if (social === "twitter") {
+            window.open("https://twitter.com/muhammedijlan")
+        } else if (social === "mail") {
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+    }
     return (
         <section class="home" id="home">
             <div class="max-width">
@@ -12,17 +23,11 @@ function Banner() {
 
                     <div class="home-content" style={{ width: "100%" }}>
                         <div class="icons">
-                            <GitHub />
-                            <LinkedIn />
-                            <Twitter />
-                            <Mail />
-                            {/* <a href="https://github.com/muhammed-ijlan"><i class="fa-brands fa-github"></i></a>
-                            <a href="https://www.linkedin.com/in/ijlan/"><i class="fa-brands fa-linkedin"></i></a>
-                            <a href="https://twitter.com/muhammedijlan"><i class="fa-brands fa-twitter"></i></a> */}
-                            {/* <a>
-                                <div onclick="window.open('mailto:ijlanijlu580@gmail.com');"> <i
-                                    class="fa-solid fa-envelope"></i></div>
-                            </a> */}
+                            <GitHub onClick={() => socialOpenHandler("github")} />
+                            <LinkedIn onClick={() => socialOpenHandler("linkedin")} />
+                            <Twitter onClick={() => socialOpenHandler("twitter")} />
+                            <Mail onClick={() => socialOpenHandler("mail")} />
+
                         </div>
                         <div class="text-1">Hello, my name is</div>
                         <div class="text-2">Ijlaaan</div>

@@ -111,7 +111,7 @@ section .title::after {
   transition: all 0.3s ease;
 }
 .navbar.sticky .logo a span {
-  color: #fff;
+  color: #fd5d5d;
 }
 .navbar .menu li {
   list-style: none;
@@ -129,7 +129,7 @@ section .title::after {
   color: #fd5d5d;
 }
 .navbar.sticky .menu li a:hover {
-  color: #fff;
+  color: #fd5d5d;
 }
 
 /* menu btn styling */
@@ -461,7 +461,7 @@ section .title::after {
 .contact .right form .fields .field {
   height: 45px;
   width: 100%;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 .contact .right form .textarea {
   height: 80px;
@@ -766,4 +766,8 @@ form .textarea textarea {
 form .button-area {
   display: flex;
   align-items: center;
+}
+.error {
+  font-size: 12px;
+  color: red;
 }
