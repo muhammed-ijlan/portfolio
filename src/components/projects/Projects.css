@@ -9,6 +9,7 @@
 }
 .projectCard{
     height: 500px;
+    /* width: 500px; */
     border-radius: 10px;
     margin: 50px ;
     box-shadow: 5px 5px 20px black;
@@ -17,7 +18,7 @@
 }
 .projectContent{
     height: 70px;
-    width: 350px;
+    max-width: 350px;
     padding: 6px;
     box-sizing: border-box;
     position: absolute;
