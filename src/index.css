@@ -30,6 +30,10 @@ html {
 section {
   padding: 100px 0;
 }
+.teams .max-width{
+  max-width: 1400px;
+  padding: 0 0px;
+}
 .max-width {
   max-width: 1300px;
   padding: 0 80px;

@@ -1,44 +1,52 @@
 import React from 'react'
-import splashWash from '../../assets/splashhome.png'
-import { CardActionArea, Card, CardMedia, Typography, CardContent } from '@mui/material';
+import splashWash from '../../assets/splashhome.png';
+import maqlink from '../../assets/maqlink.png';
+import lambda from "../../assets/lambda.png"
+
+import './Projects.css'
+import { Grid } from '@mui/material';
 function Projects() {
+    const data = [
+        {
+            title: "SplashWash",
+            content: "This project is a website for booking and paying for vehicle washing services online. It is built using Node.js and EJS as the backend and templating engine.It also integrates with a payment gateway to process online payments securely. The website features a responsive design and user authentication.",
+            image: splashWash
+        },
+        {
+            title: "Maqlink",
+            content: "This project aims to improve the website of Maqlink Consultancy by integrating a contact form, an admin panel for enquiries and news blogs management, and a chatbot functionality. The website is built using React JS, Material UI, NodeJS, and MongoDB. These additions will enhance the user experience and improve the company's ability to connect with potential clients, manage enquiries, and provide real-time support.",
+            image: maqlink
+        },
+        {
+            title: "Lambda Gaming ",
+            content: "This project is a gaming accessory e-commerce web application with an awesome UI, full-fledged functionalities, and a responsive design. It offers features such as product search, cart, payment, order tracking, invoice generation, and return management to provide gamers with a seamless shopping experience.",
+            image: lambda
+        }
+
+    ]
     return (
-        <section class="teams" id="teams">
+        <section
+            class="teams" id="teams"
+        >
             <div class="max-width">
                 <h2 class="title">Projects</h2>
-                <div class="container">
+                <div class="container" style={{ marginTop: "30px" }}>
 
-                    {/* <div class="card">
-                        <a href="https://splashwash.in">
 
-                            <div class="text">SplashWash - NodeJS</div>
-                            <div class="image" style={{
-                                background: `url(${splashWash})`, backgroundRepeat: "no-repeat",
-                                backgroundSize: "100%"
-                            }}>
+                    {
+                        data.map((item, index) => (
+
+                            <div className="projectCard">
+                                <img src={item.image} alt="" className='projectImage' />
+                                <div className='projectContent'>
+                                    <h2>{item.title}</h2>
+                                    <p>{item.content}</p>
+                                </div>
                             </div>
-                        </a>
-                    </div> */}
-                    <Card sx={{ maxWidth: 345 }}>
-                        <CardActionArea>
-                            <CardMedia
-                                component="img"
-                                sx={{ objectFit: "cover" }}
-                                height="250"
-                                image={splashWash}
-                                alt="green iguana"
-                            />
-                            <CardContent>
-                                <Typography gutterBottom variant="h5" component="div">
-                                    Splashwash
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary" >
-                                    Lizards are a widespread group of squamate reptiles, with over 6,000
-                                    species, ranging across all continents except Antarctica
-                                </Typography>
-                            </CardContent>
-                        </CardActionArea>
-                    </Card>
+
+                        ))
+                    }
+
                 </div>
             </div>
         </section>
