@@ -13,6 +13,7 @@ function HomePage() {
             <Banner />
 
             <About />
+
             <Services />
             <Skills />
             <Projects />
