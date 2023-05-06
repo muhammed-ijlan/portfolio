@@ -16,6 +16,9 @@ function HomePage() {
 
             <Services />
             <Skills />
+
+
+
             <Projects />
             <Contact />
             <Footer />
