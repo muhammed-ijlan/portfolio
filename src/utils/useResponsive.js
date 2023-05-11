@@ -15,7 +15,9 @@ export default function useResponsive(query, key, start, end) {
 
     const mediaOnly = useMediaQuery(theme.breakpoints.only(key));
 
+
     if (query === "up") {
+
         return mediaUp;
     }
 
