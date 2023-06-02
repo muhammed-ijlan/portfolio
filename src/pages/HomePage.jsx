@@ -11,9 +11,15 @@ function HomePage() {
     return (
         <body>
             <Banner />
+
             <About />
+
             <Services />
+
             <Skills />
+
+
+
             <Projects />
             <Contact />
             <Footer />
