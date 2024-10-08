@@ -1,49 +1,86 @@
 import React from 'react';
-import splashWash from '../../assets/splashhome.png';
-import maqlink from '../../assets/maqlink.png';
-import lambda from '../../assets/lambda.png';
+import project from '../../assets/project-1.png';
 
 import './Projects.css';
-import { Grid } from '@mui/material';
+import { Stack } from '@mui/material';
 
 function Projects() {
 
-    const data = [
-        {
-            title: 'SplashWash',
-            content:
-                'This project is a website for booking and paying for vehicle washing services online. It is built using Node.js and EJS as the backend and templating engine. It also integrates with a payment gateway to process online payments securely. The website features a responsive design and user authentication.',
-            image: splashWash,
-        },
-        {
-            title: 'Maqlink',
-            content:
-                'This project aims to improve the website of Maqlink Consultancy by integrating a contact form, an admin panel for enquiries and news blogs management, and a chatbot functionality. The website is built using React JS, Material UI, NodeJS, and MongoDB. These additions will enhance the user experience and improve the company\'s ability to connect with potential clients, manage enquiries, and provide real-time support.',
-            image: maqlink,
-        },
-        {
-            title: 'Lambda Gaming',
-            content:
-                'This project is a gaming accessory e-commerce web application with an awesome UI, full-fledged functionalities, and a responsive design. It offers features such as product search, cart, payment, order tracking, invoice generation, and return management to provide gamers with a seamless shopping experience.',
-            image: lambda,
-        },
-    ];
+
 
     return (
-        <section class="teams" id="teams">
-            <div class="max-width">
-                <h2 class="title">Projects</h2>
-                <div class="container" style={{ marginTop: '30px' }}>
-                    {data.map((item, index) => (
-                        <div className="projectCard" key={index}>
-                            <img src={item.image} alt="" className="projectImage" />
-                            <div className="projectContent">
-                                <h2>{item.title}</h2>
-                                <p>{item.content}</p>
-                            </div>
+        <section id="projects">
+            <p class="section__text__p1">Browse My Recent</p>
+            <h1 class="title">Projects</h1>
+            <div class="experience-details-container">
+                <div class="about-containers">
+                    <div class="details-container color-container">
+                        <div class="article-container">
+                            <img
+                                src={project}
+                                alt="Project 1"
+                                class="project-img"
+                            />
                         </div>
-                    ))}
+                        <h2 class="experience-sub-title project-title">Project One</h2>
+                        <div class="btn-container">
+
+                            <button
+                                class="btn btn-color-2 project-btn"
+                                onclick="location.href='https://github.com/'"
+                            >
+                                Live Demo
+                            </button>
+                        </div>
+                    </div>
+                    <div class="details-container color-container">
+                        <div class="article-container">
+                            <img
+                                src={project}
+                                alt="Project 2"
+                                class="project-img"
+                            />
+                        </div>
+                        <h2 class="experience-sub-title project-title">Project Two</h2>
+                        <div class="btn-container">
+
+                            <button
+                                class="btn btn-color-2 project-btn"
+                                onclick="location.href='https://github.com/'"
+                            >
+                                Live Demo
+                            </button>
+                        </div>
+                    </div>
+                    <div class="details-container color-container">
+                        <div class="article-container">
+                            <img
+                                src={project}
+                                alt="Project 3"
+                                class="project-img"
+                            />
+                        </div>
+                        <h2 class="experience-sub-title project-title">Project Three</h2>
+                        <div class="btn-container">
+
+                            <button
+                                class="btn btn-color-2 project-btn"
+                                onclick="location.href='https://github.com/'"
+                            >
+                                Live Demo
+                            </button>
+                        </div>
+                    </div>
                 </div>
+                <Stack marginTop={3} alignItems={"center"} justifyContent={"center"}>
+                    <button
+                        style={{ width: "250px", display: 'flex', alignItems: 'center', justifyContent: "center", gap: "6px" }}
+                        class="btn btn-color-2 project-btn"
+                        onclick="location.href='https://github.com/'"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 20 20"><path fill="currentColor" d="M6.25 4.5A1.75 1.75 0 0 0 4.5 6.25v7.5c0 .966.784 1.75 1.75 1.75h7.5a1.75 1.75 0 0 0 1.75-1.75v-2a.75.75 0 0 1 1.5 0v2A3.25 3.25 0 0 1 13.75 17h-7.5A3.25 3.25 0 0 1 3 13.75v-7.5A3.25 3.25 0 0 1 6.25 3h2a.75.75 0 0 1 0 1.5zm4.25-.75a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 .75.75v5a.75.75 0 0 1-1.5 0V5.56l-3.72 3.72a.75.75 0 1 1-1.06-1.06l3.72-3.72h-3.19a.75.75 0 0 1-.75-.75" /></svg>   View More
+                    </button>
+                </Stack>
             </div>
         </section>
     );

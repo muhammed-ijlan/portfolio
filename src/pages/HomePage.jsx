@@ -6,6 +6,7 @@ import Footer from '../components/footer/Footer'
 import Projects from '../components/projects/Projects'
 import Services from '../components/services/Services'
 import Skills from '../components/skills/Skills'
+import Experiance from '../components/experiance/Experiance'
 
 function HomePage() {
     return (
@@ -15,6 +16,8 @@ function HomePage() {
             <About />
 
             <Services />
+
+            <Experiance />
 
             <Skills />
 
