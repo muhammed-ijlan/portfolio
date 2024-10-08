@@ -95,6 +95,8 @@ section .title::after {
   padding: 25px 0;
   font-family: "Ubuntu", sans-serif;
   transition: all 0.3s ease;
+  background: #242f9b;
+  height: auto;
 }
 .navbar.sticky {
   background: #242f9b;
@@ -123,7 +125,7 @@ section .title::after {
 }
 .navbar .menu li a {
   display: block;
-  color: #fff;
+  /* color: #fff; */
   font-size: 18px;
   font-weight: 500;
   margin-left: 25px;
@@ -133,6 +135,12 @@ section .title::after {
   color: #fd5d5d;
 }
 .navbar.sticky .menu li a:hover {
+  color: #fd5d5d;
+}
+.navbar .menu .active {
+  color: #fd5d5d;
+}
+.menu-btn.active-nav {
   color: #fd5d5d;
 }
 
@@ -569,6 +577,7 @@ footer span a:hover {
   }
   .navbar .menu.active {
     left: 0;
+    color:#fd5d5d
   }
   .navbar .menu li {
     display: block;

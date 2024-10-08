@@ -3,6 +3,7 @@ import project from '../../assets/project-1.png';
 
 import './Projects.css';
 import { Stack } from '@mui/material';
+import Project from './Project';
 
 function Projects() {
 
@@ -14,63 +15,10 @@ function Projects() {
             <h1 class="title">Projects</h1>
             <div class="experience-details-container">
                 <div class="about-containers">
-                    <div class="details-container color-container">
-                        <div class="article-container">
-                            <img
-                                src={project}
-                                alt="Project 1"
-                                class="project-img"
-                            />
-                        </div>
-                        <h2 class="experience-sub-title project-title">Project One</h2>
-                        <div class="btn-container">
-
-                            <button
-                                class="btn btn-color-2 project-btn"
-                                onclick="location.href='https://github.com/'"
-                            >
-                                Live Demo
-                            </button>
-                        </div>
-                    </div>
-                    <div class="details-container color-container">
-                        <div class="article-container">
-                            <img
-                                src={project}
-                                alt="Project 2"
-                                class="project-img"
-                            />
-                        </div>
-                        <h2 class="experience-sub-title project-title">Project Two</h2>
-                        <div class="btn-container">
-
-                            <button
-                                class="btn btn-color-2 project-btn"
-                                onclick="location.href='https://github.com/'"
-                            >
-                                Live Demo
-                            </button>
-                        </div>
-                    </div>
-                    <div class="details-container color-container">
-                        <div class="article-container">
-                            <img
-                                src={project}
-                                alt="Project 3"
-                                class="project-img"
-                            />
-                        </div>
-                        <h2 class="experience-sub-title project-title">Project Three</h2>
-                        <div class="btn-container">
-
-                            <button
-                                class="btn btn-color-2 project-btn"
-                                onclick="location.href='https://github.com/'"
-                            >
-                                Live Demo
-                            </button>
-                        </div>
-                    </div>
+                    <Project />
+                    <Project />
+                    <Project />
+                    <Project />
                 </div>
                 <Stack marginTop={3} alignItems={"center"} justifyContent={"center"}>
                     <button

@@ -1,18 +1,19 @@
-import { useEffect, useRef, useState } from 'react'
-import "../../index.css"
+import { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import "../../index.css";
 
 // ======================== IMPORTS ENDS HERE ==========================//
-
 
 function Navbar() {
     const [isSticky, setIsSticky] = useState(false);
     const [showScrollBtn, setShowScrollBtn] = useState(false);
     const [isActive, setIsActive] = useState(false);
+    const navigate = useNavigate();
+    const location = useLocation();
 
     function toggleMenu() {
         setIsActive(!isActive);
     }
-
 
     useEffect(() => {
         const handleScroll = () => {
@@ -30,24 +31,93 @@ function Navbar() {
         };
 
         window.addEventListener('scroll', handleScroll);
-
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
+
+    const handleNavigate = (path) => {
+        if (path === "/projects" || path === "/") {
+            navigate(path);
+        } else {
+            if (location.pathname !== "/") {
+                navigate("/");
+                setTimeout(() => {
+                    scrollToSection(path);
+                }, 100);
+            } else {
+                scrollToSection(path);
+            }
+        }
+        setIsActive(false);
+    };
+
+    const scrollToSection = (id) => {
+        const section = document.querySelector(id);
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    const isActiveRoute = (route) => location.pathname === route;
+
     return (
         <>
             {/*  -------------------------- WEB NAVBAR ------------------------  */}
-            <nav class={`navbar ${isSticky ? 'sticky' : ''}`}>
-                <div class="max-width">
-                    <div class="logo"><a href="#">Ijlan's<span> Portfolio.</span></a></div>
+            <nav className={`navbar ${isSticky ? 'sticky' : ''}`}>
+                <div className="max-width">
+                    <div className="logo">
+                        <a href="/">Ijlan's<span> Portfolio.</span></a>
+                    </div>
                     <ul className={`menu ${isActive ? 'active' : ''}`}>
-                        <li><a href="#home" class="menu-btn" onClick={toggleMenu}>Home</a></li>
-                        <li><a href="#about" class="menu-btn" onClick={toggleMenu}>About</a></li>
-                        <li><a href="#services" class="menu-btn" onClick={toggleMenu}>Services</a></li>
-                        <li><a href="#skills" class="menu-btn" onClick={toggleMenu}>Skills</a></li>
-                        <li><a href="#teams" class="menu-btn" onClick={toggleMenu}>Projects</a></li>
-                        <li><a href="#contact" class="menu-btn" onClick={toggleMenu}>Contact</a></li>
+                        <li>
+                            <a
+                                className={`menu-btn ${isActiveRoute('/') ? 'active-nav' : ''}`}
+                                onClick={() => handleNavigate('/')}
+                            >
+                                Home
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                className={`menu-btn ${isActiveRoute('/projects') ? 'active-nav' : ''}`}
+                                onClick={() => handleNavigate('/projects')}
+                            >
+                                Projects
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                className="menu-btn"
+                                onClick={() => handleNavigate('#about')}
+                            >
+                                About
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                className="menu-btn"
+                                onClick={() => handleNavigate('#services')}
+                            >
+                                Services
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                className="menu-btn"
+                                onClick={() => handleNavigate('#skills')}
+                            >
+                                Skills
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                className="menu-btn"
+                                onClick={() => handleNavigate('#contact')}
+                            >
+                                Contact
+                            </a>
+                        </li>
                     </ul>
                     <div className="menu-btn" onClick={toggleMenu}>
                         <i className={`fas fa-bars ${isActive ? 'active' : ''}`}></i>
@@ -55,7 +125,7 @@ function Navbar() {
                 </div>
             </nav>
         </>
-    )
+    );
 }
 
 export default Navbar;
