@@ -38,7 +38,7 @@ function About() {
         },
         validationSchema: validationSchema,
         onSubmit: (values, { resetForm }) => {
-            emailjs.sendForm('service_i58se31', 'template_5cxi48t', form.current, 'S8bWs21sBANc18V6_')
+            emailjs.sendForm('service_qieunjm', 'template_5cxi48t', form.current, 'S8bWs21sBANc18V6_')
                 .then((result) => {
                     setOpen(false);
                     toast.success('Email has been sent !');
