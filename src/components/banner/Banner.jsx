@@ -2,7 +2,8 @@ import React from 'react'
 import { Box, Stack } from "@mui/material"
 import Typed from "react-typed"
 import programmer from "../../assets/programmer.png"
-import { GitHub, LinkedIn, Twitter, Mail } from '@mui/icons-material'
+import { GitHub, LinkedIn, Mail } from '@mui/icons-material'
+import XIcon from '@mui/icons-material/X';
 
 function Banner() {
     const socialOpenHandler = (social) => {
@@ -11,7 +12,7 @@ function Banner() {
         } else if (social === "linkedin") {
             window.open("https://www.linkedin.com/in/ijlan/")
         } else if (social === "twitter") {
-            window.open("https://twitter.com/muhammedijlan")
+            window.open("https://x.com/muhammedijlan")
         } else if (social === "mail") {
             window.scrollTo(0, document.body.scrollHeight);
         }
@@ -25,7 +26,7 @@ function Banner() {
                         <div class="icons">
                             <GitHub onClick={() => socialOpenHandler("github")} />
                             <LinkedIn onClick={() => socialOpenHandler("linkedin")} />
-                            <Twitter onClick={() => socialOpenHandler("twitter")} />
+                            <XIcon onClick={() => socialOpenHandler("twitter")} />
                             <Mail onClick={() => socialOpenHandler("mail")} />
 
                         </div>
