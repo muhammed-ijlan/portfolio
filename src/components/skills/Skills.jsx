@@ -1,4 +1,6 @@
 import React from 'react'
+import { Stack, Box } from "@mui/material"
+import mern from "../../assets/mern.png"
 
 function Skills() {
     return (
@@ -14,41 +16,9 @@ function Skills() {
 
                     </div>
                     <div class="column right">
-                        <div class="bars">
-                            <div class="info">
-                                <span>ReactJS</span>
-                                <span>90%</span>
-                            </div>
-                            <div class="line html"></div>
-                        </div>
-                        <div class="bars">
-                            <div class="info">
-                                <span>JavaScript</span>
-                                <span>90%</span>
-                            </div>
-                            <div class="line js"></div>
-                        </div>
-                        <div class="bars">
-                            <div class="info">
-                                <span>Material UI</span>
-                                <span>90%</span>
-                            </div>
-                            <div class="line css"></div>
-                        </div>
-                        <div class="bars">
-                            <div class="info">
-                                <span>NodeJS</span>
-                                <span>70%</span>
-                            </div>
-                            <div class="line php"></div>
-                        </div>
-                        <div class="bars">
-                            <div class="info">
-                                <span>MongoDB</span>
-                                <span>60%</span>
-                            </div>
-                            <div class="line mysql"></div>
-                        </div>
+                        <Stack>
+                            <Box component={"img"} src={mern} />
+                        </Stack>
                     </div>
                 </div>
             </div>
