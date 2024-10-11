@@ -27,6 +27,6 @@ function Project({ data }) {
             </div>
         </div>
     )
-}
+};
 
 export default Project
