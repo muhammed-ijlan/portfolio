@@ -8,7 +8,7 @@ function Project({ data }) {
 
             >
                 <img
-                    src={data?.images && import.meta.env.VITE_API_KEY + data.images[0]}
+                    src={data?.images && data.images[0]}
                     alt="Project"
                     class="project-img"
                     width={"300px"}
