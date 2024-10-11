@@ -10,23 +10,27 @@ import Experiance from '../components/experiance/Experiance'
 
 function HomePage() {
     return (
-        <body>
-            <Banner />
-
-            <About />
-
-            <Services />
-
-            <Experiance />
-
-            <Skills />
+        <>
 
 
+            <body>
+                <Banner />
 
-            <Projects />
-            <Contact />
-            <Footer />
-        </body>
+                <About />
+
+                <Services />
+
+                <Experiance />
+
+                <Skills />
+
+
+
+                <Projects />
+                <Contact />
+                <Footer />
+            </body>
+        </>
     )
 }
 
