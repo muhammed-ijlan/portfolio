@@ -7,44 +7,39 @@ const PORT = process.env.PORT || 3000;
 const indexPath = path.resolve(__dirname, '..', 'dist', 'index.html');
 const { getMetadata } = require("./apis");
 const formatHTML = require("./formatHTML");
-const queryString = require("querystring");
 
-
-app.get(["/index.html", "/", ""], (req, res, next) => {
-    fs.readFile(indexPath, 'utf8', async (err, htmlData) => {
-        if (err) {
-            console.error('Error during file reading', err);
-            return res.status(404).end();
-        }
+app.get(["/index.html", "/", ""], async (req, res) => {
+    try {
+        const htmlData = fs.readFileSync(indexPath, 'utf8');
         const meta = await getMetadata("/");
         const data = formatHTML(htmlData, meta, req.url);
-        return res.send(data);
-    });
+        res.send(data);
+    } catch (err) {
+        console.error('Error during file reading', err);
+        res.status(404).end();
+    }
 });
 
-// static resources should just be served as they are
-app.use(express.static(
-    path.resolve(__dirname, '..', 'dist'),
-    { maxAge: '30d' },
-));
+// Static resources
+app.use(express.static(path.resolve(__dirname, '..', 'dist'), { maxAge: '30d' }));
 
-
-app.get('/*', (req, res, next) => {
-    fs.readFile(indexPath, 'utf8', async (err, htmlData) => {
-        if (err) {
-            console.error('Error during file reading', err);
-            return res.status(404).end()
-        }
+// Catch-all route for dynamic meta
+app.get('/*', async (req, res) => {
+    try {
+        const htmlData = fs.readFileSync(indexPath, 'utf8');
         const meta = await getMetadata(req.path, req.query);
         const data = formatHTML(htmlData, meta, req.url);
-        return res.send(data);
-    });
+        res.send(data);
+    } catch (err) {
+        console.error('Error during file reading', err);
+        res.status(404).end();
+    }
 });
 
-// listening...
+// Start the server
 app.listen(PORT, (error) => {
     if (error) {
-        return console.log('Error during app startup', error);
+        console.error('Error during app startup', error);
     }
-    console.log("listening on " + PORT + "...");
+    console.log(`Listening on ${PORT}...`);
 });

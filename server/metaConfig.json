@@ -1,16 +1,17 @@
 {
     "/": {
-        "type": "static",
-        "title": "Ijlan | Web Developer & Designer",
-        "description": "Ijlan is an experienced full-stack web developer specializing in MERN stack development. Explore his services in front-end and back-end development, web design, and more.",
-        "imageLocation": "favicon.png",
-        "keywords": "MERN stack developer, full-stack developer, web designer, ReactJS developer, NodeJS developer, MongoDB developer, front-end development, back-end development, web development services, freelance web developer"
+      "type": "static",
+      "title": "Ijlan | Web Developer & Designer",
+      "description": "Ijlan is an experienced full-stack web developer specializing in MERN stack development. Explore his services in front-end and back-end development, web design, and more.",
+      "imageLocation": "https://res.cloudinary.com/dfmg0lhau/image/upload/v1728714215/projects/cs7t8sqqvc7fogdastyc.png",
+      "keywords": "MERN stack developer, full-stack developer, web designer, ReactJS developer, NodeJS developer, MongoDB developer, front-end development, back-end development, web development services, freelance web developer"
     },
     "/projects": {
-        "type": "static",
-        "title": "Ijlan's Projects - Full Stack Development Portfolio",
-        "description": "Check out the projects developed by Ijlan, showcasing his expertise in front-end and back-end technologies such as ReactJS, NodeJS, and MongoDB.",
-        "imageLocation": "favicon.png",
-        "keywords": "MERN stack projects, full-stack development portfolio, ReactJS projects, NodeJS projects, MongoDB portfolio, web development case studies, front-end projects, back-end development projects, software development portfolio"
+      "type": "static",
+      "title": "Ijlan's Projects - Full Stack Development Portfolio",
+      "description": "Check out the projects developed by Ijlan, showcasing his expertise in front-end and back-end technologies such as ReactJS, NodeJS, and MongoDB.",
+      "imageLocation": "https://res.cloudinary.com/dfmg0lhau/image/upload/v1728714215/projects/cs7t8sqqvc7fogdastyc.png",
+      "keywords": "MERN stack projects, full-stack development portfolio, ReactJS projects, NodeJS projects, MongoDB portfolio, web development case studies, front-end projects, back-end development projects, software development portfolio"
     }
-}
+  }
+  
