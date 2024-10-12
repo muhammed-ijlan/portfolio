@@ -1,6 +1,7 @@
 import React, { useRef } from 'react'
 import Typed from 'react-typed'
-import aboutBanner from "../../assets/banner-image.png"
+import aboutBanner from "../../assets/banner1.png"
+import aboutBanner2 from "../../assets/banner2.png"
 import { Backdrop, Box, Button, Fade, Modal, TextField, Stack } from '@mui/material'
 import myResume from "../../assets/ijlans-resume.pdf"
 
@@ -75,19 +76,46 @@ function About() {
                 <div class="about-content">
 
                     <div class="column left">
-                        <img src={aboutBanner} alt="" />
+                        <img src={aboutBanner} alt="vector" />
                     </div>
                     <div class="column right">
-                        <div class="text">I'm Ijlan and I'm a <Typed
-                            strings={["Web Designer", "Web Developer"]}
+                        <h1 class="text">I'm Muhammed Ijlan, I'm a <Typed
+                            strings={["Web Developer"]}
                             typeSpeed={100}
                             backSpeed={100}
-                            backDelay={1}
-                            loop
-                            smartBackspace
-                        /></div>
-                        <p>As an experienced Javascript developer with expertise in both Front-end and Back-end web development using the MERN Stack, I have spent several years building high-quality software solutions for various clients. I have gained extensive knowledge in software design, development, and testing, and have a strong track record of delivering projects on time and within budget. <br /> <br />
-                            Throughout my career, I have worked with various technologies and frameworks, and I am always eager to learn new ones to stay up-to-date with the latest trends in the industry. My experience has also helped me develop strong problem-solving skills, and I am confident in my ability to tackle complex technical challenges.
+                        /></h1>
+                        <p> As a <b>MERN Stack developer</b> based in Kerala, I bring over 2.5 years of experience in <b>front-end</b> and <b>back-end web development</b>. I specialize in building scalable web applications using <b>React.js, Node.js, and MongoDB</b>, ensuring high performance and responsiveness across devices. My work focuses on crafting user-centric interfaces and delivering robust server-side logic that helps businesses thrive online. <br /><br />
+                            I have successfully completed numerous projects for various clients, delivering on time and within budget. My core strengths lie in <b>problem-solving</b>, software design, and development, backed by a solid understanding of modern technologies and industry best practices.
+
+                        </p>
+                        <Button onClick={handleOpen} sx={{
+                            width: "125px",
+                            backgroundColor: "#242f9b",
+                            height: "43px",
+                            fontSize: "16px",
+                            fontWeight: "500",
+                            color: "white",
+                            textTransform: "capitalize",
+                            m: "20px 0",
+                            "&:hover": {
+                                backgroundColor: "#242f9b",
+                            }
+                        }}> Hire Me</Button>
+                    </div>
+                </div>
+                <div class="about-content">
+
+
+                    <div class="column right" style={{ marginTop: "30px" }}>
+                        <h2 class="text">Experienced for <Typed
+                            strings={["End-to-End Solutions"]}
+                            typeSpeed={100}
+                            backSpeed={100}
+                            loop={false}
+                        /> </h2>
+                        <p> With a strong background in <b>JavaScript</b> and modern frameworks like <b>Next.js</b> and <b>Express.js</b>, I create seamless, efficient web solutions tailored to client needs. My expertise covers both <b>UI/UX design</b> and <b>back-end API development</b>, ensuring that the products I build not only look great but also function optimally.<br /><br />
+                            I continually learn and adopt new tools, working with technologies like <b>AWS</b>, <b>Material UI</b>, and <b>GraphQL</b> to stay ahead in the industry. My goal is to deliver solutions that meet technical requirements and user expectations while maintaining high standards for code quality and performance.
+
                         </p>
 
                         <Button onClick={handleOpen} sx={{
@@ -103,6 +131,16 @@ function About() {
                                 backgroundColor: "#242f9b",
                             }
                         }}> Hire Me</Button>
+                    </div>
+                    <div class="column left" style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+                        <Box
+                            sx={{
+                                display: { xs: "none", md: "flex" }
+                            }}
+                            component="img"
+                            src={aboutBanner2}
+                            alt="vector"
+                        />
                     </div>
                 </div>
             </div>
