@@ -3,6 +3,7 @@ import emailjs from '@emailjs/browser';
 
 import { Button } from '@mui/material'
 import { toast } from 'react-toastify'
+import axios from "axios";
 
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -29,17 +30,38 @@ function Contact() {
             message: '',
         },
         validationSchema: validationSchema,
-        onSubmit: (values, { resetForm }) => {
-            emailjs.sendForm('service_qieunjm', 'template_5cxi48t', form.current, 'S8bWs21sBANc18V6_')
-                .then((result) => {
-                    toast.success('Email has been sent !');
-                    resetForm();
-                }, (error) => {
-                    toast.error('Email is not sent !');
-                    console.log(error)
+        onSubmit: async (values, { resetForm }) => {
+            try {
+                const res = await axios.post(`${import.meta.env.VITE_API_KEY}/enquiry/`, {
+                    name: values.user_name,
+                    email: values.user_email,
+                    subject: values.subject,
+                    message: values.message,
                 });
+
+                // Handle API response
+                if (!res.data.isError) {
+                    toast.success(res.data.message);
+                } else {
+                    toast.error(res.data.message);
+                    return;
+                }
+                await emailjs.sendForm(
+                    'service_qieunjm',
+                    'template_5cxi48t',
+                    form.current,
+                    'S8bWs21sBANc18V6_'
+                );
+                toast.success('Email has been sent!');
+                resetForm();
+
+            } catch (error) {
+                console.log(error);
+                toast.error('Something went wrong. Please try again later.');
+            }
         },
     });
+
 
     return (
         <section class="contact" id="contact">
