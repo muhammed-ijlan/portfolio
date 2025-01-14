@@ -3,7 +3,12 @@ import { Grid, Pagination, Stack, Skeleton } from '@mui/material';
 import Project from '../components/projects/Project';
 import { makeStyles } from '@mui/styles';
 import { useNavigate } from 'react-router-dom';
+
+import Contact from '../components/contact/Contact'
+import Footer from '../components/footer/Footer'
+
 import axios from 'axios';
+
 
 const useStyles = makeStyles((theme) => ({
     // your existing styles...
@@ -87,6 +92,8 @@ function ProjectsPage() {
                     </Stack>
                 </div>
             </section>
+            <Contact />
+            <Footer />
         </div>
     );
 }
