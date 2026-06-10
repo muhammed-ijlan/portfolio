@@ -1,14 +1,8 @@
 "use client";
 
-// Client-side CMS store for the Portfolio admin — localStorage-backed with a
-// tiny pub/sub, mirroring the design prototype. SSR-safe: first render uses the
-// seed, real data hydrates after mount (see useStore).
-
 import { useCallback, useEffect, useState } from "react";
 import { SEED, type CmsData } from "./seed-data";
 
-// Types + seed data live in the server-safe `seed-data` module so the backend
-// (route handlers) can import them too. Re-exported here for existing imports.
 export { SEED };
 export type {
   Project,
@@ -22,7 +16,6 @@ export type {
   CmsData,
 } from "./seed-data";
 
-/* ---------- Store (localStorage-backed, pub/sub) ---------- */
 const CMS_LS = "mi-cms-v1";
 
 function cmsLoad(): CmsData {
@@ -72,8 +65,6 @@ export const CMS = {
 export function useStore<K extends keyof CmsData>(
   key: K
 ): [CmsData[K], (val: CmsData[K] | ((prev: CmsData[K]) => CmsData[K])) => void] {
-  // First render (server + client hydration) uses the seed for a stable match;
-  // real localStorage data loads in after mount.
   const [state, setState] = useState<CmsData[K]>(() => SEED[key]);
 
   useEffect(() => {
@@ -91,7 +82,6 @@ export function useStore<K extends keyof CmsData>(
 
 export const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 
-/* ---------- Display helpers ---------- */
 const AVATAR_GRADIENTS = [
   "linear-gradient(135deg,#22D3EE,#7C3AED)",
   "linear-gradient(135deg,#3b82f6,#22D3EE)",
@@ -125,7 +115,6 @@ export function relTime(iso: string) {
   return Math.round(diff / 86400) + "d ago";
 }
 
-// Deterministic 30-day traffic series (no Math.random — keeps SSR/CSR identical).
 export function trafficSeries() {
   const days = Array.from({ length: 30 }, (_, i) => {
     const d = new Date("2026-06-10");

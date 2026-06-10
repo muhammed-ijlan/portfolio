@@ -7,8 +7,6 @@ import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { AdminIcons } from "@/components/admin/icons";
 import { authApi } from "@/lib/api";
 
-// Default admin seeded on first login from ADMIN_EMAIL / ADMIN_PASSWORD
-// (see lib/auth.ts → ensureDefaultAdmin). Shown so the first sign-in works.
 const DEMO_CREDENTIALS = { email: "ijlan.dev@gmail.com", password: "admin123" };
 
 export default function LoginPage() {
@@ -20,7 +18,6 @@ export default function LoginPage() {
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // If a valid session cookie is already present, skip the login screen.
   useEffect(() => {
     authApi
       .me()

@@ -8,9 +8,6 @@ export const dynamic = "force-dynamic";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// POST /api/auth/register  { email, password, name?, role? }
-// Creates a new admin account. Authorised either by an existing signed-in admin
-// OR by the SEED_SECRET header (for first-time bootstrap from a script).
 export async function POST(req: Request) {
   try {
     const session = await getSession();

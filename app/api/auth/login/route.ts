@@ -6,8 +6,6 @@ import { ensureDefaultAdmin, startSession, verifyPassword } from "@/lib/auth";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// POST /api/auth/login  { email, password }
-// Sets an httpOnly session cookie on success and returns the admin profile.
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
@@ -17,7 +15,6 @@ export async function POST(req: Request) {
     if (!email || !password) return fail("Email and password are required", 400);
 
     await connectDB();
-    // First-run convenience: create the default admin if none exists yet.
     await ensureDefaultAdmin();
 
     const user = await AdminUser.findOne({ email });

@@ -73,7 +73,6 @@ export function ImageField({ value, onChange, label = "Cover image" }: { value?:
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
-  // Upload straight to Cloudinary and store the hosted URL (not a base64 blob).
   const onFile = async (file?: File) => {
     if (!file || uploading) return;
     setUploading(true);

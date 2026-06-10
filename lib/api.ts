@@ -1,7 +1,3 @@
-// Typed client for the CMS REST API (app/api/*). Use these helpers from client
-// components to read/write CMS data once MONGODB_URI is configured. The shapes
-// match the `cms-store` types exactly, so swapping `useStore` for these is direct.
-
 import type {
   About,
   Experience,
@@ -32,7 +28,7 @@ export type AdminUserPublic = {
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`/api${path}`, {
     headers: { "Content-Type": "application/json" },
-    credentials: "same-origin", // send the session cookie
+    credentials: "same-origin",
     ...init,
   });
   const json = (await res.json()) as ApiResponse<T>;
@@ -42,7 +38,6 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return json.data;
 }
 
-// Generic CRUD for a collection resource (projects, experience, …).
 function resource<T extends { id: string }>(name: string) {
   return {
     list: () => request<T[]>(`/${name}`),
@@ -56,7 +51,6 @@ function resource<T extends { id: string }>(name: string) {
   };
 }
 
-// Singleton resource (about, settings).
 function singletonResource<T>(name: string) {
   return {
     get: () => request<T>(`/${name}`),
@@ -70,10 +64,9 @@ type ContactInput = {
   email: string;
   subject: string;
   message: string;
-  website?: string; // honeypot — leave empty
+  website?: string;
 };
 
-// Admin auth: login/logout/session + account management.
 export const authApi = {
   login: (email: string, password: string) =>
     request<{ user: AdminUserPublic }>("/auth/login", {
@@ -94,7 +87,6 @@ export const authApi = {
     }),
 };
 
-// Admin/CMS API: full CRUD (requires an authenticated session).
 export const api = {
   projects: resource<Project>("projects"),
   experience: resource<Experience>("experience"),
@@ -115,27 +107,26 @@ export type UploadResult = {
   bytes: number;
 };
 
-// Media uploads (Cloudinary). Sends multipart/form-data — note we must NOT set
-// a Content-Type header so the browser adds the multipart boundary itself.
+async function uploadFile(file: File): Promise<UploadResult> {
+  const body = new FormData();
+  body.append("file", file);
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    credentials: "same-origin",
+    body,
+  });
+  const json = (await res.json()) as ApiResponse<UploadResult>;
+  if (!res.ok || !json.ok) {
+    throw new Error(json.ok ? `Upload failed (${res.status})` : json.error);
+  }
+  return json.data;
+}
+
 export const uploadApi = {
-  async image(file: File): Promise<UploadResult> {
-    const body = new FormData();
-    body.append("file", file);
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      credentials: "same-origin",
-      body,
-    });
-    const json = (await res.json()) as ApiResponse<UploadResult>;
-    if (!res.ok || !json.ok) {
-      throw new Error(json.ok ? `Upload failed (${res.status})` : json.error);
-    }
-    return json.data;
-  },
+  image: uploadFile,
+  file: uploadFile,
 };
 
-// Public API: read-only published content + contact form. This is what the
-// public portfolio site consumes.
 export const portfolioApi = {
   all: () => request<Portfolio>("/portfolio"),
   projects: () => request<PublicProject[]>("/portfolio/projects"),

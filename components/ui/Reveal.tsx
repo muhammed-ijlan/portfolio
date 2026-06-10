@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-
-const reducedMo = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+import { motionDisabled } from "./motion";
 
 const easeOutCubic = (p: number) => 1 - Math.pow(1 - p, 3);
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
@@ -15,7 +12,7 @@ let ticking = false;
 
 function runScroll() {
   const vh = window.innerHeight;
-  scrollReg.forEach((item) => { try { item.cb(vh); } catch { /* noop */ } });
+  scrollReg.forEach((item) => { try { item.cb(vh); } catch { } });
   ticking = false;
 }
 
@@ -58,7 +55,7 @@ export function Reveal({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (reducedMo()) {
+    if (motionDisabled()) {
       el.style.opacity = "1";
       el.style.transform = "none";
       el.style.filter = "none";

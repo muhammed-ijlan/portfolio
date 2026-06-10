@@ -4,7 +4,7 @@ import { Media } from "@/lib/models/Media";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const c = crud(() => Media);
+const c = crud(() => Media, { cloudinaryFields: ["src"] });
 type Ctx = { params: Promise<{ id: string }> };
 
 export async function GET(_req: Request, { params }: Ctx) {

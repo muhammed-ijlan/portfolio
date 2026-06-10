@@ -6,8 +6,6 @@ import { Typewriter } from "@/components/ui/Typewriter";
 import { Icons } from "@/components/ui/Icons";
 import type { PublicAbout } from "@/lib/portfolio-service";
 
-// Syntax-highlight primitives for the code card (module scope so they aren't
-// re-created on every render).
 const L = ({ n, children, last }: { n: number; children: React.ReactNode; last?: boolean }) => (
   <div className="cl">
     <span className="ln">{n}</span>
@@ -51,7 +49,7 @@ function CodeCard({ about }: { about: PublicAbout }) {
   );
 }
 
-export function Hero({ about }: { about: PublicAbout }) {
+export function Hero({ about, resumeUrl }: { about: PublicAbout; resumeUrl?: string }) {
   const [firstName, ...restName] = about.name.split(" ");
   const lastName = restName.join(" ");
   const socials = [
@@ -66,7 +64,7 @@ export function Hero({ about }: { about: PublicAbout }) {
       className="section"
       style={{ position: "relative", minHeight: "100vh", display: "flex", alignItems: "center", overflow: "hidden" }}
     >
-      {/* Aurora */}
+      {}
       <div className="aurora" aria-hidden="true">
         <span className="aurora-blob a1" />
         <span className="aurora-blob a2" />
@@ -77,7 +75,7 @@ export function Hero({ about }: { about: PublicAbout }) {
         className="container-x hero-grid"
         style={{ position: "relative", zIndex: 2, width: "100%", paddingTop: "7rem", paddingBottom: "3rem" }}
       >
-        {/* LEFT */}
+        {}
         <div className="hero-left">
           <Reveal>
             <span className="chip" style={{ borderColor: "rgba(34,211,238,0.35)" }}>
@@ -113,6 +111,13 @@ export function Hero({ about }: { about: PublicAbout }) {
               <Magnetic>
                 <a href="#contact" className="btn btn-ghost">Get in Touch</a>
               </Magnetic>
+              {resumeUrl && (
+                <Magnetic>
+                  <a href={resumeUrl} target="_blank" rel="noreferrer" className="btn btn-ghost">
+                    Résumé {Icons.external()}
+                  </a>
+                </Magnetic>
+              )}
             </div>
           </Reveal>
 
@@ -139,13 +144,13 @@ export function Hero({ about }: { about: PublicAbout }) {
           </Reveal>
         </div>
 
-        {/* RIGHT — code card */}
+        {}
         <Reveal className="hero-right">
           <CodeCard about={about} />
         </Reveal>
       </div>
 
-      {/* Scroll cue */}
+      {}
       <div
         style={{ position: "absolute", bottom: 24, left: "50%", transform: "translateX(-50%)", zIndex: 2 }}
         className="hidden-touch"

@@ -4,6 +4,7 @@ import { Nav } from "@/components/layout/Nav";
 import { CursorGlow } from "@/components/layout/CursorGlow";
 import { ScrollProgress } from "@/components/layout/ScrollProgress";
 import { Intro } from "@/components/layout/Intro";
+import { Maintenance } from "@/components/layout/Maintenance";
 import { Hero } from "@/components/sections/Hero";
 import { About } from "@/components/sections/About";
 import { Experience } from "@/components/sections/Experience";
@@ -12,34 +13,72 @@ import { Projects } from "@/components/sections/Projects";
 import { Contact } from "@/components/sections/Contact";
 import { Footer } from "@/components/sections/Footer";
 import { getPortfolioCached } from "@/lib/portfolio-service";
+import { SITE_URL, buildKeywords, buildJsonLd, jsonLdScript } from "@/lib/seo";
 
-// Incrementally re-render the page so published CMS edits appear without a
-// redeploy, while keeping public reads cheap. getPortfolioCached dedupes the DB
-// round-trip shared by generateMetadata + the page within one request.
 export const revalidate = 120;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { settings, about } = await getPortfolioCached();
+  const portfolio = await getPortfolioCached();
+  const { settings, about } = portfolio;
   return {
     title: settings.siteTitle,
     description: settings.seoDescription,
-    authors: [{ name: about.name }],
+    keywords: buildKeywords(portfolio),
+    authors: [{ name: about.name, url: SITE_URL }],
+    creator: about.name,
+    publisher: about.name,
+    category: "technology",
+    alternates: { canonical: "/" },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
     openGraph: {
+      type: "website",
+      url: SITE_URL,
+      siteName: settings.siteTitle,
       title: settings.siteTitle,
       description: settings.seoDescription,
-      type: "website",
+      locale: "en_US",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: settings.siteTitle,
+      description: settings.seoDescription,
     },
   };
 }
 
 export default async function Home() {
-  const { about, projects, experience, skills, settings, contact } = await getPortfolioCached();
+  const portfolio = await getPortfolioCached();
+  const { about, projects, experience, skills, settings, contact } = portfolio;
+  const { toggles } = settings;
+
+  if (toggles.maintenance) return <Maintenance settings={settings} />;
 
   return (
     <ThemeProvider defaultTheme={settings.defaultTheme} accent={settings.accent}>
+      {}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `document.documentElement.dataset.animations=${JSON.stringify(toggles.animations ? "on" : "off")}`,
+        }}
+      />
+      {}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(buildJsonLd(portfolio)) }}
+      />
       <Intro />
       <ScrollProgress />
-      <CursorGlow />
+      {toggles.customCursor && <CursorGlow />}
 
       <div className="bg-atmosphere" />
       <div className="bg-grid" />
@@ -49,7 +88,7 @@ export default async function Home() {
       <Nav />
 
       <main id="main" style={{ position: "relative", zIndex: 2 }}>
-        <Hero about={about} />
+        <Hero about={about} resumeUrl={toggles.showResume ? settings.resumeUrl : ""} />
         <About about={about} />
         <Experience items={experience} />
         <Skills groups={skills} />

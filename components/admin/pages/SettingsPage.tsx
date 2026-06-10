@@ -1,23 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { AdminIcons } from "../icons";
 import { PageHead } from "../PageHead";
 import { Field, TextInput, TextArea, SelectInput, Toggle } from "../cms/Fields";
 import { toast } from "../cms/Toast";
 import { PageLoading, PageError, Spinner } from "../cms/Loading";
 import { type Settings } from "@/lib/cms-store";
-import { api } from "@/lib/api";
+import { api, uploadApi } from "@/lib/api";
 import { useSingleton } from "@/lib/use-cms";
 
 export function SettingsPage() {
   const { data: settings, loading, error, save: persist } = useSingleton(api.settings);
   const [draft, setDraft] = useState<Settings | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploadingResume, setUploadingResume] = useState(false);
+  const resumeRef = useRef<HTMLInputElement>(null);
 
-  // Mirror the persisted document into a local draft for editing, re-syncing
-  // whenever the source changes (initial load + after a successful save). Synced
-  // during render — React's recommended alternative to a sync effect.
   const [synced, setSynced] = useState<Settings | null>(null);
   if (settings && settings !== synced) {
     setSynced(settings);
@@ -29,6 +28,25 @@ export function SettingsPage() {
     setDraft((d) => (d ? { ...d, toggles: { ...d.toggles, [k]: !d.toggles[k] } } : d));
   const dirty = !!settings && !!draft && JSON.stringify(draft) !== JSON.stringify(settings);
   const accents = ["#22D3EE", "#7C3AED", "#34d399", "#f59e0b", "#ec4899"];
+
+  const onResumeFile = async (file?: File) => {
+    if (!file) return;
+    if (file.type !== "application/pdf") {
+      toast("Please upload a PDF file", "error");
+      return;
+    }
+    setUploadingResume(true);
+    try {
+      const { url } = await uploadApi.file(file);
+      set("resumeUrl", url);
+      toast("Résumé uploaded — click Save Changes to publish");
+    } catch (e) {
+      toast(e instanceof Error ? e.message : "Upload failed", "error");
+    } finally {
+      setUploadingResume(false);
+      if (resumeRef.current) resumeRef.current.value = "";
+    }
+  };
 
   const onSave = async () => {
     if (!draft) return;
@@ -74,6 +92,20 @@ export function SettingsPage() {
                 {accents.map((c) => (
                   <button key={c} onClick={() => set("accent", c)} aria-label={c} style={{ width: 34, height: 34, borderRadius: 9, background: c, border: draft.accent === c ? "2px solid var(--text)" : "2px solid transparent", cursor: "pointer", boxShadow: draft.accent === c ? `0 0 0 2px ${c}55` : "none" }} />
                 ))}
+              </div>
+            </Field>
+            <Field label="Résumé / CV (PDF)" hint="Stored on Cloudinary. Shown as a download button when “Resume download” is on.">
+              <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                <button type="button" className="adm-btn" disabled={uploadingResume} onClick={() => resumeRef.current?.click()}>
+                  {uploadingResume ? <Spinner /> : <AdminIcons.upload style={{ width: 13, height: 13 }} />} {uploadingResume ? "Uploading…" : draft.resumeUrl ? "Replace PDF" : "Upload PDF"}
+                </button>
+                {draft.resumeUrl && (
+                  <>
+                    <a className="adm-btn" href={draft.resumeUrl} target="_blank" rel="noreferrer"><AdminIcons.external style={{ width: 13, height: 13 }} /> View</a>
+                    <button type="button" className="adm-btn" style={{ color: "#f87171" }} onClick={() => set("resumeUrl", "")}><AdminIcons.trash style={{ width: 13, height: 13 }} /> Remove</button>
+                  </>
+                )}
+                <input ref={resumeRef} type="file" accept="application/pdf" hidden onChange={(e) => onResumeFile(e.target.files?.[0])} />
               </div>
             </Field>
           </div>

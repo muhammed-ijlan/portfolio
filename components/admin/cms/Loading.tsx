@@ -2,9 +2,6 @@
 
 import { AdminIcons } from "../icons";
 
-// Shared loading / error states for the API-backed CMS pages.
-
-// Small inline spinner for buttons — inherits the button's text color.
 export function Spinner({ size = 14 }: { size?: number }) {
   return (
     <span

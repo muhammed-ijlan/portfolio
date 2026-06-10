@@ -4,7 +4,6 @@ import { clearSession } from "@/lib/auth";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// POST /api/auth/logout — clears the session cookie.
 export async function POST() {
   try {
     await clearSession();

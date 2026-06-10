@@ -16,7 +16,6 @@ type SingletonResource<T> = {
 
 const message = (e: unknown) => (e instanceof Error ? e.message : "Something went wrong");
 
-// CRUD-backed collection (projects, experience, skills, messages, media).
 export function useCollection<T extends { id: string }>(resource: CollectionResource<T>) {
   const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,7 +63,6 @@ export function useCollection<T extends { id: string }>(resource: CollectionReso
   return { items, setItems, loading, error, create, update, remove };
 }
 
-// Singleton-backed document (about, settings).
 export function useSingleton<T>(resource: SingletonResource<T>) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);

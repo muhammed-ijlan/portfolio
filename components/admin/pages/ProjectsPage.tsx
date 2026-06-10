@@ -15,8 +15,6 @@ const emptyProject = (): Project => ({ id: "", title: "", kind: "", desc: "", ta
 
 function ProjectModal({ open, initial, onClose, onSave, saving }: { open: boolean; initial: Project | null; onClose: () => void; onSave: (p: Project) => void; saving: boolean }) {
   const [draft, setDraft] = useState<Project>(initial || emptyProject());
-  // Reset the draft when the modal opens or targets a different item — synced
-  // during render (React's recommended alternative to a sync effect).
   const [synced, setSynced] = useState({ initial, open });
   if (synced.initial !== initial || synced.open !== open) {
     setSynced({ initial, open });

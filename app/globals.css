@@ -1,9 +1,5 @@
 @import "tailwindcss";
 
-/* ============================================================
-   Muhammed Ijlan — Portfolio v2
-   ============================================================ */
-
 :root {
   --cyan: #22D3EE;
   --violet: #7C3AED;
@@ -42,7 +38,18 @@ html[data-theme="light"] {
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; max-width: 100%; }
+img, svg, video, canvas { max-width: 100%; }
+
+html[data-animations="off"] { scroll-behavior: auto; }
+html[data-animations="off"] *,
+html[data-animations="off"] *::before,
+html[data-animations="off"] *::after {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+}
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 body {
@@ -194,7 +201,8 @@ body {
 .section { position: relative; z-index: 2; }
 
 .hero-grid { display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr); gap: 3.5rem; align-items: center; }
-@media (max-width: 920px) { .hero-grid { grid-template-columns: 1fr; gap: 2.4rem; } .hero-right { max-width: 560px; } }
+.hero-left, .hero-right { min-width: 0; }
+@media (max-width: 920px) { .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 2.4rem; } .hero-right { max-width: 560px; } }
 
 .aurora { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; -webkit-mask-image: radial-gradient(120% 100% at 50% 40%, black 55%, transparent 100%); mask-image: radial-gradient(120% 100% at 50% 40%, black 55%, transparent 100%); }
 .aurora-blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.5; will-change: transform; }
@@ -203,7 +211,7 @@ body {
 .aurora .a3 { width: 460px; height: 460px; left: 38%; bottom: -12%; background: radial-gradient(circle, rgba(34,211,238,0.22), transparent 65%); animation: drift3 26s ease-in-out infinite; }
 html[data-theme="light"] .aurora-blob { opacity: 0.35; }
 
-.code-card { border-radius: 16px; background: linear-gradient(180deg, #0d1018, #090b11); border: 1px solid rgba(255,255,255,0.12); box-shadow: var(--shadow), 0 0 60px -30px rgba(34,211,238,0.5); overflow: hidden; position: relative; }
+.code-card { border-radius: 16px; background: linear-gradient(180deg, #0d1018, #090b11); border: 1px solid rgba(255,255,255,0.12); box-shadow: var(--shadow), 0 0 60px -30px rgba(34,211,238,0.5); overflow: hidden; position: relative; max-width: 100%; }
 .code-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; background: linear-gradient(135deg, rgba(34,211,238,0.55), transparent 40%, rgba(124,58,237,0.55)); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
 .code-card-bar { display: flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.025); }
 .code-card-bar .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
@@ -227,11 +235,15 @@ html[data-theme="light"] .aurora-blob { opacity: 0.35; }
   .bento-cell { grid-column: auto !important; }
   .projects-grid { grid-template-columns: 1fr; }
   .projects-grid > * { grid-column: auto !important; }
+  .project-featured { grid-template-columns: 1fr !important; display: block !important; }
   .project-shot { border-right: none !important; }
   .featured-inner { grid-template-columns: 1fr !important; display: block !important; }
 }
 @media (max-width: 760px) { .nav-links { display: none !important; } .nav-cta { display: none !important; } .nav-burger { display: inline-flex !important; } }
-@media (max-width: 560px) { .bento { grid-template-columns: 1fr; } .form-row { grid-template-columns: 1fr !important; } }
+@media (max-width: 560px) {
+  .bento { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr !important; }
+}
 
 .marquee { display: flex; width: max-content; animation: marquee 38s linear infinite; }
 .marquee-wrap:hover .marquee { animation-play-state: paused; }

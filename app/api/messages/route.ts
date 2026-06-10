@@ -14,7 +14,6 @@ export async function GET() {
   }
 }
 
-// Admin-only. The public contact form posts to /api/contact instead.
 export async function POST(req: Request) {
   try {
     return await c.create(req);

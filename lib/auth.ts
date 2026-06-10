@@ -7,9 +7,8 @@ import { AdminUser } from "./models/AdminUser";
 const scryptAsync = promisify(scrypt);
 
 export const SESSION_COOKIE = "mi-admin-session";
-const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days (seconds)
+const SESSION_MAX_AGE = 60 * 60 * 24 * 7;
 
-/* ---------- Password hashing (scrypt, no native deps) ---------- */
 export async function hashPassword(password: string): Promise<string> {
   const salt = randomBytes(16).toString("hex");
   const derived = (await scryptAsync(password, salt, 64)) as Buffer;
@@ -24,13 +23,12 @@ export async function verifyPassword(password: string, stored: string): Promise<
   return keyBuf.length === derived.length && timingSafeEqual(keyBuf, derived);
 }
 
-/* ---------- Session tokens (compact HMAC-signed, JWT-like) ---------- */
 export type SessionPayload = {
   sub: string;
   email: string;
   name: string;
   role: string;
-  exp: number; // epoch ms
+  exp: number;
 };
 
 function getSecret(): string {
@@ -65,7 +63,6 @@ export function verifySession(token: string): SessionPayload | null {
   }
 }
 
-/* ---------- Cookie helpers ---------- */
 export async function startSession(user: {
   id: string;
   email: string;
@@ -107,7 +104,6 @@ export async function getSession(): Promise<SessionPayload | null> {
   return verifySession(token);
 }
 
-/* ---------- Guard ---------- */
 export class AuthError extends Error {
   status = 401;
   constructor(message = "Unauthorized") {
@@ -116,16 +112,12 @@ export class AuthError extends Error {
   }
 }
 
-// Throw inside a route handler; handleError() maps AuthError → 401.
 export async function requireAuth(): Promise<SessionPayload> {
   const session = await getSession();
   if (!session) throw new AuthError();
   return session;
 }
 
-/* ---------- Default admin bootstrap ---------- */
-// Creates the first admin from ADMIN_EMAIL / ADMIN_PASSWORD (falling back to the
-// prototype demo creds) when no admin exists yet, so the first login works.
 export async function ensureDefaultAdmin() {
   await connectDB();
   const count = await AdminUser.countDocuments();

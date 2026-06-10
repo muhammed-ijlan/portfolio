@@ -21,7 +21,6 @@ export function ThemeProvider({
   const [theme, setTheme] = useState<Theme>(defaultTheme);
 
   useEffect(() => {
-    // A visitor's explicit choice wins over the site default from Settings.
     const stored = localStorage.getItem("mi-theme") as Theme | null;
     if (stored) setTheme(stored);
   }, []);
@@ -31,7 +30,6 @@ export function ThemeProvider({
     localStorage.setItem("mi-theme", theme);
   }, [theme]);
 
-  // Drive the site accent from Settings (falls back to the CSS default).
   useEffect(() => {
     if (!accent) return;
     const root = document.documentElement;

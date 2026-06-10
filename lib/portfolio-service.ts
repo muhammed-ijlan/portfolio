@@ -1,8 +1,3 @@
-// Public portfolio data service. Reads the published CMS content from MongoDB
-// and shapes it for the public site (drafts excluded, admin-only fields dropped).
-// Used by the public API routes — and reusable from server components if you
-// later render the site straight from the DB.
-
 import { cache } from "react";
 import { connectDB } from "./db";
 import { Project } from "./models/Project";
@@ -19,12 +14,10 @@ import type {
   Skill as SkillType,
 } from "./seed-data";
 
-// What the public site cares about for a project — no draft status, no views.
 export type PublicProject = Omit<ProjectType, "status" | "views">;
 export type PublicExperience = ExperienceType;
 export type PublicSkill = SkillType;
 export type PublicAbout = AboutType;
-// Settings are already public-safe; expose them as-is.
 export type PublicSettings = SettingsType;
 
 function pid(d: Record<string, unknown>) {
@@ -83,6 +76,7 @@ export async function getPublicSettings(): Promise<PublicSettings> {
     accent: src.accent,
     defaultTheme: src.defaultTheme,
     seoDescription: src.seoDescription,
+    resumeUrl: src.resumeUrl ?? "",
     toggles: src.toggles,
   };
 }
@@ -96,7 +90,6 @@ export type Portfolio = {
   contact: { email: string; phone: string; socials: PublicAbout["socials"] };
 };
 
-// One call that returns everything the public site needs to render.
 export async function getPortfolio(): Promise<Portfolio> {
   await connectDB();
   const [about, projects, experience, skills, settings] = await Promise.all([
@@ -116,8 +109,6 @@ export async function getPortfolio(): Promise<Portfolio> {
   };
 }
 
-// Build a Portfolio straight from the in-repo SEED — used as a fallback when the
-// database isn't configured/reachable so the public site always renders.
 function seedPortfolio(): Portfolio {
   const { about, settings } = SEED;
   const projects = SEED.projects
@@ -138,16 +129,13 @@ function seedPortfolio(): Portfolio {
       accent: settings.accent,
       defaultTheme: settings.defaultTheme,
       seoDescription: settings.seoDescription,
+      resumeUrl: settings.resumeUrl ?? "",
       toggles: settings.toggles,
     },
     contact: { email: about.email, phone: about.phone, socials: about.socials },
   };
 }
 
-// Request-cached portfolio for server components. Resilient: if the DB is down or
-// MONGODB_URI is unset (e.g. at build time on a fresh deploy) it serves the seed
-// instead of throwing, so the page renders either way. Memoized per-request via
-// React.cache so multiple components share a single DB round-trip.
 export const getPortfolioCached = cache(async (): Promise<Portfolio> => {
   try {
     return await getPortfolio();

@@ -1,8 +1,5 @@
 import mongoose, { Schema, model, models } from "mongoose";
 
-// Singleton document: there is only ever one About record, addressed by a
-// fixed `key`. We don't use the shared id transform here — the frontend reads
-// About as a plain object, not an entity with an id.
 const StatSchema = new Schema(
   { value: String, label: String, sub: String },
   { _id: false }

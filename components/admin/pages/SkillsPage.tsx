@@ -15,8 +15,6 @@ const emptySkill = (): Skill => ({ id: "", title: "", items: [], accent: false }
 
 function SkillModal({ open, initial, onClose, onSave, saving }: { open: boolean; initial: Skill | null; onClose: () => void; onSave: (s: Skill) => void; saving: boolean }) {
   const [draft, setDraft] = useState<Skill>(initial || emptySkill());
-  // Reset the draft when the modal opens or targets a different item — synced
-  // during render (React's recommended alternative to a sync effect).
   const [synced, setSynced] = useState<{ initial: Skill | null; open: boolean }>({ initial, open });
   if (synced.initial !== initial || synced.open !== open) {
     setSynced({ initial, open });
