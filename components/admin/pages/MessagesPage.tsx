@@ -38,7 +38,6 @@ export function MessagesPage() {
   });
   const visible = rows.slice(0, page * PAGE_SIZE);
 
-  // Optimistic: reflect the change instantly, then persist; roll back on failure.
   const patch = (m: Message, change: Partial<Message>) => {
     setItems((prev) => prev.map((x) => (x.id === m.id ? { ...x, ...change } : x)));
     update(m.id, change).catch((e) => {

@@ -6,7 +6,6 @@ import { hashPassword, requireAuth, startSession, verifyPassword } from "@/lib/a
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// POST /api/auth/change-password  { currentPassword, newPassword }  (auth required)
 export async function POST(req: Request) {
   try {
     const session = await requireAuth();
@@ -29,7 +28,6 @@ export async function POST(req: Request) {
     user.passwordHash = await hashPassword(newPassword);
     await user.save();
 
-    // Re-issue the session so the cookie stays valid after the change.
     await startSession({ id: user.id, email: user.email, name: user.name, role: user.role });
     return ok({ changed: true });
   } catch (e) {

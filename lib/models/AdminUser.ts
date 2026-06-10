@@ -1,7 +1,5 @@
 import mongoose, { Schema, model, models } from "mongoose";
 
-// Admin account for the CMS. `passwordHash` is a scrypt hash (see lib/auth.ts)
-// and is never serialised to JSON.
 const AdminUserSchema = new Schema(
   {
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },

@@ -13,9 +13,6 @@ import { ensureDefaultAdmin } from "@/lib/auth";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// One-shot seeding endpoint. Drops the CMS collections and reloads the SEED data.
-// Guarded by SEED_SECRET (header `x-seed-secret` or `?secret=`). The `id` fields
-// from SEED are stripped so Mongo assigns real ObjectIds.
 export async function POST(req: Request) {
   try {
     const secret = process.env.SEED_SECRET;
@@ -31,7 +28,7 @@ export async function POST(req: Request) {
     const strip = <T extends { id?: string }>(arr: T[]) =>
       arr.map((doc) => {
         const { id, ...rest } = doc;
-        void id; // drop the seed's string id so Mongo assigns a real ObjectId
+        void id;
         return rest;
       });
 
@@ -56,7 +53,6 @@ export async function POST(req: Request) {
     await About.create({ ...SEED.about, key: "singleton" });
     await Settings.create({ ...SEED.settings, key: "singleton" });
 
-    // Bootstrap the default admin account if none exists yet.
     const admin = await ensureDefaultAdmin();
 
     return ok({

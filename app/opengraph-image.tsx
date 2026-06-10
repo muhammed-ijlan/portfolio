@@ -1,7 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getPortfolioCached } from "@/lib/portfolio-service";
 
-// Dynamic Open Graph / social-share card, generated from CMS content.
 export const runtime = "nodejs";
 export const alt = "Muhammed Ijlan — Portfolio";
 export const size = { width: 1200, height: 630 };

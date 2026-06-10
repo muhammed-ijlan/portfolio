@@ -15,9 +15,6 @@ export function AboutPage() {
   const [draft, setDraft] = useState<About | null>(null);
   const [saving, setSaving] = useState(false);
 
-  // Mirror the persisted document into a local draft for editing, re-syncing
-  // whenever the source changes (initial load + after a successful save). Synced
-  // during render — React's recommended alternative to a sync effect.
   const [synced, setSynced] = useState<About | null>(null);
   if (about && about !== synced) {
     setSynced(about);

@@ -8,9 +8,6 @@ export const dynamic = "force-dynamic";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX = { name: 120, email: 200, subject: 160, message: 4000 };
 
-// Public endpoint for the portfolio contact form. Validates input, drops obvious
-// bots via a honeypot, and stores the message as a "new" inbox entry the CMS
-// Messages page can read.
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
@@ -18,9 +15,8 @@ export async function POST(req: Request) {
     const email = String(body?.email ?? "").trim();
     const subject = String(body?.subject ?? "").trim();
     const message = String(body?.message ?? "").trim();
-    const honeypot = String(body?.website ?? "").trim(); // hidden field; humans leave it empty
+    const honeypot = String(body?.website ?? "").trim();
 
-    // Pretend success for bots so they don't probe further.
     if (honeypot) return ok({ delivered: true });
 
     const errors: Record<string, string> = {};

@@ -21,7 +21,7 @@ export function Projects({ items }: { items: PublicProject[] }) {
           <Reveal key={p.id} style={{ gridColumn: p.featured ? "1 / -1" : "auto" }}>
             <Tilt
               max={p.featured ? 4 : 8}
-              className="grad-border"
+              className={`grad-border${p.featured ? " project-featured" : ""}`}
               style={{
                 overflow: "hidden", height: "100%", position: "relative",
                 display: p.featured ? "grid" : "block",

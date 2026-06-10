@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef } from "react";
+import { motionDisabled } from "./motion";
 
 interface TiltProps {
   children: React.ReactNode;
@@ -15,7 +16,7 @@ export function Tilt({ children, max = 9, glow = true, className = "", style = {
   const ref = useRef<HTMLDivElement>(null);
 
   const onMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (motionDisabled()) return;
     const el = ref.current;
     if (!el) return;
     const r = el.getBoundingClientRect();

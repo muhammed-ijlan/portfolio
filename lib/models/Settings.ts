@@ -1,6 +1,5 @@
 import mongoose, { Schema, model, models } from "mongoose";
 
-// Singleton document, same pattern as About.
 const SettingsSchema = new Schema(
   {
     key: { type: String, default: "singleton", unique: true },
@@ -9,6 +8,7 @@ const SettingsSchema = new Schema(
     accent: { type: String, default: "#22D3EE" },
     defaultTheme: { type: String, enum: ["dark", "light"], default: "dark" },
     seoDescription: { type: String, default: "" },
+    resumeUrl: { type: String, default: "" },
     toggles: {
       animations: { type: Boolean, default: true },
       customCursor: { type: Boolean, default: true },

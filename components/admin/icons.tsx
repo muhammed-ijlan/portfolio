@@ -13,7 +13,6 @@ const stroke = (p?: P): P => ({
   ...p,
 });
 
-// Inline SVG icon set for the admin CMS — mirrors the design's Lucide-style icons.
 export const AdminIcons = {
   grid: (p?: P) => (
     <svg {...stroke(p)}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>

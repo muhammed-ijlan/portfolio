@@ -5,8 +5,6 @@ import { fail, ok } from "@/lib/api-helpers";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Lightweight DB connectivity check. Useful to confirm the MONGODB_URI works
-// once the live URI is plugged in: GET /api/health
 export async function GET() {
   try {
     await connectDB();

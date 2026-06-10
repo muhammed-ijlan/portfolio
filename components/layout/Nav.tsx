@@ -89,7 +89,7 @@ export function Nav() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {}
       <div
         style={{
           display: open ? "block" : "none",

@@ -4,7 +4,7 @@ import { Project } from "@/lib/models/Project";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const c = crud(() => Project);
+const c = crud(() => Project, { cloudinaryFields: ["image"] });
 type Ctx = { params: Promise<{ id: string }> };
 
 export async function GET(_req: Request, { params }: Ctx) {

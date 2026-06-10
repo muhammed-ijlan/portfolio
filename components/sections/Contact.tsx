@@ -25,7 +25,7 @@ export function Contact({ contact }: { contact: Portfolio["contact"] }) {
   const [errors, setErrors] = useState<Errors>({});
   const [touched, setTouched] = useState<Partial<Record<keyof FormState, boolean>>>({});
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
-  const [website, setWebsite] = useState(""); // honeypot — bots fill it, humans don't
+  const [website, setWebsite] = useState("");
   const [serverError, setServerError] = useState("");
 
   const contactLinks = [
@@ -62,7 +62,6 @@ export function Contact({ contact }: { contact: Portfolio["contact"] }) {
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok || !json?.ok) {
-        // Surface server-side field errors (422 carries them in `extra`).
         if (json?.extra && typeof json.extra === "object") setErrors(json.extra as Errors);
         setServerError(json?.error || "Couldn't send your message. Please try again.");
         setStatus("idle");
@@ -132,7 +131,7 @@ export function Contact({ contact }: { contact: Portfolio["contact"] }) {
               </div>
             ) : (
               <>
-                {/* Honeypot: hidden from users, attractive to bots. */}
+                {}
                 <input
                   type="text"
                   name="website"

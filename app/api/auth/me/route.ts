@@ -6,7 +6,6 @@ import { getSession } from "@/lib/auth";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// GET /api/auth/me — returns the current admin, or 401 if not signed in.
 export async function GET() {
   try {
     const session = await getSession();

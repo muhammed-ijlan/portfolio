@@ -5,8 +5,6 @@ import { Tilt } from "@/components/ui/Tilt";
 import { Counter } from "@/components/ui/Counter";
 import type { PublicAbout } from "@/lib/portfolio-service";
 
-// Split a stat like "4+" or "30%" into an animatable number + suffix. Returns
-// null for non-numeric values (e.g. "Shipped"), which render as-is.
 function parseStat(value: string): { num: number; suffix: string } | null {
   const m = value.match(/^(\d+(?:\.\d+)?)(.*)$/);
   return m ? { num: parseFloat(m[1]), suffix: m[2] } : null;
@@ -15,7 +13,7 @@ function parseStat(value: string): { num: number; suffix: string } | null {
 export function About({ about }: { about: PublicAbout }) {
   return (
     <section id="about" className="section container-x" style={{ paddingTop: "7rem", paddingBottom: "3rem" }}>
-      {/* Connecting glow */}
+      {}
       <div
         aria-hidden="true"
         style={{

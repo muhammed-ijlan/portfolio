@@ -4,7 +4,6 @@ import { getPublicProjects } from "@/lib/portfolio-service";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Published projects only, featured first.
 export async function GET() {
   try {
     return okCached(await getPublicProjects());

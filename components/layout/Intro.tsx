@@ -6,15 +6,12 @@ const prefersReducedMotion = () =>
   typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 export function Intro() {
-  // Skip the intro entirely when reduced motion is requested (set at mount, not
-  // in an effect). Otherwise let the timer dismiss it.
   const [gone, setGone] = useState(prefersReducedMotion);
 
   useEffect(() => {
     if (gone) return;
     const t = setTimeout(() => setGone(true), 1500);
     return () => clearTimeout(t);
-    // Run once on mount; `gone` is only read for the initial skip.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

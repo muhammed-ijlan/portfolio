@@ -1,8 +1,3 @@
-// Server-safe CMS types + seed data. Shared by the client store (cms-store.ts)
-// and the backend (API route handlers, seed endpoint). No React / no "use client"
-// here so it can be imported from server route handlers safely.
-
-/* ---------- Types ---------- */
 export type Project = {
   id: string;
   title: string;
@@ -63,6 +58,7 @@ export type Settings = {
   accent: string;
   defaultTheme: "dark" | "light";
   seoDescription: string;
+  resumeUrl: string;
   toggles: { animations: boolean; customCursor: boolean; maintenance: boolean; showResume: boolean };
 };
 
@@ -76,7 +72,6 @@ export type CmsData = {
   settings: Settings;
 };
 
-/* ---------- Seed data (mirrors the real portfolio) ---------- */
 export const SEED: CmsData = {
   projects: [
     { id: "p1", title: "Multi-Chain Crypto Wallet", kind: "Web3 · Chrome MV3", desc: "Non-custodial Ethereum & Tron wallet as a Manifest V3 extension — WASM crypto SDK, biometric auth, on-device signing.", tags: ["React", "TypeScript", "WebAssembly", "WebAuthn", "Vite"], featured: true, live: "https://example.com", repo: "https://github.com/muhammed-ijlan", image: "", status: "published", views: 3820 },
@@ -144,6 +139,7 @@ export const SEED: CmsData = {
     accent: "#22D3EE",
     defaultTheme: "dark",
     seoDescription: "Senior Web Developer (Full Stack & Web3) in Dubai. 4+ years building production-grade, high-performance web & Web3 applications.",
-    toggles: { animations: true, customCursor: true, maintenance: false, showResume: true },
+    resumeUrl: "",
+    toggles: { animations: true, customCursor: false, maintenance: false, showResume: true },
   },
 };

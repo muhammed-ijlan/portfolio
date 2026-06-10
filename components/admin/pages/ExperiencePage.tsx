@@ -17,8 +17,6 @@ const emptyExp = (): Draft => ({ id: "", role: "", company: "", place: "", perio
 
 function ExperienceModal({ open, initial, onClose, onSave, saving }: { open: boolean; initial: Experience | null; onClose: () => void; onSave: (e: Experience) => void; saving: boolean }) {
   const [draft, setDraft] = useState<Draft>(initial || emptyExp());
-  // Reset the draft when the modal opens or targets a different item — synced
-  // during render (React's recommended alternative to a sync effect).
   const [synced, setSynced] = useState<{ initial: Experience | null; open: boolean }>({ initial, open });
   if (synced.initial !== initial || synced.open !== open) {
     setSynced({ initial, open });

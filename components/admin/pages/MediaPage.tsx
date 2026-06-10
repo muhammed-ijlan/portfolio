@@ -16,7 +16,6 @@ export function MediaPage() {
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Upload each file to Cloudinary, then persist the hosted URL as a Media doc.
   const onFiles = async (files: FileList | null) => {
     if (!files || uploading) return;
     const arr = [...files];
