@@ -1,0 +1,57 @@
+import { connectDB } from "@/lib/db";
+import { fail, handleError, ok } from "@/lib/api-helpers";
+import { Message } from "@/lib/models/Message";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX = { name: 120, email: 200, subject: 160, message: 4000 };
+
+// Public endpoint for the portfolio contact form. Validates input, drops obvious
+// bots via a honeypot, and stores the message as a "new" inbox entry the CMS
+// Messages page can read.
+export async function POST(req: Request) {
+  try {
+    const body = await req.json().catch(() => ({}));
+    const name = String(body?.name ?? "").trim();
+    const email = String(body?.email ?? "").trim();
+    const subject = String(body?.subject ?? "").trim();
+    const message = String(body?.message ?? "").trim();
+    const honeypot = String(body?.website ?? "").trim(); // hidden field; humans leave it empty
+
+    // Pretend success for bots so they don't probe further.
+    if (honeypot) return ok({ delivered: true });
+
+    const errors: Record<string, string> = {};
+    if (!name) errors.name = "Please enter your name";
+    if (!email) errors.email = "Please enter your email";
+    else if (!EMAIL_RE.test(email)) errors.email = "Enter a valid email address";
+    if (!subject) errors.subject = "Add a subject";
+    if (!message) errors.message = "Write a short message";
+    else if (message.length < 10) errors.message = "A little more detail, please";
+
+    for (const [k, v] of Object.entries({ name, email, subject, message })) {
+      if (v.length > MAX[k as keyof typeof MAX]) errors[k] = "Too long";
+    }
+
+    if (Object.keys(errors).length) {
+      return fail("Validation failed", 422, errors);
+    }
+
+    await connectDB();
+    const doc = await Message.create({
+      name,
+      email,
+      subject,
+      message,
+      status: "new",
+      starred: false,
+      date: new Date().toISOString(),
+    });
+
+    return ok({ delivered: true, id: doc.id }, { status: 201 });
+  } catch (e) {
+    return handleError(e);
+  }
+}
