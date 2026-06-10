@@ -7,11 +7,18 @@ import { StatCard } from "../StatCard";
 import { TrafficChart } from "../charts/TrafficChart";
 import { ProjectViewsChart } from "../charts/ProjectViewsChart";
 import { TrafficSourcesChart } from "../charts/TrafficSourcesChart";
-import { useStore, initials, avatarColor, relTime, trafficSeries } from "@/lib/cms-store";
+import { PageLoading, PageError } from "../cms/Loading";
+import { initials, avatarColor, relTime, trafficSeries } from "@/lib/cms-store";
+import { api } from "@/lib/api";
+import { useCollection } from "@/lib/use-cms";
 
 export function DashboardPage() {
-  const [projects] = useStore("projects");
-  const [messages] = useStore("messages");
+  const { items: projects, loading: lp, error: ep } = useCollection(api.projects);
+  const { items: messages, loading: lm, error: em } = useCollection(api.messages);
+
+  if (lp || lm) return <PageLoading />;
+  if (ep || em) return <PageError error={ep || em || "Failed to load dashboard"} />;
+
   const { days, views, visitors } = trafficSeries();
 
   const newMsgs = messages.filter((m) => m.status === "new").length;

@@ -1,20 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AdminIcons } from "../icons";
 import { PageHead } from "../PageHead";
 import { Modal, useConfirm } from "../cms/Modal";
 import { Field, TextInput, TagInput, Toggle } from "../cms/Fields";
 import { toast } from "../cms/Toast";
-import { useStore, uid, type Skill } from "@/lib/cms-store";
+import { PageLoading, PageError, Spinner } from "../cms/Loading";
+import { type Skill } from "@/lib/cms-store";
+import { api } from "@/lib/api";
+import { useCollection } from "@/lib/use-cms";
 
 const emptySkill = (): Skill => ({ id: "", title: "", items: [], accent: false });
 
-function SkillModal({ open, initial, onClose, onSave }: { open: boolean; initial: Skill | null; onClose: () => void; onSave: (s: Skill) => void }) {
+function SkillModal({ open, initial, onClose, onSave, saving }: { open: boolean; initial: Skill | null; onClose: () => void; onSave: (s: Skill) => void; saving: boolean }) {
   const [draft, setDraft] = useState<Skill>(initial || emptySkill());
-  useEffect(() => {
+  // Reset the draft when the modal opens or targets a different item — synced
+  // during render (React's recommended alternative to a sync effect).
+  const [synced, setSynced] = useState<{ initial: Skill | null; open: boolean }>({ initial, open });
+  if (synced.initial !== initial || synced.open !== open) {
+    setSynced({ initial, open });
     setDraft(initial || emptySkill());
-  }, [initial, open]);
+  }
   const set = <K extends keyof Skill>(k: K, v: Skill[K]) => setDraft((d) => ({ ...d, [k]: v }));
   const isNew = !draft.id;
   const save = () => {
@@ -22,7 +29,7 @@ function SkillModal({ open, initial, onClose, onSave }: { open: boolean; initial
       toast("Group name is required", "error");
       return;
     }
-    onSave({ ...draft, id: draft.id || uid() });
+    onSave(draft);
   };
   return (
     <Modal
@@ -32,9 +39,9 @@ function SkillModal({ open, initial, onClose, onSave }: { open: boolean; initial
       sub={isNew ? "Group related skills together" : draft.title}
       footer={
         <>
-          <button className="adm-btn" onClick={onClose}>Cancel</button>
-          <button className="adm-btn adm-btn-primary" onClick={save}>
-            <AdminIcons.save style={{ width: 14, height: 14 }} /> {isNew ? "Create" : "Save"}
+          <button className="adm-btn" onClick={onClose} disabled={saving}>Cancel</button>
+          <button className="adm-btn adm-btn-primary" onClick={save} disabled={saving}>
+            {saving ? <Spinner /> : <AdminIcons.save style={{ width: 14, height: 14 }} />} {saving ? "Saving…" : isNew ? "Create" : "Save"}
           </button>
         </>
       }
@@ -57,23 +64,48 @@ function SkillModal({ open, initial, onClose, onSave }: { open: boolean; initial
 }
 
 export function SkillsPage() {
-  const [skills, setSkills] = useStore("skills");
+  const { items: skills, loading, error, create, update, remove } = useCollection(api.skills);
   const [modal, setModal] = useState<{ open: boolean; item: Skill | null }>({ open: false, item: null });
+  const [saving, setSaving] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
   const [confirm, confirmNode] = useConfirm();
   const total = skills.reduce((a, s) => a + s.items.length, 0);
 
-  const onSave = (item: Skill) => {
-    const exists = skills.some((s) => s.id === item.id);
-    setSkills(exists ? skills.map((s) => (s.id === item.id ? item : s)) : [...skills, item]);
-    setModal({ open: false, item: null });
-    toast(exists ? "Skill group updated" : "Skill group added");
+  const onSave = async (item: Skill) => {
+    setSaving(true);
+    try {
+      if (item.id) {
+        await update(item.id, item);
+        toast("Skill group updated");
+      } else {
+        const { id: _id, ...body } = item;
+        void _id;
+        await create(body);
+        toast("Skill group added");
+      }
+      setModal({ open: false, item: null });
+    } catch (e) {
+      toast(e instanceof Error ? e.message : "Failed to save skill group", "error");
+    } finally {
+      setSaving(false);
+    }
   };
   const onDelete = async (s: Skill) => {
     if (await confirm({ title: "Delete skill group?", message: `"${s.title}" and its ${s.items.length} skills will be removed.` })) {
-      setSkills(skills.filter((x) => x.id !== s.id));
-      toast("Skill group deleted", "info");
+      setBusyId(s.id);
+      try {
+        await remove(s.id);
+        toast("Skill group deleted", "info");
+      } catch (e) {
+        toast(e instanceof Error ? e.message : "Failed to delete skill group", "error");
+      } finally {
+        setBusyId(null);
+      }
     }
   };
+
+  if (loading) return <PageLoading />;
+  if (error) return <PageError error={error} />;
 
   return (
     <>
@@ -88,8 +120,8 @@ export function SkillsPage() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
               <span style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 700, fontSize: 14.5 }}>{s.title}</span>
               <div style={{ display: "flex", gap: 5 }}>
-                <button className="cms-card-action" style={{ width: 28, height: 28 }} onClick={() => setModal({ open: true, item: s })}><AdminIcons.edit style={{ width: 13, height: 13 }} /></button>
-                <button className="cms-card-action danger" style={{ width: 28, height: 28 }} onClick={() => onDelete(s)}><AdminIcons.trash style={{ width: 13, height: 13 }} /></button>
+                <button className="cms-card-action" style={{ width: 28, height: 28 }} onClick={() => setModal({ open: true, item: s })} disabled={busyId === s.id}><AdminIcons.edit style={{ width: 13, height: 13 }} /></button>
+                <button className="cms-card-action danger" style={{ width: 28, height: 28 }} onClick={() => onDelete(s)} disabled={busyId === s.id}>{busyId === s.id ? <Spinner size={13} /> : <AdminIcons.trash style={{ width: 13, height: 13 }} />}</button>
               </div>
             </div>
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
@@ -100,7 +132,7 @@ export function SkillsPage() {
           </div>
         ))}
       </div>
-      <SkillModal open={modal.open} initial={modal.item} onClose={() => setModal({ open: false, item: null })} onSave={onSave} />
+      <SkillModal open={modal.open} initial={modal.item} onClose={() => setModal({ open: false, item: null })} onSave={onSave} saving={saving} />
       {confirmNode}
     </>
   );

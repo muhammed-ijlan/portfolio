@@ -5,7 +5,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { AdminIcons } from "@/components/admin/icons";
-import { DEMO_CREDENTIALS, isAuthed, login } from "@/lib/admin-auth";
+import { authApi } from "@/lib/api";
+
+// Default admin seeded on first login from ADMIN_EMAIL / ADMIN_PASSWORD
+// (see lib/auth.ts → ensureDefaultAdmin). Shown so the first sign-in works.
+const DEMO_CREDENTIALS = { email: "ijlan.dev@gmail.com", password: "admin123" };
 
 export default function LoginPage() {
   const router = useRouter();
@@ -16,11 +20,15 @@ export default function LoginPage() {
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // If a valid session cookie is already present, skip the login screen.
   useEffect(() => {
-    if (isAuthed()) router.replace("/admin");
+    authApi
+      .me()
+      .then(() => router.replace("/admin"))
+      .catch(() => {});
   }, [router]);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr("");
     if (!email.trim() || !password) {
@@ -28,15 +36,13 @@ export default function LoginPage() {
       return;
     }
     setLoading(true);
-    setTimeout(() => {
-      if (email.trim().toLowerCase() === DEMO_CREDENTIALS.email && password === DEMO_CREDENTIALS.password) {
-        login(remember);
-        router.push("/admin");
-      } else {
-        setLoading(false);
-        setErr("Invalid credentials. Try the demo login below.");
-      }
-    }, 650);
+    try {
+      await authApi.login(email.trim(), password);
+      router.push("/admin");
+    } catch (e) {
+      setLoading(false);
+      setErr(e instanceof Error ? e.message : "Invalid credentials. Try the demo login below.");
+    }
   };
 
   return (

@@ -306,13 +306,21 @@ html[data-theme="light"] {
   white-space: nowrap;
   text-decoration: none;
 }
-.adm-btn:hover { background: var(--glass); border-color: rgba(34,211,238,0.4); }
+.adm-btn:hover:not(:disabled) { background: var(--glass); border-color: rgba(34,211,238,0.45); color: var(--text); }
 .adm-btn-primary {
   background: var(--accent-grad); color: #04060a;
   border-color: transparent;
   box-shadow: 0 6px 24px -8px rgba(34,211,238,0.5);
+  transition: background 0.18s, border-color 0.18s, box-shadow 0.18s, filter 0.18s, transform 0.18s;
 }
-.adm-btn-primary:hover { box-shadow: 0 8px 28px -8px rgba(124,58,237,0.6); }
+.adm-btn-primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+  box-shadow: 0 10px 30px -8px rgba(124,58,237,0.65);
+  transform: translateY(-1px);
+}
+.adm-btn-primary:active:not(:disabled) { transform: translateY(0); }
+/* Disabled / in-flight (e.g. while saving): dim, no hover, no pointer. */
+.adm-btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; filter: none; transform: none; }
 
 /* ---- Empty / coming soon state ---- */
 .cms-empty { text-align:center; padding:52px 20px; }
@@ -488,8 +496,9 @@ select.cms-input { cursor:pointer; appearance:none; background-image:url("data:i
 .cms-proj-desc { font-size:12.5px; color:var(--text-dim); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .cms-proj-foot { display:flex; align-items:center; gap:6px; margin-top:auto; padding-top:10px; border-top:1px solid var(--border); }
 .cms-card-action { width:30px; height:30px; border-radius:8px; border:1px solid var(--border); background:var(--bg-elev); display:grid; place-items:center; cursor:pointer; color:var(--text-dim); transition:background .18s,color .18s,border-color .18s; text-decoration:none; }
-.cms-card-action:hover { background:var(--glass); color:var(--text); }
-.cms-card-action.danger:hover { color:#f87171; border-color:rgba(248,113,113,0.4); }
+.cms-card-action:hover:not(:disabled) { background:var(--glass); color:var(--text); }
+.cms-card-action.danger:hover:not(:disabled) { color:#f87171; border-color:rgba(248,113,113,0.4); }
+.cms-card-action:disabled, .cms-star:disabled { opacity:0.5; cursor:not-allowed; }
 .cms-star { display:inline-grid; place-items:center; width:26px; height:26px; border-radius:7px; background:rgba(4,5,9,0.5); backdrop-filter:blur(4px); border:none; cursor:pointer; color:var(--text-faint); }
 .cms-star.on { color:#fbbf24; }
 

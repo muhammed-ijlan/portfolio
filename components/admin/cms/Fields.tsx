@@ -2,6 +2,8 @@
 
 import { useRef, useState, type ReactNode } from "react";
 import { AdminIcons } from "../icons";
+import { uploadApi } from "@/lib/api";
+import { toast } from "./Toast";
 
 export function Field({ label, children, hint, full }: { label?: string; children: ReactNode; hint?: string; full?: boolean }) {
   return (
@@ -69,21 +71,32 @@ export function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) =
 
 export function ImageField({ value, onChange, label = "Cover image" }: { value?: string; onChange: (v: string) => void; label?: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const onFile = (file?: File) => {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => onChange(reader.result as string);
-    reader.readAsDataURL(file);
+  const [uploading, setUploading] = useState(false);
+
+  // Upload straight to Cloudinary and store the hosted URL (not a base64 blob).
+  const onFile = async (file?: File) => {
+    if (!file || uploading) return;
+    setUploading(true);
+    try {
+      const { url } = await uploadApi.image(file);
+      onChange(url);
+      toast("Image uploaded");
+    } catch (e) {
+      toast(e instanceof Error ? e.message : "Upload failed", "error");
+    } finally {
+      setUploading(false);
+    }
   };
+
   return (
     <div className="cms-imagefield">
       {value ? (
         <div className="cms-image-preview" style={{ backgroundImage: `url(${value})` }}>
           <div className="cms-image-actions">
-            <button type="button" className="adm-btn" style={{ fontSize: 12, padding: "5px 10px" }} onClick={() => inputRef.current?.click()}>
-              <AdminIcons.upload style={{ width: 13, height: 13 }} /> Replace
+            <button type="button" className="adm-btn" style={{ fontSize: 12, padding: "5px 10px" }} disabled={uploading} onClick={() => inputRef.current?.click()}>
+              <AdminIcons.upload style={{ width: 13, height: 13 }} /> {uploading ? "Uploading…" : "Replace"}
             </button>
-            <button type="button" className="adm-btn" style={{ fontSize: 12, padding: "5px 10px" }} onClick={() => onChange("")}>
+            <button type="button" className="adm-btn" style={{ fontSize: 12, padding: "5px 10px" }} disabled={uploading} onClick={() => onChange("")}>
               <AdminIcons.trash style={{ width: 13, height: 13 }} /> Remove
             </button>
           </div>
@@ -91,7 +104,7 @@ export function ImageField({ value, onChange, label = "Cover image" }: { value?:
       ) : (
         <div
           className="cms-image-drop"
-          onClick={() => inputRef.current?.click()}
+          onClick={() => !uploading && inputRef.current?.click()}
           onDragOver={(e) => {
             e.preventDefault();
             e.currentTarget.classList.add("drag");
@@ -106,7 +119,9 @@ export function ImageField({ value, onChange, label = "Cover image" }: { value?:
           <span style={{ color: "var(--text-faint)" }}>
             <AdminIcons.image style={{ width: 22, height: 22 }} />
           </span>
-          <div style={{ fontSize: 13, fontWeight: 600, marginTop: 8 }}>Drop image or click to upload</div>
+          <div style={{ fontSize: 13, fontWeight: 600, marginTop: 8 }}>
+            {uploading ? "Uploading…" : "Drop image or click to upload"}
+          </div>
           <div style={{ fontSize: 11.5, color: "var(--text-faint)", marginTop: 2 }}>PNG, JPG · {label}</div>
         </div>
       )}

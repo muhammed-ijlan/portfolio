@@ -6,7 +6,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { AdminIcons } from "./icons";
 import { labelForPath } from "./nav";
-import { logout } from "@/lib/admin-auth";
+import { authApi } from "@/lib/api";
+import { toast } from "./cms/Toast";
 
 export function TopBar({ setMobileOpen }: { setMobileOpen: (v: boolean | ((o: boolean) => boolean)) => void }) {
   const pathname = usePathname();
@@ -22,8 +23,12 @@ export function TopBar({ setMobileOpen }: { setMobileOpen: (v: boolean | ((o: bo
     return () => window.removeEventListener("click", close);
   }, [menu]);
 
-  const onLogout = () => {
-    logout();
+  const onLogout = async () => {
+    try {
+      await authApi.logout();
+    } catch {
+      toast("Couldn't reach the server, signing out anyway", "info");
+    }
     router.replace("/admin/login");
   };
 

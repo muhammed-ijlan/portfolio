@@ -1,25 +1,50 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AdminIcons } from "../icons";
 import { PageHead } from "../PageHead";
 import { Field, TextInput, TextArea, SelectInput, Toggle } from "../cms/Fields";
 import { toast } from "../cms/Toast";
-import { CMS, useStore, type Settings } from "@/lib/cms-store";
+import { PageLoading, PageError, Spinner } from "../cms/Loading";
+import { type Settings } from "@/lib/cms-store";
+import { api } from "@/lib/api";
+import { useSingleton } from "@/lib/use-cms";
 
 export function SettingsPage() {
-  const [settings, setSettings] = useStore("settings");
-  const [draft, setDraft] = useState<Settings>(settings);
+  const { data: settings, loading, error, save: persist } = useSingleton(api.settings);
+  const [draft, setDraft] = useState<Settings | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  // Re-sync when the persisted value changes (e.g. localStorage hydration / after save).
-  useEffect(() => {
+  // Mirror the persisted document into a local draft for editing, re-syncing
+  // whenever the source changes (initial load + after a successful save). Synced
+  // during render — React's recommended alternative to a sync effect.
+  const [synced, setSynced] = useState<Settings | null>(null);
+  if (settings && settings !== synced) {
+    setSynced(settings);
     setDraft(settings);
-  }, [settings]);
+  }
 
-  const set = <K extends keyof Settings>(k: K, v: Settings[K]) => setDraft((d) => ({ ...d, [k]: v }));
-  const setTog = (k: keyof Settings["toggles"]) => setDraft((d) => ({ ...d, toggles: { ...d.toggles, [k]: !d.toggles[k] } }));
-  const dirty = JSON.stringify(draft) !== JSON.stringify(settings);
+  const set = <K extends keyof Settings>(k: K, v: Settings[K]) => setDraft((d) => (d ? { ...d, [k]: v } : d));
+  const setTog = (k: keyof Settings["toggles"]) =>
+    setDraft((d) => (d ? { ...d, toggles: { ...d.toggles, [k]: !d.toggles[k] } } : d));
+  const dirty = !!settings && !!draft && JSON.stringify(draft) !== JSON.stringify(settings);
   const accents = ["#22D3EE", "#7C3AED", "#34d399", "#f59e0b", "#ec4899"];
+
+  const onSave = async () => {
+    if (!draft) return;
+    setSaving(true);
+    try {
+      await persist(draft);
+      toast("Settings saved");
+    } catch (e) {
+      toast(e instanceof Error ? e.message : "Failed to save", "error");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading || !draft) return <PageLoading />;
+  if (error) return <PageError error={error} />;
 
   const cardTitle = { textTransform: "none" as const, letterSpacing: 0, fontSize: 13, fontWeight: 700, color: "var(--text)" };
   const rows: { k: keyof Settings["toggles"]; l: string; s: string }[] = [
@@ -32,8 +57,8 @@ export function SettingsPage() {
   return (
     <>
       <PageHead title="Site Settings" sub="Global configuration for your portfolio">
-        <button className="adm-btn adm-btn-primary" onClick={() => { setSettings(draft); toast("Settings saved"); }} disabled={!dirty} style={{ opacity: dirty ? 1 : 0.6 }}>
-          <AdminIcons.save style={{ width: 14, height: 14 }} /> Save Changes
+        <button className="adm-btn adm-btn-primary" onClick={onSave} disabled={!dirty || saving} style={{ opacity: dirty && !saving ? 1 : 0.6 }}>
+          {saving ? <Spinner /> : <AdminIcons.save style={{ width: 14, height: 14 }} />} {saving ? "Saving…" : "Save Changes"}
         </button>
       </PageHead>
       <div className="adm-grid-2">
@@ -65,10 +90,10 @@ export function SettingsPage() {
             </div>
           ))}
           <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--border)" }}>
-            <div className="adm-setting-label" style={{ marginBottom: 4 }}>Danger zone</div>
-            <div className="adm-setting-sub" style={{ marginBottom: 10 }}>Reset all CMS content to the original seed data.</div>
-            <button className="adm-btn" style={{ color: "#f87171", borderColor: "rgba(248,113,113,0.3)" }} onClick={() => { CMS.reset(); setDraft(CMS.get("settings")); toast("CMS reset to defaults", "info"); }}>
-              Reset all content
+            <div className="adm-setting-label" style={{ marginBottom: 4 }}>Discard changes</div>
+            <div className="adm-setting-sub" style={{ marginBottom: 10 }}>Revert unsaved edits back to the saved settings.</div>
+            <button className="adm-btn" style={{ color: "#f87171", borderColor: "rgba(248,113,113,0.3)" }} disabled={!dirty} onClick={() => { setDraft(settings); toast("Reverted unsaved changes", "info"); }}>
+              Discard changes
             </button>
           </div>
         </div>
