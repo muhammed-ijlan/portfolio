@@ -1,10 +1,15 @@
 "use client";
 
 import { PageHead } from "../PageHead";
-import { useStore } from "@/lib/cms-store";
+import { PageLoading, PageError } from "../cms/Loading";
+import { api } from "@/lib/api";
+import { useSingleton } from "@/lib/use-cms";
 
 export function ProfilePage() {
-  const [about] = useStore("about");
+  const { data: about, loading, error } = useSingleton(api.about);
+
+  if (loading || !about) return <PageLoading />;
+  if (error) return <PageError error={error} />;
 
   const cardTitle = { textTransform: "none" as const, letterSpacing: 0, fontSize: 13, fontWeight: 700, color: "var(--text)", marginBottom: 12 };
   const kv: [string, string][] = [

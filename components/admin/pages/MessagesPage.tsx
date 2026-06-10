@@ -6,13 +6,20 @@ import { PageHead } from "../PageHead";
 import { Modal, useConfirm } from "../cms/Modal";
 import { EmptyState, Segmented } from "../cms/Fields";
 import { toast } from "../cms/Toast";
-import { useStore, initials, avatarColor, relTime, type Message } from "@/lib/cms-store";
+import { PageLoading, PageError } from "../cms/Loading";
+import { initials, avatarColor, relTime, type Message } from "@/lib/cms-store";
+import { api } from "@/lib/api";
+import { useCollection } from "@/lib/use-cms";
 
 type Filter = "all" | "new" | "replied" | "starred";
 
+const PAGE_SIZE = 12;
+
 export function MessagesPage() {
-  const [messages, setMessages] = useStore("messages");
+  const { items: messages, setItems, loading, error, update, remove } = useCollection(api.messages);
   const [filter, setFilter] = useState<Filter>("all");
+  const [q, setQ] = useState("");
+  const [page, setPage] = useState(1);
   const [open, setOpen] = useState<Message | null>(null);
   const [confirm, confirmNode] = useConfirm();
 
@@ -21,33 +28,63 @@ export function MessagesPage() {
     new: messages.filter((m) => m.status === "new").length,
     starred: messages.filter((m) => m.starred).length,
   };
-  const rows = messages.filter((m) => (filter === "all" ? true : filter === "starred" ? m.starred : m.status === filter));
+  const query = q.trim().toLowerCase();
+  const rows = messages.filter((m) => {
+    const matchesFilter = filter === "all" ? true : filter === "starred" ? m.starred : m.status === filter;
+    const matchesQuery =
+      !query ||
+      [m.name, m.email, m.subject, m.message].some((f) => f.toLowerCase().includes(query));
+    return matchesFilter && matchesQuery;
+  });
+  const visible = rows.slice(0, page * PAGE_SIZE);
 
-  const markStatus = (m: Message, status: Message["status"]) => setMessages(messages.map((x) => (x.id === m.id ? { ...x, status } : x)));
-  const toggleStar = (m: Message) => setMessages(messages.map((x) => (x.id === m.id ? { ...x, starred: !x.starred } : x)));
+  // Optimistic: reflect the change instantly, then persist; roll back on failure.
+  const patch = (m: Message, change: Partial<Message>) => {
+    setItems((prev) => prev.map((x) => (x.id === m.id ? { ...x, ...change } : x)));
+    update(m.id, change).catch((e) => {
+      setItems((prev) => prev.map((x) => (x.id === m.id ? m : x)));
+      toast(e instanceof Error ? e.message : "Failed to update", "error");
+    });
+  };
+  const markStatus = (m: Message, status: Message["status"]) => patch(m, { status });
+  const toggleStar = (m: Message) => patch(m, { starred: !m.starred });
   const openMsg = (m: Message) => {
     if (m.status === "new") markStatus(m, "read");
     setOpen({ ...m, status: m.status === "new" ? "read" : m.status });
   };
   const onDelete = async (m: Message) => {
     if (await confirm({ title: "Delete message?", message: `Message from ${m.name} will be removed.` })) {
-      setMessages(messages.filter((x) => x.id !== m.id));
-      setOpen(null);
-      toast("Message deleted", "info");
+      try {
+        await remove(m.id);
+        setOpen(null);
+        toast("Message deleted", "info");
+      } catch (e) {
+        toast(e instanceof Error ? e.message : "Failed to delete message", "error");
+      }
     }
   };
+
+  if (loading) return <PageLoading />;
+  if (error) return <PageError error={error} />;
 
   return (
     <>
       <PageHead title="Messages" sub={`${counts.new} new · ${counts.all} total from your contact form`}>
-        <Segmented value={filter} onChange={setFilter} options={[{ value: "all", label: "All" }, { value: "new", label: "New" }, { value: "replied", label: "Replied" }, { value: "starred", label: "Starred" }]} />
+        <Segmented value={filter} onChange={(v: Filter) => { setFilter(v); setPage(1); }} options={[{ value: "all", label: "All" }, { value: "new", label: "New" }, { value: "replied", label: "Replied" }, { value: "starred", label: "Starred" }]} />
       </PageHead>
 
+      <div className="adm-toolbar">
+        <div className="adm-search">
+          <AdminIcons.search style={{ width: 14, height: 14 }} />
+          <input placeholder="Search messages…" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
+        </div>
+      </div>
+
       {rows.length === 0 ? (
-        <EmptyState icon={<AdminIcons.mail style={{ width: 24, height: 24 }} />} title="No messages" sub="Contact form submissions will appear here." />
+        <EmptyState icon={<AdminIcons.mail style={{ width: 24, height: 24 }} />} title={query || filter !== "all" ? "No matching messages" : "No messages"} sub={query || filter !== "all" ? "Try a different search or filter." : "Contact form submissions will appear here."} />
       ) : (
         <div style={{ display: "grid", gap: 10 }}>
-          {rows.map((m) => (
+          {visible.map((m) => (
             <div key={m.id} className={`cms-msg-row${m.status === "new" ? " unread" : ""}`} onClick={() => openMsg(m)}>
               <div className="cms-msg-avatar" style={{ background: avatarColor(m.name) }}>{initials(m.name)}</div>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -70,6 +107,13 @@ export function MessagesPage() {
               </div>
             </div>
           ))}
+          {visible.length < rows.length && (
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 6 }}>
+              <button className="adm-btn" onClick={() => setPage((p) => p + 1)}>
+                Load more ({rows.length - visible.length})
+              </button>
+            </div>
+          )}
         </div>
       )}
 

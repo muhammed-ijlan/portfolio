@@ -1,39 +1,59 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AdminIcons } from "../icons";
 import { PageHead } from "../PageHead";
 import { Field, TextInput, TextArea, TagInput } from "../cms/Fields";
 import { toast } from "../cms/Toast";
-import { useStore, type About } from "@/lib/cms-store";
+import { PageLoading, PageError, Spinner } from "../cms/Loading";
+import { type About } from "@/lib/cms-store";
+import { api } from "@/lib/api";
+import { useSingleton } from "@/lib/use-cms";
 
 export function AboutPage() {
-  const [about, setAbout] = useStore("about");
-  const [draft, setDraft] = useState<About>(about);
+  const { data: about, loading, error, save: persist } = useSingleton(api.about);
+  const [draft, setDraft] = useState<About | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  // Re-sync when the persisted value changes (e.g. localStorage hydration / after save).
-  useEffect(() => {
+  // Mirror the persisted document into a local draft for editing, re-syncing
+  // whenever the source changes (initial load + after a successful save). Synced
+  // during render — React's recommended alternative to a sync effect.
+  const [synced, setSynced] = useState<About | null>(null);
+  if (about && about !== synced) {
+    setSynced(about);
     setDraft(about);
-  }, [about]);
+  }
 
-  const set = <K extends keyof About>(k: K, v: About[K]) => setDraft((d) => ({ ...d, [k]: v }));
+  const set = <K extends keyof About>(k: K, v: About[K]) => setDraft((d) => (d ? { ...d, [k]: v } : d));
   const setStat = (i: number, k: "value" | "label" | "sub", v: string) =>
-    setDraft((d) => ({ ...d, stats: d.stats.map((s, j) => (j === i ? { ...s, [k]: v } : s)) }));
-  const setSocial = (k: keyof About["socials"], v: string) => setDraft((d) => ({ ...d, socials: { ...d.socials, [k]: v } }));
-  const dirty = JSON.stringify(draft) !== JSON.stringify(about);
-  const save = () => {
-    setAbout(draft);
-    toast("About section saved");
+    setDraft((d) => (d ? { ...d, stats: d.stats.map((s, j) => (j === i ? { ...s, [k]: v } : s)) } : d));
+  const setSocial = (k: keyof About["socials"], v: string) =>
+    setDraft((d) => (d ? { ...d, socials: { ...d.socials, [k]: v } } : d));
+  const dirty = !!about && !!draft && JSON.stringify(draft) !== JSON.stringify(about);
+  const save = async () => {
+    if (!draft) return;
+    setSaving(true);
+    try {
+      await persist(draft);
+      toast("About section saved");
+    } catch (e) {
+      toast(e instanceof Error ? e.message : "Failed to save", "error");
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (loading || !draft) return <PageLoading />;
+  if (error) return <PageError error={error} />;
 
   const cardTitle = { textTransform: "none" as const, letterSpacing: 0, fontSize: 13, fontWeight: 700, color: "var(--text)", marginBottom: 14 };
 
   return (
     <>
       <PageHead title="About / Bio" sub="Edit your homepage intro, bio and stats">
-        <button className="adm-btn" onClick={() => setDraft(about)} disabled={!dirty} style={{ opacity: dirty ? 1 : 0.5 }}>Reset</button>
-        <button className="adm-btn adm-btn-primary" onClick={save} disabled={!dirty} style={{ opacity: dirty ? 1 : 0.6 }}>
-          <AdminIcons.save style={{ width: 14, height: 14 }} /> Save Changes
+        <button className="adm-btn" onClick={() => setDraft(about)} disabled={!dirty || saving} style={{ opacity: dirty ? 1 : 0.5 }}>Reset</button>
+        <button className="adm-btn adm-btn-primary" onClick={save} disabled={!dirty || saving} style={{ opacity: dirty && !saving ? 1 : 0.6 }}>
+          {saving ? <Spinner /> : <AdminIcons.save style={{ width: 14, height: 14 }} />} {saving ? "Saving…" : "Save Changes"}
         </button>
       </PageHead>
       <div className="adm-grid-2">

@@ -1,22 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AdminIcons } from "../icons";
 import { PageHead } from "../PageHead";
 import { Modal, useConfirm } from "../cms/Modal";
 import { Field, TextInput, TextArea, TagInput } from "../cms/Fields";
 import { toast } from "../cms/Toast";
-import { useStore, uid, type Experience } from "@/lib/cms-store";
+import { PageLoading, PageError, Spinner } from "../cms/Loading";
+import { type Experience } from "@/lib/cms-store";
+import { api } from "@/lib/api";
+import { useCollection } from "@/lib/use-cms";
 
 type Draft = Experience & { pointsText?: string };
 
 const emptyExp = (): Draft => ({ id: "", role: "", company: "", place: "", period: "", tags: [], points: [] });
 
-function ExperienceModal({ open, initial, onClose, onSave }: { open: boolean; initial: Experience | null; onClose: () => void; onSave: (e: Experience) => void }) {
+function ExperienceModal({ open, initial, onClose, onSave, saving }: { open: boolean; initial: Experience | null; onClose: () => void; onSave: (e: Experience) => void; saving: boolean }) {
   const [draft, setDraft] = useState<Draft>(initial || emptyExp());
-  useEffect(() => {
+  // Reset the draft when the modal opens or targets a different item — synced
+  // during render (React's recommended alternative to a sync effect).
+  const [synced, setSynced] = useState<{ initial: Experience | null; open: boolean }>({ initial, open });
+  if (synced.initial !== initial || synced.open !== open) {
+    setSynced({ initial, open });
     setDraft(initial || emptyExp());
-  }, [initial, open]);
+  }
   const set = <K extends keyof Draft>(k: K, v: Draft[K]) => setDraft((d) => ({ ...d, [k]: v }));
   const isNew = !draft.id;
   const pointsText = draft.pointsText !== undefined ? draft.pointsText : draft.points.join("\n");
@@ -28,7 +35,7 @@ function ExperienceModal({ open, initial, onClose, onSave }: { open: boolean; in
     const points = (draft.pointsText !== undefined ? draft.pointsText.split("\n") : draft.points).map((s) => s.trim()).filter(Boolean);
     const { pointsText: _omit, ...rest } = draft;
     void _omit;
-    onSave({ ...rest, id: draft.id || uid(), points });
+    onSave({ ...rest, points });
   };
   return (
     <Modal
@@ -39,9 +46,9 @@ function ExperienceModal({ open, initial, onClose, onSave }: { open: boolean; in
       sub={isNew ? "Add a role to your timeline" : `${draft.role} · ${draft.company}`}
       footer={
         <>
-          <button className="adm-btn" onClick={onClose}>Cancel</button>
-          <button className="adm-btn adm-btn-primary" onClick={save}>
-            <AdminIcons.save style={{ width: 14, height: 14 }} /> {isNew ? "Create" : "Save"}
+          <button className="adm-btn" onClick={onClose} disabled={saving}>Cancel</button>
+          <button className="adm-btn adm-btn-primary" onClick={save} disabled={saving}>
+            {saving ? <Spinner /> : <AdminIcons.save style={{ width: 14, height: 14 }} />} {saving ? "Saving…" : isNew ? "Create" : "Save"}
           </button>
         </>
       }
@@ -61,22 +68,47 @@ function ExperienceModal({ open, initial, onClose, onSave }: { open: boolean; in
 }
 
 export function ExperiencePage() {
-  const [experience, setExperience] = useStore("experience");
+  const { items: experience, loading, error, create, update, remove } = useCollection(api.experience);
   const [modal, setModal] = useState<{ open: boolean; item: Experience | null }>({ open: false, item: null });
+  const [saving, setSaving] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
   const [confirm, confirmNode] = useConfirm();
 
-  const onSave = (item: Experience) => {
-    const exists = experience.some((e) => e.id === item.id);
-    setExperience(exists ? experience.map((e) => (e.id === item.id ? item : e)) : [...experience, item]);
-    setModal({ open: false, item: null });
-    toast(exists ? "Experience updated" : "Experience added");
+  const onSave = async (item: Experience) => {
+    setSaving(true);
+    try {
+      if (item.id) {
+        await update(item.id, item);
+        toast("Experience updated");
+      } else {
+        const { id: _id, ...body } = item;
+        void _id;
+        await create(body);
+        toast("Experience added");
+      }
+      setModal({ open: false, item: null });
+    } catch (e) {
+      toast(e instanceof Error ? e.message : "Failed to save experience", "error");
+    } finally {
+      setSaving(false);
+    }
   };
   const onDelete = async (e: Experience) => {
     if (await confirm({ title: "Delete experience?", message: `"${e.role} at ${e.company}" will be removed.` })) {
-      setExperience(experience.filter((x) => x.id !== e.id));
-      toast("Experience deleted", "info");
+      setBusyId(e.id);
+      try {
+        await remove(e.id);
+        toast("Experience deleted", "info");
+      } catch (err) {
+        toast(err instanceof Error ? err.message : "Failed to delete experience", "error");
+      } finally {
+        setBusyId(null);
+      }
     }
   };
+
+  if (loading) return <PageLoading />;
+  if (error) return <PageError error={error} />;
 
   return (
     <>
@@ -108,14 +140,14 @@ export function ExperiencePage() {
                 </div>
               </div>
               <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-                <button className="cms-card-action" onClick={() => setModal({ open: true, item: e })}><AdminIcons.edit style={{ width: 13, height: 13 }} /></button>
-                <button className="cms-card-action danger" onClick={() => onDelete(e)}><AdminIcons.trash style={{ width: 13, height: 13 }} /></button>
+                <button className="cms-card-action" onClick={() => setModal({ open: true, item: e })} disabled={busyId === e.id}><AdminIcons.edit style={{ width: 13, height: 13 }} /></button>
+                <button className="cms-card-action danger" onClick={() => onDelete(e)} disabled={busyId === e.id}>{busyId === e.id ? <Spinner size={13} /> : <AdminIcons.trash style={{ width: 13, height: 13 }} />}</button>
               </div>
             </div>
           </div>
         ))}
       </div>
-      <ExperienceModal open={modal.open} initial={modal.item} onClose={() => setModal({ open: false, item: null })} onSave={onSave} />
+      <ExperienceModal open={modal.open} initial={modal.item} onClose={() => setModal({ open: false, item: null })} onSave={onSave} saving={saving} />
       {confirmNode}
     </>
   );

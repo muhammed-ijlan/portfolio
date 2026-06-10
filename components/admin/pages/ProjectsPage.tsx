@@ -1,20 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AdminIcons } from "../icons";
 import { PageHead } from "../PageHead";
 import { Modal, useConfirm } from "../cms/Modal";
 import { Field, TextInput, TextArea, SelectInput, TagInput, Toggle, ImageField, EmptyState, Segmented } from "../cms/Fields";
 import { toast } from "../cms/Toast";
-import { useStore, uid, type Project } from "@/lib/cms-store";
+import { PageLoading, PageError, Spinner } from "../cms/Loading";
+import { type Project } from "@/lib/cms-store";
+import { api } from "@/lib/api";
+import { useCollection } from "@/lib/use-cms";
 
 const emptyProject = (): Project => ({ id: "", title: "", kind: "", desc: "", tags: [], featured: false, live: "", repo: "", image: "", status: "draft", views: 0 });
 
-function ProjectModal({ open, initial, onClose, onSave }: { open: boolean; initial: Project | null; onClose: () => void; onSave: (p: Project) => void }) {
+function ProjectModal({ open, initial, onClose, onSave, saving }: { open: boolean; initial: Project | null; onClose: () => void; onSave: (p: Project) => void; saving: boolean }) {
   const [draft, setDraft] = useState<Project>(initial || emptyProject());
-  useEffect(() => {
+  // Reset the draft when the modal opens or targets a different item — synced
+  // during render (React's recommended alternative to a sync effect).
+  const [synced, setSynced] = useState({ initial, open });
+  if (synced.initial !== initial || synced.open !== open) {
+    setSynced({ initial, open });
     setDraft(initial || emptyProject());
-  }, [initial, open]);
+  }
   const set = <K extends keyof Project>(k: K, v: Project[K]) => setDraft((d) => ({ ...d, [k]: v }));
   const isNew = !draft.id;
   const save = () => {
@@ -22,7 +29,7 @@ function ProjectModal({ open, initial, onClose, onSave }: { open: boolean; initi
       toast("Title is required", "error");
       return;
     }
-    onSave({ ...draft, id: draft.id || uid() });
+    onSave(draft);
   };
   return (
     <Modal
@@ -33,9 +40,9 @@ function ProjectModal({ open, initial, onClose, onSave }: { open: boolean; initi
       sub={isNew ? "Add a project to your portfolio" : draft.title}
       footer={
         <>
-          <button className="adm-btn" onClick={onClose}>Cancel</button>
-          <button className="adm-btn adm-btn-primary" onClick={save}>
-            <AdminIcons.save style={{ width: 14, height: 14 }} /> {isNew ? "Create" : "Save"}
+          <button className="adm-btn" onClick={onClose} disabled={saving}>Cancel</button>
+          <button className="adm-btn adm-btn-primary" onClick={save} disabled={saving}>
+            {saving ? <Spinner /> : <AdminIcons.save style={{ width: 14, height: 14 }} />} {saving ? "Saving…" : isNew ? "Create" : "Save"}
           </button>
         </>
       }
@@ -64,27 +71,61 @@ function ProjectModal({ open, initial, onClose, onSave }: { open: boolean; initi
 }
 
 export function ProjectsPage() {
-  const [projects, setProjects] = useStore("projects");
+  const { items: projects, loading, error, create, update, remove } = useCollection(api.projects);
   const [view, setView] = useState<"cards" | "table">("cards");
   const [q, setQ] = useState("");
   const [modal, setModal] = useState<{ open: boolean; item: Project | null }>({ open: false, item: null });
+  const [saving, setSaving] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
   const [confirm, confirmNode] = useConfirm();
 
   const rows = projects.filter((p) => p.title.toLowerCase().includes(q.toLowerCase()) || p.kind.toLowerCase().includes(q.toLowerCase()));
 
-  const onSave = (item: Project) => {
-    const exists = projects.some((p) => p.id === item.id);
-    setProjects(exists ? projects.map((p) => (p.id === item.id ? item : p)) : [item, ...projects]);
-    setModal({ open: false, item: null });
-    toast(exists ? "Project updated" : "Project created");
+  const onSave = async (item: Project) => {
+    setSaving(true);
+    try {
+      if (item.id) {
+        await update(item.id, item);
+        toast("Project updated");
+      } else {
+        const { id: _id, ...body } = item;
+        void _id;
+        await create(body);
+        toast("Project created");
+      }
+      setModal({ open: false, item: null });
+    } catch (e) {
+      toast(e instanceof Error ? e.message : "Failed to save project", "error");
+    } finally {
+      setSaving(false);
+    }
   };
   const onDelete = async (p: Project) => {
     if (await confirm({ title: "Delete project?", message: `"${p.title}" will be permanently removed.` })) {
-      setProjects(projects.filter((x) => x.id !== p.id));
-      toast("Project deleted", "info");
+      setBusyId(p.id);
+      try {
+        await remove(p.id);
+        toast("Project deleted", "info");
+      } catch (e) {
+        toast(e instanceof Error ? e.message : "Failed to delete project", "error");
+      } finally {
+        setBusyId(null);
+      }
     }
   };
-  const toggleFeatured = (p: Project) => setProjects(projects.map((x) => (x.id === p.id ? { ...x, featured: !x.featured } : x)));
+  const toggleFeatured = async (p: Project) => {
+    setBusyId(p.id);
+    try {
+      await update(p.id, { featured: !p.featured });
+    } catch (e) {
+      toast(e instanceof Error ? e.message : "Failed to update project", "error");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  if (loading) return <PageLoading />;
+  if (error) return <PageError error={error} />;
 
   return (
     <>
@@ -118,7 +159,7 @@ export function ProjectsPage() {
           {rows.map((p) => (
             <div key={p.id} className="cms-proj-card">
               <div className={`cms-proj-cover${p.image ? "" : " cms-proj-cover-fallback"}`} style={p.image ? { backgroundImage: `url(${p.image})` } : undefined}>
-                <button className={`cms-star${p.featured ? " on" : ""}`} onClick={() => toggleFeatured(p)} title="Toggle featured">
+                <button className={`cms-star${p.featured ? " on" : ""}`} onClick={() => toggleFeatured(p)} title="Toggle featured" disabled={busyId === p.id}>
                   <AdminIcons.star style={{ width: 13, height: 13 }} />
                 </button>
                 <span className={`adm-badge ${p.status === "published" ? "badge-green" : "badge-gray"}`} style={{ background: "rgba(4,5,9,0.5)", backdropFilter: "blur(4px)" }}>
@@ -138,8 +179,8 @@ export function ProjectsPage() {
                   {p.live && <a className="cms-card-action" href={p.live} target="_blank" rel="noreferrer" title="Live"><AdminIcons.external style={{ width: 13, height: 13 }} /></a>}
                   {p.repo && <a className="cms-card-action" href={p.repo} target="_blank" rel="noreferrer" title="Repo"><AdminIcons.link style={{ width: 13, height: 13 }} /></a>}
                   <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
-                    <button className="cms-card-action" onClick={() => setModal({ open: true, item: p })} title="Edit"><AdminIcons.edit style={{ width: 13, height: 13 }} /></button>
-                    <button className="cms-card-action danger" onClick={() => onDelete(p)} title="Delete"><AdminIcons.trash style={{ width: 13, height: 13 }} /></button>
+                    <button className="cms-card-action" onClick={() => setModal({ open: true, item: p })} title="Edit" disabled={busyId === p.id}><AdminIcons.edit style={{ width: 13, height: 13 }} /></button>
+                    <button className="cms-card-action danger" onClick={() => onDelete(p)} title="Delete" disabled={busyId === p.id}>{busyId === p.id ? <Spinner size={13} /> : <AdminIcons.trash style={{ width: 13, height: 13 }} />}</button>
                   </div>
                 </div>
               </div>
@@ -164,14 +205,14 @@ export function ProjectsPage() {
                       <span className={`adm-badge ${p.status === "published" ? "badge-green" : "badge-gray"}`}><span className="badge-dot" />{p.status}</span>
                     </td>
                     <td>
-                      <button className={`cms-star${p.featured ? " on" : ""}`} style={{ background: "var(--bg-elev)" }} onClick={() => toggleFeatured(p)}>
+                      <button className={`cms-star${p.featured ? " on" : ""}`} style={{ background: "var(--bg-elev)" }} onClick={() => toggleFeatured(p)} disabled={busyId === p.id}>
                         <AdminIcons.star style={{ width: 13, height: 13 }} />
                       </button>
                     </td>
                     <td>
                       <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
-                        <button className="cms-card-action" onClick={() => setModal({ open: true, item: p })}><AdminIcons.edit style={{ width: 13, height: 13 }} /></button>
-                        <button className="cms-card-action danger" onClick={() => onDelete(p)}><AdminIcons.trash style={{ width: 13, height: 13 }} /></button>
+                        <button className="cms-card-action" onClick={() => setModal({ open: true, item: p })} disabled={busyId === p.id}><AdminIcons.edit style={{ width: 13, height: 13 }} /></button>
+                        <button className="cms-card-action danger" onClick={() => onDelete(p)} disabled={busyId === p.id}>{busyId === p.id ? <Spinner size={13} /> : <AdminIcons.trash style={{ width: 13, height: 13 }} />}</button>
                       </div>
                     </td>
                   </tr>
@@ -182,7 +223,7 @@ export function ProjectsPage() {
         </div>
       )}
 
-      <ProjectModal open={modal.open} initial={modal.item} onClose={() => setModal({ open: false, item: null })} onSave={onSave} />
+      <ProjectModal open={modal.open} initial={modal.item} onClose={() => setModal({ open: false, item: null })} onSave={onSave} saving={saving} />
       {confirmNode}
     </>
   );
