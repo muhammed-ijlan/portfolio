@@ -4,24 +4,27 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { Typewriter } from "@/components/ui/Typewriter";
 import { Icons } from "@/components/ui/Icons";
+import type { PublicAbout } from "@/lib/portfolio-service";
 
-function CodeCard() {
-  const L = ({ n, children, last }: { n: number; children: React.ReactNode; last?: boolean }) => (
-    <div className="cl">
-      <span className="ln">{n}</span>
-      <span className="cl-code">
-        {children}
-        {last && <span className="cc-cursor" />}
-      </span>
-    </div>
-  );
-  const K = ({ c }: { c: string }) => <span className="t-key">{c}</span>;
-  const V = ({ c }: { c: string }) => <span className="t-var">{c}</span>;
-  const Prop = ({ c }: { c: string }) => <span className="t-prop">{c}</span>;
-  const S = ({ c }: { c: string }) => <span className="t-str">{c}</span>;
-  const B = ({ c }: { c: string }) => <span className="t-bool">{c}</span>;
-  const Pu = ({ c }: { c: string }) => <span className="t-pun">{c}</span>;
+// Syntax-highlight primitives for the code card (module scope so they aren't
+// re-created on every render).
+const L = ({ n, children, last }: { n: number; children: React.ReactNode; last?: boolean }) => (
+  <div className="cl">
+    <span className="ln">{n}</span>
+    <span className="cl-code">
+      {children}
+      {last && <span className="cc-cursor" />}
+    </span>
+  </div>
+);
+const K = ({ c }: { c: string }) => <span className="t-key">{c}</span>;
+const V = ({ c }: { c: string }) => <span className="t-var">{c}</span>;
+const Prop = ({ c }: { c: string }) => <span className="t-prop">{c}</span>;
+const S = ({ c }: { c: string }) => <span className="t-str">{c}</span>;
+const B = ({ c }: { c: string }) => <span className="t-bool">{c}</span>;
+const Pu = ({ c }: { c: string }) => <span className="t-pun">{c}</span>;
 
+function CodeCard({ about }: { about: PublicAbout }) {
   return (
     <div className="code-card" style={{ willChange: "transform" }}>
       <div className="code-card-bar font-mono-custom">
@@ -35,11 +38,11 @@ function CodeCard() {
       </div>
       <div className="code-card-body font-mono-custom">
         <L n={1}><K c="const" /> <V c="engineer" /> <Pu c="= {" /></L>
-        <L n={2}>{"  "}<Prop c="name" /><Pu c=": " /><S c={'"Muhammed Ijlan"'} /><Pu c="," /></L>
-        <L n={3}>{"  "}<Prop c="role" /><Pu c=": " /><S c={'"Senior Web Developer"'} /><Pu c="," /></L>
+        <L n={2}>{"  "}<Prop c="name" /><Pu c=": " /><S c={`"${about.name}"`} /><Pu c="," /></L>
+        <L n={3}>{"  "}<Prop c="role" /><Pu c=": " /><S c={`"${about.role}"`} /><Pu c="," /></L>
         <L n={4}>{"  "}<Prop c="focus" /><Pu c=": [" /><S c={'"Full Stack"'} /><Pu c=", " /><S c={'"Web3"'} /><Pu c="]," /></L>
         <L n={5}>{"  "}<Prop c="stack" /><Pu c=": [" /><S c={'"React"'} /><Pu c=", " /><S c={'"Next.js"'} /><Pu c=", " /><S c={'"Node"'} /><Pu c="]," /></L>
-        <L n={6}>{"  "}<Prop c="location" /><Pu c=": " /><S c={'"Dubai, UAE"'} /><Pu c="," /></L>
+        <L n={6}>{"  "}<Prop c="location" /><Pu c=": " /><S c={`"${about.location}"`} /><Pu c="," /></L>
         <L n={7}>{"  "}<Prop c="experience" /><Pu c=": " /><S c={'"4+ years"'} /><Pu c="," /></L>
         <L n={8}>{"  "}<Prop c="openToWork" /><Pu c=": " /><B c="true" /><Pu c="," /></L>
         <L n={9} last><Pu c="};" /></L>
@@ -48,13 +51,15 @@ function CodeCard() {
   );
 }
 
-const SOCIALS = [
-  { icon: Icons.github, label: "GitHub", href: "https://github.com/muhammed-ijlan" },
-  { icon: Icons.linkedin, label: "LinkedIn", href: "https://linkedin.com/in/ijlan" },
-  { icon: Icons.mail, label: "Email", href: "mailto:ijlan.dev@gmail.com" },
-];
+export function Hero({ about }: { about: PublicAbout }) {
+  const [firstName, ...restName] = about.name.split(" ");
+  const lastName = restName.join(" ");
+  const socials = [
+    { icon: Icons.github, label: "GitHub", href: about.socials.github },
+    { icon: Icons.linkedin, label: "LinkedIn", href: about.socials.linkedin },
+    { icon: Icons.mail, label: "Email", href: `mailto:${about.email}` },
+  ].filter((s) => s.href);
 
-export function Hero() {
   return (
     <header
       id="home"
@@ -77,13 +82,13 @@ export function Hero() {
           <Reveal>
             <span className="chip" style={{ borderColor: "rgba(34,211,238,0.35)" }}>
               <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#34d399", boxShadow: "0 0 10px #34d399" }} />
-              Available for senior roles · Dubai, UAE
+              Available for senior roles · {about.location}
             </span>
           </Reveal>
 
           <Reveal>
             <h1 className="display-xl" style={{ fontSize: "clamp(2.6rem,6vw,5rem)", margin: "1.3rem 0 0.5rem" }}>
-              Muhammed<br /><span className="grad-text">Ijlan</span>
+              {firstName}<br /><span className="grad-text">{lastName || firstName}</span>
             </h1>
           </Reveal>
 
@@ -96,7 +101,7 @@ export function Hero() {
 
           <Reveal>
             <p className="text-dim" style={{ maxWidth: 480, marginTop: "1.3rem", fontSize: "clamp(1rem,1.4vw,1.12rem)", lineHeight: 1.65 }}>
-              4+ years building production-grade, high-performance web &amp; Web3 applications — React, Next.js, TypeScript, Node.js.
+              {about.bio}
             </p>
           </Reveal>
 
@@ -113,11 +118,11 @@ export function Hero() {
 
           <Reveal>
             <div style={{ display: "flex", gap: "0.6rem", alignItems: "center", marginTop: "1.9rem" }}>
-              {SOCIALS.map((s) => (
+              {socials.map((s) => (
                 <Magnetic key={s.label} strength={0.5}>
                   <a
                     href={s.href}
-                    target="_blank"
+                    target={s.href.startsWith("http") ? "_blank" : undefined}
                     rel="noreferrer"
                     aria-label={s.label}
                     className="glass"
@@ -128,7 +133,7 @@ export function Hero() {
                 </Magnetic>
               ))}
               <span className="text-faint font-mono-custom" style={{ fontSize: "0.78rem", marginLeft: "0.4rem" }}>
-                ijlan.dev@gmail.com
+                {about.email}
               </span>
             </div>
           </Reveal>
@@ -136,7 +141,7 @@ export function Hero() {
 
         {/* RIGHT — code card */}
         <Reveal className="hero-right">
-          <CodeCard />
+          <CodeCard about={about} />
         </Reveal>
       </div>
 

@@ -3,17 +3,9 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { Tilt } from "@/components/ui/Tilt";
 import { Icons } from "@/components/ui/Icons";
+import type { PublicSkill } from "@/lib/portfolio-service";
 
-const GROUPS = [
-  { title: "Languages", span: "span 1", items: ["JavaScript (ES6+)", "TypeScript", "SQL"] },
-  { title: "Frontend", span: "span 2", items: ["React", "Next.js (SSR/SSG)", "Redux", "React Query", "Tailwind", "Material UI", "Vite"] },
-  { title: "Web3", span: "span 1", accent: true, items: ["Ethereum", "WebAssembly", "WebAuthn", "MV3 Extensions"] },
-  { title: "Backend", span: "span 2", items: ["Node.js", "Express", "REST", "GraphQL", "JWT & 2FA", "Clean Architecture"] },
-  { title: "Databases", span: "span 1", items: ["MongoDB", "MySQL", "PostgreSQL", "Firebase"] },
-  { title: "Cloud / DevOps", span: "span 2", items: ["AWS (EC2, S3)", "Docker", "CI/CD", "Nginx", "Turbo / pnpm"] },
-];
-
-export function Skills() {
+export function Skills({ groups }: { groups: PublicSkill[] }) {
   return (
     <section id="skills" className="section container-x" style={{ paddingTop: "7rem", paddingBottom: "3rem" }}>
       <Reveal><span className="eyebrow">03 — Skills</span></Reveal>
@@ -24,8 +16,8 @@ export function Skills() {
       </Reveal>
 
       <div className="bento">
-        {GROUPS.map((g) => (
-          <Reveal key={g.title} style={{ gridColumn: g.span }} className="bento-cell">
+        {groups.map((g) => (
+          <Reveal key={g.id} style={{ gridColumn: g.items.length > 4 ? "span 2" : "span 1" }} className="bento-cell">
             <Tilt
               max={6}
               className="grad-border"
