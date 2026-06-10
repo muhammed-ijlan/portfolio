@@ -8,7 +8,10 @@ export function useChartTheme() {
   const [vars, setVars] = useState({ text: "#9AA3B2", font: "monospace" });
 
   useEffect(() => {
+    // Read the resolved CSS custom properties from the DOM — only available on the
+    // client and dependent on the active theme, so an effect is the correct place.
     const cs = getComputedStyle(document.documentElement);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setVars({
       text: cs.getPropertyValue("--text-dim").trim() || "#9AA3B2",
       font: cs.getPropertyValue("--font-jetbrains-mono").trim() || "monospace",

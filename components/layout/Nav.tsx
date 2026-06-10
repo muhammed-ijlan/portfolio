@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { Icons } from "@/components/ui/Icons";
-import { Magnetic } from "@/components/ui/Magnetic";
 
 const NAV_LINKS = [
   ["About", "#about"],
