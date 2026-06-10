@@ -2,14 +2,15 @@
 
 import { Magnetic } from "@/components/ui/Magnetic";
 import { Icons } from "@/components/ui/Icons";
+import type { PublicAbout } from "@/lib/portfolio-service";
 
-const SOCIALS = [
-  { icon: Icons.github, href: "https://github.com/muhammed-ijlan", label: "GitHub" },
-  { icon: Icons.linkedin, href: "https://linkedin.com/in/ijlan", label: "LinkedIn" },
-  { icon: Icons.mail, href: "mailto:ijlan.dev@gmail.com", label: "Email" },
-];
+export function Footer({ about }: { about: PublicAbout }) {
+  const socials = [
+    { icon: Icons.github, href: about.socials.github, label: "GitHub" },
+    { icon: Icons.linkedin, href: about.socials.linkedin, label: "LinkedIn" },
+    { icon: Icons.mail, href: `mailto:${about.email}`, label: "Email" },
+  ].filter((s) => s.href);
 
-export function Footer() {
   const toTop = () =>
     window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
 
@@ -18,13 +19,13 @@ export function Footer() {
       <div className="divider" style={{ marginBottom: "2rem" }} />
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1.2rem" }}>
         <div>
-          <div className="font-display grad-text" style={{ fontWeight: 700, fontSize: "1.2rem" }}>Muhammed Ijlan</div>
+          <div className="font-display grad-text" style={{ fontWeight: 700, fontSize: "1.2rem" }}>{about.name}</div>
           <div className="text-faint font-mono-custom" style={{ fontSize: "0.78rem", marginTop: "0.3rem" }}>
             Built in Dubai · © {new Date().getFullYear()}
           </div>
         </div>
         <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
-          {SOCIALS.map((s) => (
+          {socials.map((s) => (
             <a
               key={s.label}
               href={s.href}

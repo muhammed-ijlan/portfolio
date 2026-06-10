@@ -9,10 +9,19 @@ const ThemeContext = createContext<{ theme: Theme; toggleTheme: () => void }>({
   toggleTheme: () => {},
 });
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("dark");
+export function ThemeProvider({
+  children,
+  defaultTheme = "dark",
+  accent,
+}: {
+  children: React.ReactNode;
+  defaultTheme?: Theme;
+  accent?: string;
+}) {
+  const [theme, setTheme] = useState<Theme>(defaultTheme);
 
   useEffect(() => {
+    // A visitor's explicit choice wins over the site default from Settings.
     const stored = localStorage.getItem("mi-theme") as Theme | null;
     if (stored) setTheme(stored);
   }, []);
@@ -21,6 +30,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("mi-theme", theme);
   }, [theme]);
+
+  // Drive the site accent from Settings (falls back to the CSS default).
+  useEffect(() => {
+    if (!accent) return;
+    const root = document.documentElement;
+    root.style.setProperty("--cyan", accent);
+    root.style.setProperty("--accent-grad", `linear-gradient(120deg, ${accent} 0%, #7C3AED 100%)`);
+  }, [accent]);
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme: () => setTheme((t) => (t === "dark" ? "light" : "dark")) }}>

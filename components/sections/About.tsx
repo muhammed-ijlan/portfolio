@@ -3,16 +3,16 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { Tilt } from "@/components/ui/Tilt";
 import { Counter } from "@/components/ui/Counter";
+import type { PublicAbout } from "@/lib/portfolio-service";
 
-const STATS = [
-  { to: 4, suffix: "+", label: "Years building production apps", sub: "React · Next.js · Node · Web3" },
-  { to: 30, suffix: "%", label: "Faster API response times", sub: "delivered at Stackroots" },
-  { custom: "Shipped", label: "Multi-chain wallet shipped", sub: "Ethereum & Tron · Chrome MV3", accent: true },
-] as const;
+// Split a stat like "4+" or "30%" into an animatable number + suffix. Returns
+// null for non-numeric values (e.g. "Shipped"), which render as-is.
+function parseStat(value: string): { num: number; suffix: string } | null {
+  const m = value.match(/^(\d+(?:\.\d+)?)(.*)$/);
+  return m ? { num: parseFloat(m[1]), suffix: m[2] } : null;
+}
 
-const TAGS = ["Scalable architecture", "Secure APIs", "Blockchain / Web3", "Cloud-ready", "Performance"];
-
-export function About() {
+export function About({ about }: { about: PublicAbout }) {
   return (
     <section id="about" className="section container-x" style={{ paddingTop: "7rem", paddingBottom: "3rem" }}>
       {/* Connecting glow */}
@@ -33,41 +33,42 @@ export function About() {
           style={{ display: "grid", gridTemplateColumns: "minmax(0,1.4fr) minmax(0,1fr)", gap: "3rem", marginTop: "1.6rem", alignItems: "start" }}
         >
           <Reveal>
-            <h2 className="display-xl" style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", marginBottom: "1.3rem" }}>
-              I build <span className="grad-text">scalable, secure</span> web &amp; Web3 products.
+            <h2 className="display-xl grad-text" style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", marginBottom: "1.3rem" }}>
+              {about.headline}
             </h2>
             <p className="text-dim" style={{ fontSize: "1.08rem", lineHeight: 1.75 }}>
-              Senior Full Stack &amp; Web3 Developer with 4+ years building scalable, secure web apps in React,
-              Next.js, TypeScript, Node.js, Express and SQL/NoSQL. Recently shipped a non-custodial multi-chain
-              crypto wallet (Ethereum &amp; Tron) as a Chrome MV3 extension — with biometric authentication and
-              on-device transaction signing.
+              {about.bio}
             </p>
             <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "1.6rem" }}>
-              {TAGS.map((t) => <span key={t} className="chip">{t}</span>)}
+              {about.chips.map((t) => <span key={t} className="chip">{t}</span>)}
             </div>
           </Reveal>
 
           <Reveal>
             <div style={{ display: "grid", gap: "1rem" }}>
-              {STATS.map((s, i) => (
-                <Tilt
-                  key={i}
-                  max={5}
-                  className="grad-border"
-                  style={{
-                    padding: "1.4rem 1.5rem", position: "relative", overflow: "hidden",
-                    background: "accent" in s && s.accent
-                      ? "linear-gradient(150deg, rgba(34,211,238,0.12), rgba(124,58,237,0.12))"
-                      : "var(--bg-elev)",
-                  }}
-                >
-                  <div className="display-xl grad-text" style={{ fontSize: "2.6rem", lineHeight: 1 }}>
-                    {"custom" in s ? s.custom : <Counter to={s.to} suffix={s.suffix} />}
-                  </div>
-                  <div style={{ fontWeight: 600, marginTop: "0.5rem" }}>{s.label}</div>
-                  <div className="text-faint font-mono-custom" style={{ fontSize: "0.78rem", marginTop: "0.25rem" }}>{s.sub}</div>
-                </Tilt>
-              ))}
+              {about.stats.map((s, i) => {
+                const parsed = parseStat(s.value);
+                const accent = i === about.stats.length - 1;
+                return (
+                  <Tilt
+                    key={i}
+                    max={5}
+                    className="grad-border"
+                    style={{
+                      padding: "1.4rem 1.5rem", position: "relative", overflow: "hidden",
+                      background: accent
+                        ? "linear-gradient(150deg, rgba(34,211,238,0.12), rgba(124,58,237,0.12))"
+                        : "var(--bg-elev)",
+                    }}
+                  >
+                    <div className="display-xl grad-text" style={{ fontSize: "2.6rem", lineHeight: 1 }}>
+                      {parsed ? <Counter to={parsed.num} suffix={parsed.suffix} /> : s.value}
+                    </div>
+                    <div style={{ fontWeight: 600, marginTop: "0.5rem" }}>{s.label}</div>
+                    <div className="text-faint font-mono-custom" style={{ fontSize: "0.78rem", marginTop: "0.25rem" }}>{s.sub}</div>
+                  </Tilt>
+                );
+              })}
             </div>
           </Reveal>
         </div>

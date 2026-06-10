@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { Reveal } from "@/components/ui/Reveal";
 import { Icons } from "@/components/ui/Icons";
+import type { Portfolio } from "@/lib/portfolio-service";
 
 type FormState = { name: string; email: string; subject: string; message: string };
 type Errors = Partial<FormState>;
+const stripScheme = (url: string) => url.replace(/^https?:\/\//, "");
 
 function validate(f: FormState): Errors {
   const e: Errors = {};
@@ -18,18 +20,20 @@ function validate(f: FormState): Errors {
   return e;
 }
 
-const CONTACT_LINKS = [
-  { icon: Icons.mail, label: "ijlan.dev@gmail.com", href: "mailto:ijlan.dev@gmail.com" },
-  { icon: Icons.phone, label: "+971 56 766 9737", href: "tel:+971567669737" },
-  { icon: Icons.github, label: "github.com/muhammed-ijlan", href: "https://github.com/muhammed-ijlan" },
-  { icon: Icons.linkedin, label: "linkedin.com/in/ijlan", href: "https://linkedin.com/in/ijlan" },
-];
-
-export function Contact() {
+export function Contact({ contact }: { contact: Portfolio["contact"] }) {
   const [form, setForm] = useState<FormState>({ name: "", email: "", subject: "", message: "" });
   const [errors, setErrors] = useState<Errors>({});
   const [touched, setTouched] = useState<Partial<Record<keyof FormState, boolean>>>({});
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
+  const [website, setWebsite] = useState(""); // honeypot — bots fill it, humans don't
+  const [serverError, setServerError] = useState("");
+
+  const contactLinks = [
+    { icon: Icons.mail, label: contact.email, href: `mailto:${contact.email}` },
+    { icon: Icons.phone, label: contact.phone, href: `tel:${contact.phone.replace(/\s+/g, "")}` },
+    { icon: Icons.github, label: stripScheme(contact.socials.github), href: contact.socials.github },
+    { icon: Icons.linkedin, label: stripScheme(contact.socials.linkedin), href: contact.socials.linkedin },
+  ].filter((c) => c.label);
 
   const onChange = (k: keyof FormState) => (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const next = { ...form, [k]: ev.target.value };
@@ -42,15 +46,33 @@ export function Contact() {
     setErrors(validate(form));
   };
 
-  const handleSubmit = (ev: React.FormEvent) => {
+  const handleSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
+    setServerError("");
     const e = validate(form);
     setErrors(e);
     setTouched({ name: true, email: true, subject: true, message: true });
     if (Object.keys(e).length) return;
     setStatus("sending");
-    // TODO: connect EmailJS or POST /api/contact
-    setTimeout(() => setStatus("sent"), 1100);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, website }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json?.ok) {
+        // Surface server-side field errors (422 carries them in `extra`).
+        if (json?.extra && typeof json.extra === "object") setErrors(json.extra as Errors);
+        setServerError(json?.error || "Couldn't send your message. Please try again.");
+        setStatus("idle");
+        return;
+      }
+      setStatus("sent");
+    } catch {
+      setServerError("Network error — please try again.");
+      setStatus("idle");
+    }
   };
 
   const reset = () => {
@@ -58,6 +80,7 @@ export function Contact() {
     setForm({ name: "", email: "", subject: "", message: "" });
     setTouched({});
     setErrors({});
+    setServerError("");
   };
 
   return (
@@ -76,7 +99,7 @@ export function Contact() {
             Open to senior full-stack and Web3 roles, contracts and interesting problems. Drop a line — I reply quickly.
           </p>
           <div style={{ display: "grid", gap: "0.7rem", marginTop: "1.8rem" }}>
-            {CONTACT_LINKS.map((c) => (
+            {contactLinks.map((c) => (
               <a
                 key={c.label}
                 href={c.href}
@@ -101,14 +124,25 @@ export function Contact() {
                 >
                   {Icons.check({ width: 30, height: 30 })}
                 </div>
-                <h3 className="font-display" style={{ fontSize: "1.4rem", marginBottom: "0.4rem" }}>Message ready to send</h3>
-                <p className="text-dim" style={{ fontSize: "0.92rem" }}>Connect EmailJS / your API to deliver it.</p>
+                <h3 className="font-display" style={{ fontSize: "1.4rem", marginBottom: "0.4rem" }}>Message sent</h3>
+                <p className="text-dim" style={{ fontSize: "0.92rem" }}>Thanks for reaching out — I&apos;ll get back to you shortly.</p>
                 <button type="button" className="btn btn-ghost" style={{ marginTop: "1.4rem" }} onClick={reset}>
                   Send another
                 </button>
               </div>
             ) : (
               <>
+                {/* Honeypot: hidden from users, attractive to bots. */}
+                <input
+                  type="text"
+                  name="website"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+                />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }} className="form-row">
                   {(["name", "email"] as const).map((k) => (
                     <div key={k}>
@@ -154,6 +188,11 @@ export function Contact() {
                   />
                   {errors.message && touched.message && <div className="field-err">{errors.message}</div>}
                 </div>
+                {serverError && (
+                  <div className="field-err" role="alert" style={{ marginTop: "1rem", textAlign: "center" }}>
+                    {serverError}
+                  </div>
+                )}
                 <button
                   type="submit"
                   className="btn btn-primary"
@@ -163,7 +202,7 @@ export function Contact() {
                   {status === "sending" ? "Sending…" : <>Send message {Icons.arrow()}</>}
                 </button>
                 <p className="text-faint font-mono-custom" style={{ fontSize: "0.72rem", textAlign: "center", marginTop: "0.8rem" }}>
-                  Client-side validation only · connect your API to deliver
+                  Your message lands straight in my inbox · I reply quickly
                 </p>
               </>
             )}

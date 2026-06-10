@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { Nav } from "@/components/layout/Nav";
 import { CursorGlow } from "@/components/layout/CursorGlow";
@@ -10,10 +11,32 @@ import { Skills } from "@/components/sections/Skills";
 import { Projects } from "@/components/sections/Projects";
 import { Contact } from "@/components/sections/Contact";
 import { Footer } from "@/components/sections/Footer";
+import { getPortfolioCached } from "@/lib/portfolio-service";
 
-export default function Home() {
+// Incrementally re-render the page so published CMS edits appear without a
+// redeploy, while keeping public reads cheap. getPortfolioCached dedupes the DB
+// round-trip shared by generateMetadata + the page within one request.
+export const revalidate = 120;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { settings, about } = await getPortfolioCached();
+  return {
+    title: settings.siteTitle,
+    description: settings.seoDescription,
+    authors: [{ name: about.name }],
+    openGraph: {
+      title: settings.siteTitle,
+      description: settings.seoDescription,
+      type: "website",
+    },
+  };
+}
+
+export default async function Home() {
+  const { about, projects, experience, skills, settings, contact } = await getPortfolioCached();
+
   return (
-    <ThemeProvider>
+    <ThemeProvider defaultTheme={settings.defaultTheme} accent={settings.accent}>
       <Intro />
       <ScrollProgress />
       <CursorGlow />
@@ -26,15 +49,15 @@ export default function Home() {
       <Nav />
 
       <main id="main" style={{ position: "relative", zIndex: 2 }}>
-        <Hero />
-        <About />
-        <Experience />
-        <Skills />
-        <Projects />
-        <Contact />
+        <Hero about={about} />
+        <About about={about} />
+        <Experience items={experience} />
+        <Skills groups={skills} />
+        <Projects items={projects} />
+        <Contact contact={contact} />
       </main>
 
-      <Footer />
+      <Footer about={about} />
     </ThemeProvider>
   );
 }
