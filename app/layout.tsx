@@ -21,17 +21,87 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
-  title: "Muhammed Ijlan — Senior Web & Web3 Developer",
-  description:
-    "Muhammed Ijlan — Senior Web Developer (Full Stack & Web3) in Dubai. 4+ years building production-grade, high-performance web & Web3 applications.",
-  keywords: ["React", "Next.js", "TypeScript", "Web3", "Full Stack", "Dubai"],
-  authors: [{ name: "Muhammed Ijlan" }],
-  openGraph: {
-    title: "Muhammed Ijlan — Senior Web & Web3 Developer",
-    description: "4+ years building production-grade web & Web3 apps.",
-    type: "website",
+  metadataBase: new URL("https://ijlan.dev"),
+
+  title: {
+    default: "Muhammed Ijlan | Senior Web & Web3 Developer",
+    template: "%s | Muhammed Ijlan",
   },
+
+  description:
+    "Muhammed Ijlan is a Senior Web & Web3 Developer based in Dubai, specializing in Next.js, React, TypeScript, Node.js, Shopify, and modern web applications.",
+
+  keywords: [
+    "Muhammed Ijlan",
+    "Ijlan",
+    "Frontend Developer",
+    "Web Developer",
+    "Web3 Developer",
+    "Next.js Developer",
+    "React Developer",
+    "TypeScript Developer",
+    "Shopify Developer",
+    "Dubai Developer",
+    "Full Stack Developer",
+  ],
+
+  authors: [
+    {
+      name: "Muhammed Ijlan",
+      url: "https://ijlan.dev",
+    },
+  ],
+
+  creator: "Muhammed Ijlan",
+  publisher: "Muhammed Ijlan",
+
+  alternates: {
+    canonical: "/",
+  },
+
+  openGraph: {
+    title: "Muhammed Ijlan | Senior Web & Web3 Developer",
+    description:
+      "4+ years building production-grade web applications, eCommerce platforms, SaaS products, and Web3 solutions.",
+
+    url: "https://ijlan.dev",
+    siteName: "ijlan.dev",
+    locale: "en_US",
+    type: "website",
+
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Muhammed Ijlan Portfolio",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Muhammed Ijlan | Senior Web & Web3 Developer",
+    description:
+      "4+ years building production-grade web applications and Web3 products.",
+
+    images: ["/og-image.jpg"],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+
+  category: "technology",
 };
 
 export default function RootLayout({
