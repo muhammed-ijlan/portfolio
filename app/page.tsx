@@ -20,6 +20,7 @@ export const revalidate = 120;
 export async function generateMetadata(): Promise<Metadata> {
   const portfolio = await getPortfolioCached();
   const { settings, about } = portfolio;
+  const [firstName, ...rest] = about.name.split(" ");
   return {
     title: settings.siteTitle,
     description: settings.seoDescription,
@@ -41,7 +42,10 @@ export async function generateMetadata(): Promise<Metadata> {
       },
     },
     openGraph: {
-      type: "website",
+      type: "profile",
+      firstName,
+      lastName: rest.join(" "),
+      username: "ijlan",
       url: SITE_URL,
       siteName: settings.siteTitle,
       title: settings.siteTitle,

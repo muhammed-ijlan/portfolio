@@ -1,11 +1,18 @@
-import type { Metadata } from "next";
-import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Space_Grotesk, Inter, JetBrains_Mono, Poppins } from "next/font/google";
+import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+});
+
+const poppins = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin"],
+  weight: ["500"],
 });
 
 const inter = Inter({
@@ -20,8 +27,19 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#06070A" },
+    { media: "(prefers-color-scheme: light)", color: "#F4F5F8" },
+  ],
+};
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://ijlan.dev"),
+  metadataBase: new URL(SITE_URL),
+  applicationName: "ijlan.dev",
+  referrer: "origin-when-cross-origin",
 
   title: {
     default: "Muhammed Ijlan | Senior Web & Web3 Developer",
@@ -64,19 +82,10 @@ export const metadata: Metadata = {
     description:
       "4+ years building production-grade web applications, eCommerce platforms, SaaS products, and Web3 solutions.",
 
-    url: "https://ijlan.dev",
+    url: SITE_URL,
     siteName: "ijlan.dev",
     locale: "en_US",
     type: "website",
-
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Muhammed Ijlan Portfolio",
-      },
-    ],
   },
 
   twitter: {
@@ -84,9 +93,11 @@ export const metadata: Metadata = {
     title: "Muhammed Ijlan | Senior Web & Web3 Developer",
     description:
       "4+ years building production-grade web applications and Web3 products.",
-
-    images: ["/og-image.jpg"],
   },
+
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } }
+    : {}),
 
   robots: {
     index: true,
@@ -113,7 +124,7 @@ export default function RootLayout({
     <html
       lang="en"
       data-theme="dark"
-      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} ${poppins.variable}`}
     >
       <body>{children}</body>
     </html>
