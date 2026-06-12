@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { Icons } from "@/components/ui/Icons";
+import { Logo } from "@/components/ui/Logo";
 
 const NAV_LINKS = [
   ["About", "#about"],
@@ -47,8 +48,8 @@ export function Nav() {
       }}
     >
       <div className="container-x" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 68 }}>
-        <a href="#home" className="font-display" style={{ fontWeight: 700, fontSize: "1.05rem", textDecoration: "none", color: "var(--text)", letterSpacing: "-0.01em" }}>
-          <span className="grad-text">MI</span><span style={{ opacity: 0.5 }}>.</span>
+        <a href="#home" aria-label="ijlan.dev — home" style={{ display: "flex", alignItems: "center", textDecoration: "none", color: "var(--text)" }}>
+          <Logo height={30} />
         </a>
 
         <div className="nav-links" style={{ display: "flex", gap: "0.3rem", alignItems: "center" }}>

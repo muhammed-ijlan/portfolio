@@ -25,6 +25,7 @@ export function buildKeywords(p: Portfolio): string[] {
     p.about.location,
     ...p.about.chips,
     ...p.skills.flatMap((s) => s.items),
+    ...p.projects.flatMap((proj) => proj.tags),
   ];
   return Array.from(new Set([...base, ...fromCms].map((k) => k.trim()).filter(Boolean)));
 }
@@ -34,20 +35,53 @@ export function buildJsonLd(p: Portfolio) {
   const sameAs = [about.socials.github, about.socials.linkedin].filter(Boolean);
   const current = experience[0];
 
+  const ogImage = {
+    "@type": "ImageObject",
+    "@id": `${SITE_URL}/#primaryimage`,
+    url: `${SITE_URL}/opengraph-image`,
+    width: 1200,
+    height: 630,
+    caption: `${about.name} — ${about.role}`,
+  };
+
+  const logo = {
+    "@type": "ImageObject",
+    "@id": `${SITE_URL}/#logo`,
+    url: `${SITE_URL}/logo.svg`,
+    caption: "ijlan.dev",
+  };
+
   const person = {
     "@type": "Person",
     "@id": `${SITE_URL}/#person`,
     name: about.name,
+    alternateName: ["Ijlan", "ijlan.dev"],
     jobTitle: about.role,
     description: about.bio,
     email: `mailto:${about.email}`,
     ...(about.phone ? { telephone: about.phone } : {}),
     url: SITE_URL,
-    image: `${SITE_URL}/opengraph-image`,
+    image: { "@id": `${SITE_URL}/#primaryimage` },
+    mainEntityOfPage: { "@id": `${SITE_URL}/#webpage` },
     address: { "@type": "PostalAddress", addressLocality: about.location },
+    workLocation: { "@type": "Place", name: about.location },
     knowsAbout: skills.flatMap((s) => s.items),
+    hasOccupation: {
+      "@type": "Occupation",
+      name: about.role,
+      skills: skills.flatMap((s) => s.items).join(", "),
+      occupationLocation: { "@type": "City", name: about.location },
+    },
     ...(sameAs.length ? { sameAs } : {}),
-    ...(current ? { worksFor: { "@type": "Organization", name: current.company } } : {}),
+    ...(current
+      ? {
+          worksFor: {
+            "@type": "Organization",
+            name: current.company,
+            ...(current.place ? { location: current.place } : {}),
+          },
+        }
+      : {}),
   };
 
   const website = {
@@ -57,7 +91,9 @@ export function buildJsonLd(p: Portfolio) {
     name: settings.siteTitle,
     description: settings.seoDescription,
     inLanguage: "en",
+    image: { "@id": `${SITE_URL}/#logo` },
     publisher: { "@id": `${SITE_URL}/#person` },
+    copyrightHolder: { "@id": `${SITE_URL}/#person` },
   };
 
   const profilePage = {
@@ -65,14 +101,19 @@ export function buildJsonLd(p: Portfolio) {
     "@id": `${SITE_URL}/#webpage`,
     url: SITE_URL,
     name: settings.siteTitle,
+    description: settings.seoDescription,
+    inLanguage: "en",
     isPartOf: { "@id": `${SITE_URL}/#website` },
     about: { "@id": `${SITE_URL}/#person` },
-    primaryImageOfPage: `${SITE_URL}/opengraph-image`,
+    mainEntity: { "@id": `${SITE_URL}/#person` },
+    primaryImageOfPage: { "@id": `${SITE_URL}/#primaryimage` },
   };
 
   const work = {
     "@type": "ItemList",
+    "@id": `${SITE_URL}/#work`,
     name: "Selected work",
+    numberOfItems: projects.length,
     itemListElement: projects.map((proj, i) => ({
       "@type": "ListItem",
       position: i + 1,
@@ -81,13 +122,17 @@ export function buildJsonLd(p: Portfolio) {
         name: proj.title,
         description: proj.desc,
         keywords: proj.tags.join(", "),
+        author: { "@id": `${SITE_URL}/#person` },
         ...(proj.live ? { url: proj.live } : {}),
         ...(proj.image ? { image: proj.image } : {}),
       },
     })),
   };
 
-  return { "@context": "https://schema.org", "@graph": [person, website, profilePage, work] };
+  return {
+    "@context": "https://schema.org",
+    "@graph": [person, website, profilePage, work, ogImage, logo],
+  };
 }
 
 export function jsonLdScript(data: unknown): string {
