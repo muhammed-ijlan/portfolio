@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="10 22 291 104" width="291" height="104" fill="none">
+  <defs>
+    <linearGradient id="wm" x1="18" y1="34" x2="70" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fc167e"/><stop offset="0.5" stop-color="#f95e51"/><stop offset="1" stop-color="#fbb336"/>
+    </linearGradient>
+  </defs>
+  <g stroke="url(#wm)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 26 58 V 92"/>
+    <path d="M 58 58 V 100 Q 58 116 42 116 L 30 116"/>
+  </g>
+  <g fill="url(#wm)"><circle cx="26" cy="40" r="9"/><circle cx="58" cy="40" r="9"/></g>
+  <text x="74" y="92" font-family="'Space Grotesk', sans-serif" font-size="66" letter-spacing="-1.5">
+    <tspan font-weight="600" fill="#16181d">lan</tspan><tspan font-weight="500" fill="#5a606b">.dev</tspan>
+  </text>
+</svg>

@@ -47,7 +47,9 @@ export function buildJsonLd(p: Portfolio) {
   const logo = {
     "@type": "ImageObject",
     "@id": `${SITE_URL}/#logo`,
-    url: `${SITE_URL}/logo.svg`,
+    url: `${SITE_URL}/logo-mark.svg`,
+    width: 128,
+    height: 128,
     caption: "ijlan.dev",
   };
 
@@ -88,7 +90,10 @@ export function buildJsonLd(p: Portfolio) {
     "@type": "WebSite",
     "@id": `${SITE_URL}/#website`,
     url: SITE_URL,
-    name: settings.siteTitle,
+    // Google's site name in search results comes from here — keep it short,
+    // or it falls back to the bare domain.
+    name: about.name,
+    alternateName: [`${about.name} Portfolio`, "ijlan.dev"],
     description: settings.seoDescription,
     inLanguage: "en",
     image: { "@id": `${SITE_URL}/#logo` },

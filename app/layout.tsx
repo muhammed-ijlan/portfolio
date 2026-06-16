@@ -38,7 +38,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  applicationName: "ijlan.dev",
+  applicationName: "Muhammed Ijlan",
   referrer: "origin-when-cross-origin",
 
   title: {
@@ -83,7 +83,7 @@ export const metadata: Metadata = {
       "4+ years building production-grade web applications, eCommerce platforms, SaaS products, and Web3 solutions.",
 
     url: SITE_URL,
-    siteName: "ijlan.dev",
+    siteName: "Muhammed Ijlan",
     locale: "en_US",
     type: "website",
   },

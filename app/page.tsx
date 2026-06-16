@@ -47,7 +47,7 @@ export async function generateMetadata(): Promise<Metadata> {
       lastName: rest.join(" "),
       username: "ijlan",
       url: SITE_URL,
-      siteName: settings.siteTitle,
+      siteName: about.name,
       title: settings.siteTitle,
       description: settings.seoDescription,
       locale: "en_US",
