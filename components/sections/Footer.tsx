@@ -2,6 +2,7 @@
 
 import { Magnetic } from "@/components/ui/Magnetic";
 import { Icons } from "@/components/ui/Icons";
+import { LogoMark } from "@/components/ui/Logo";
 import type { PublicAbout } from "@/lib/portfolio-service";
 
 export function Footer({ about }: { about: PublicAbout }) {
@@ -18,10 +19,13 @@ export function Footer({ about }: { about: PublicAbout }) {
     <footer className="section container-x" style={{ paddingTop: "4rem", paddingBottom: "2.5rem" }}>
       <div className="divider" style={{ marginBottom: "2rem" }} />
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1.2rem" }}>
-        <div>
-          <div className="font-display grad-text" style={{ fontWeight: 700, fontSize: "1.2rem" }}>{about.name}</div>
-          <div className="text-faint font-mono-custom" style={{ fontSize: "0.78rem", marginTop: "0.3rem" }}>
-            Built in Dubai · © {new Date().getFullYear()}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+          <LogoMark size={38} />
+          <div>
+            <div className="font-display" style={{ fontWeight: 700, fontSize: "1.2rem", color: "var(--text)" }}>{about.name}</div>
+            <div className="text-faint font-mono-custom" style={{ fontSize: "0.78rem", marginTop: "0.3rem" }}>
+              Built in Dubai · © {new Date().getFullYear()}
+            </div>
           </div>
         </div>
         <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
