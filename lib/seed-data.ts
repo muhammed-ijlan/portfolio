@@ -71,6 +71,8 @@ export type Settings = {
   resumeUrl: string;
   notifyEmail: string;
   searchConsoleSite: string;
+  ga4PropertyId: string;
+  ga4MeasurementId: string;
   toggles: { animations: boolean; customCursor: boolean; maintenance: boolean; showResume: boolean };
 };
 
@@ -151,6 +153,8 @@ export const SEED: CmsData = {
     resumeUrl: "",
     notifyEmail: "ijlan.dev@gmail.com",
     searchConsoleSite: "sc-domain:ijlan.dev",
+    ga4PropertyId: "",
+    ga4MeasurementId: "",
     toggles: { animations: true, customCursor: false, maintenance: false, showResume: true },
   },
 };

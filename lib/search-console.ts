@@ -1,4 +1,5 @@
-import { JWT } from "google-auth-library";
+import type { JWT } from "google-auth-library";
+import { makeJwtClient } from "./google-auth";
 
 const SCOPE = "https://www.googleapis.com/auth/webmasters.readonly";
 const API = "https://searchconsole.googleapis.com/webmasters/v3";
@@ -29,22 +30,6 @@ function ymd(d: Date) {
   return d.toISOString().slice(0, 10);
 }
 
-function loadCredentials() {
-  const raw = process.env.GOOGLE_SERVICE_ACCOUNT_KEY?.trim();
-  if (!raw) return null;
-  try {
-    // Accept either a base64-encoded JSON blob or raw JSON.
-    const json = raw.startsWith("{")
-      ? raw
-      : Buffer.from(raw, "base64").toString("utf8");
-    const creds = JSON.parse(json) as { client_email?: string; private_key?: string };
-    if (!creds.client_email || !creds.private_key) return null;
-    return creds;
-  } catch {
-    return null;
-  }
-}
-
 async function query(
   client: JWT,
   site: string,
@@ -69,8 +54,8 @@ export async function getSearchConsoleData(
   days = 28
 ): Promise<SearchConsoleResult> {
   if (!site) return { configured: false, reason: "no_site" };
-  const creds = loadCredentials();
-  if (!creds) return { configured: false, reason: "no_credentials" };
+  const client = makeJwtClient([SCOPE]);
+  if (!client) return { configured: false, reason: "no_credentials" };
 
   // Search Console data lags ~2-3 days; end a couple days back to avoid empty tails.
   const end = new Date();
@@ -80,12 +65,6 @@ export async function getSearchConsoleData(
   const range = { start: ymd(start), end: ymd(end) };
 
   try {
-    const client = new JWT({
-      email: creds.client_email,
-      key: creds.private_key,
-      scopes: [SCOPE],
-    });
-
     const base = { startDate: range.start, endDate: range.end };
     const [totalsRes, seriesRes, queriesRes, pagesRes] = await Promise.all([
       query(client, site, base),
