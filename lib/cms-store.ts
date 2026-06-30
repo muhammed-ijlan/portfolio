@@ -111,7 +111,7 @@ const MINUTE = 60;
 const HOUR = 3600;
 const DAY = 86400;
 const WEEK = 604800;
-const MONTH = 2592000; // 30 days
+const MONTH = 2592000;
 const YEAR = 31536000;
 
 /** Human-friendly relative time, measured from the real "now" on each render. */
@@ -119,7 +119,7 @@ export function relTime(iso: string | number | Date) {
   const then = new Date(iso).getTime();
   if (!Number.isFinite(then)) return "";
   const diff = (Date.now() - then) / 1000;
-  if (diff < 0) return "just now"; // clock skew / future timestamps
+  if (diff < 0) return "just now";
   if (diff < 45) return "just now";
   if (diff < 90) return "1m ago";
   if (diff < HOUR) return Math.round(diff / MINUTE) + "m ago";

@@ -32,7 +32,6 @@ const num = (s?: string) => {
   return Number.isFinite(n) ? n : 0;
 };
 
-// GA4's `date` dimension is "YYYYMMDD" — normalise to "YYYY-MM-DD".
 const isoDate = (yyyymmdd: string) =>
   yyyymmdd.length === 8
     ? `${yyyymmdd.slice(0, 4)}-${yyyymmdd.slice(4, 6)}-${yyyymmdd.slice(6, 8)}`

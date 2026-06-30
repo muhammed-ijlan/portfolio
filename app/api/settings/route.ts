@@ -18,7 +18,6 @@ export async function GET() {
   }
 }
 
-// Custom PUT so a replaced/removed résumé PDF is also deleted from Cloudinary.
 export async function PUT(req: Request) {
   try {
     await requireAuth();

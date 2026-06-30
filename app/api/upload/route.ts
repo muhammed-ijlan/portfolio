@@ -34,9 +34,6 @@ export async function POST(req: Request) {
     const cloudinary = getCloudinary();
     const isPdf = file.type === "application/pdf";
 
-    // PDFs upload as "raw", not "image": Cloudinary blocks delivery of image-type
-    // PDFs by default, but raw assets serve directly. The ".pdf" public_id keeps
-    // the URL extension so it opens inline in the browser.
     const safeName =
       (file.name || "file").replace(/\.[^.]+$/, "").replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 60) || "file";
 

@@ -25,7 +25,6 @@ export function TopBar({ setMobileOpen }: { setMobileOpen: (v: boolean | ((o: bo
     return () => window.removeEventListener("click", close);
   }, [menu]);
 
-  // Real account + unread-message count, refreshed when the route changes.
   useEffect(() => {
     let active = true;
     authApi.me().then(({ user }) => active && setAccount(user)).catch(() => {});

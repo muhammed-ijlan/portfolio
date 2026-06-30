@@ -63,8 +63,6 @@ export async function POST(req: Request) {
       date: new Date().toISOString(),
     });
 
-    // Email the owner. Failures are logged but never fail the submission —
-    // the message is already saved and visible in the admin inbox.
     const recipient = await resolveRecipient();
     const mail = await sendContactNotification(recipient, { name, email, subject, message });
 

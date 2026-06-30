@@ -90,8 +90,6 @@ export function buildJsonLd(p: Portfolio) {
     "@type": "WebSite",
     "@id": `${SITE_URL}/#website`,
     url: SITE_URL,
-    // Google's site name in search results comes from here — keep it short,
-    // or it falls back to the bare domain.
     name: about.name,
     alternateName: [`${about.name} Portfolio`, "ijlan.dev"],
     description: settings.seoDescription,
