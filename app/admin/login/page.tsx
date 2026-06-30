@@ -7,8 +7,6 @@ import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { AdminIcons } from "@/components/admin/icons";
 import { authApi } from "@/lib/api";
 
-const DEMO_CREDENTIALS = { email: "ijlan.dev@gmail.com", password: "admin123" };
-
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -38,7 +36,7 @@ export default function LoginPage() {
       router.push("/admin");
     } catch (e) {
       setLoading(false);
-      setErr(e instanceof Error ? e.message : "Invalid credentials. Try the demo login below.");
+      setErr(e instanceof Error ? e.message : "Invalid email or password.");
     }
   };
 
@@ -85,10 +83,7 @@ export default function LoginPage() {
             </div>
 
             <div className="cms-field" style={{ marginTop: 14 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                <label className="cms-label" htmlFor="password">Password</label>
-                <a href="#" className="login-link" onClick={(e) => e.preventDefault()}>Forgot?</a>
-              </div>
+              <label className="cms-label" htmlFor="password">Password</label>
               <div className="login-pw">
                 <input
                   id="password"
@@ -133,24 +128,6 @@ export default function LoginPage() {
                 </>
               )}
             </button>
-
-            <div className="login-demo">
-              <span className="login-demo-label">Demo login</span>
-              <div className="login-demo-creds">
-                <code>{DEMO_CREDENTIALS.email}</code> · <code>{DEMO_CREDENTIALS.password}</code>
-              </div>
-              <button
-                type="button"
-                className="login-demo-fill"
-                onClick={() => {
-                  setEmail(DEMO_CREDENTIALS.email);
-                  setPassword(DEMO_CREDENTIALS.password);
-                  setErr("");
-                }}
-              >
-                Fill demo credentials
-              </button>
-            </div>
 
             <Link href="/" className="login-back">← Back to portfolio</Link>
           </form>
