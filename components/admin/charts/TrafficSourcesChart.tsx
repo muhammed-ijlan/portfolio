@@ -4,19 +4,25 @@ import "./registry";
 import { Doughnut } from "react-chartjs-2";
 import { useChartTheme } from "./useChartTheme";
 
-const LABELS = ["Direct", "LinkedIn", "GitHub", "Google"];
-const VALUES = [38, 29, 19, 14];
-const COLORS = ["#22D3EE", "#7C3AED", "#3b82f6", "#34d399"];
+const DEFAULT_COLORS = ["#22D3EE", "#7C3AED", "#3b82f6", "#34d399", "#f59e0b", "#ec4899"];
 
-export function TrafficSourcesChart() {
+export function TrafficSourcesChart({
+  labels,
+  values,
+  colors = DEFAULT_COLORS,
+}: {
+  labels: string[];
+  values: number[];
+  colors?: string[];
+}) {
   const { textColor, fontFamily } = useChartTheme();
 
   const data = {
-    labels: LABELS,
+    labels,
     datasets: [
       {
-        data: VALUES,
-        backgroundColor: COLORS,
+        data: values,
+        backgroundColor: colors,
         borderWidth: 0,
         hoverOffset: 4,
       },

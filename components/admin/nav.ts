@@ -26,7 +26,7 @@ export const NAV: NavSection[] = [
   {
     section: "Engagement",
     items: [
-      { id: "messages", label: "Messages", icon: "mail", badge: "NEW" },
+      { id: "messages", label: "Messages", icon: "mail" },
       { id: "media", label: "Media Library", icon: "image" },
     ],
   },

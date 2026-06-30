@@ -8,7 +8,8 @@ import { TrafficChart } from "../charts/TrafficChart";
 import { ProjectViewsChart } from "../charts/ProjectViewsChart";
 import { TrafficSourcesChart } from "../charts/TrafficSourcesChart";
 import { PageLoading, PageError } from "../cms/Loading";
-import { initials, avatarColor, relTime, trafficSeries } from "@/lib/cms-store";
+import { EmptyState } from "../cms/Fields";
+import { initials, avatarColor, relTime, messageSeries } from "@/lib/cms-store";
 import { api } from "@/lib/api";
 import { useCollection } from "@/lib/use-cms";
 
@@ -19,12 +20,33 @@ export function DashboardPage() {
   if (lp || lm) return <PageLoading />;
   if (ep || em) return <PageError error={ep || em || "Failed to load dashboard"} />;
 
-  const { days, views, visitors } = trafficSeries();
+  // Real 30-day series built from actual message timestamps.
+  const { labels, received, avg } = messageSeries(messages.map((m) => m.date));
 
   const newMsgs = messages.filter((m) => m.status === "new").length;
+  const replied = messages.filter((m) => m.status === "replied").length;
+  const responseRate = messages.length ? Math.round((replied / messages.length) * 100) : 0;
   const published = projects.filter((p) => p.status === "published").length;
-  const totalViews = projects.reduce((a, p) => a + (p.views || 0), 0);
-  const topProjects = [...projects].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 4);
+  const featured = projects.filter((p) => p.featured).length;
+  const draft = projects.length - published;
+
+  // Message status breakdown (real).
+  const statusCounts = {
+    new: newMsgs,
+    read: messages.filter((m) => m.status === "read").length,
+    replied,
+  };
+
+  // Most-used technologies across all projects (real, derived from tags).
+  const tagCounts = new Map<string, number>();
+  for (const p of projects) for (const t of p.tags) tagCounts.set(t, (tagCounts.get(t) || 0) + 1);
+  const topTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6);
+
+  // Featured first, then published, then the rest — no fabricated view counts.
+  const rank = (s: string) => (s === "published" ? 0 : 1);
+  const topProjects = [...projects]
+    .sort((a, b) => Number(b.featured) - Number(a.featured) || rank(a.status) - rank(b.status))
+    .slice(0, 4);
 
   return (
     <>
@@ -38,30 +60,48 @@ export function DashboardPage() {
       </PageHead>
 
       <div className="adm-stat-grid">
-        <StatCard title="Page Views (30d)" value={totalViews.toLocaleString()} delta="↑ 12.4% vs last month" type="up" icon={<span style={{ color: "#22D3EE" }}><AdminIcons.eye style={{ width: 18, height: 18 }} /></span>} accent="rgba(34,211,238,0.12)" />
-        <StatCard title="New Messages" value={newMsgs} delta={`${messages.length} total`} type="neu" icon={<span style={{ color: "#7C3AED" }}><AdminIcons.mail style={{ width: 18, height: 18 }} /></span>} accent="rgba(124,58,237,0.12)" />
-        <StatCard title="Published Projects" value={published} delta={`${projects.length - published} draft`} type="neu" icon={<span style={{ color: "#34d399" }}><AdminIcons.briefcase style={{ width: 18, height: 18 }} /></span>} accent="rgba(52,211,153,0.12)" />
-        <StatCard title="Avg. Engagement" value="3m 42s" delta="↑ 0.8% this week" type="up" icon={<span style={{ color: "#fbbf24" }}><AdminIcons.trending style={{ width: 18, height: 18 }} /></span>} accent="rgba(251,191,36,0.12)" />
+        <StatCard title="New Messages" value={newMsgs} delta={`${messages.length} total received`} type="neu" icon={<span style={{ color: "#7C3AED" }}><AdminIcons.mail style={{ width: 18, height: 18 }} /></span>} accent="rgba(124,58,237,0.12)" />
+        <StatCard title="Published Projects" value={published} delta={draft ? `${draft} in draft` : "all live"} type="neu" icon={<span style={{ color: "#34d399" }}><AdminIcons.briefcase style={{ width: 18, height: 18 }} /></span>} accent="rgba(52,211,153,0.12)" />
+        <StatCard title="Featured" value={featured} delta="shown on homepage" type="neu" icon={<span style={{ color: "#22D3EE" }}><AdminIcons.star style={{ width: 18, height: 18 }} /></span>} accent="rgba(34,211,238,0.12)" />
+        <StatCard title="Response Rate" value={`${responseRate}%`} delta={`${replied} replied`} type={responseRate >= 50 ? "up" : "neu"} icon={<span style={{ color: "#fbbf24" }}><AdminIcons.reply style={{ width: 18, height: 18 }} /></span>} accent="rgba(251,191,36,0.12)" />
       </div>
 
       <div className="adm-card" style={{ marginBottom: 16 }}>
-        <div className="adm-card-title">Traffic — last 30 days</div>
+        <div className="adm-card-title">Messages — last 30 days</div>
         <div style={{ height: 220 }}>
-          <TrafficChart days={days} views={views} visitors={visitors} />
+          <TrafficChart
+            labels={labels}
+            series={[
+              { label: "Received", data: received, color: "#22D3EE", fillColor: "rgba(34,211,238,0.09)" },
+              { label: "7-day avg", data: avg, color: "#7C3AED" },
+            ]}
+          />
         </div>
       </div>
 
       <div className="adm-grid-2" style={{ marginBottom: 16 }}>
         <div className="adm-card">
-          <div className="adm-card-title">Project Views</div>
+          <div className="adm-card-title">Top Technologies</div>
           <div style={{ height: 200 }}>
-            <ProjectViewsChart labels={projects.map((p) => p.title.split(" ")[0])} values={projects.map((p) => p.views || 0)} />
+            {topTags.length ? (
+              <ProjectViewsChart label="Projects" labels={topTags.map(([t]) => t)} values={topTags.map(([, n]) => n)} />
+            ) : (
+              <div style={{ height: "100%", display: "grid", placeItems: "center", color: "var(--text-faint)", fontSize: 13 }}>Add projects to see your stack</div>
+            )}
           </div>
         </div>
         <div className="adm-card">
-          <div className="adm-card-title">Traffic Sources</div>
+          <div className="adm-card-title">Messages by Status</div>
           <div style={{ height: 200 }}>
-            <TrafficSourcesChart />
+            {messages.length ? (
+              <TrafficSourcesChart
+                labels={["New", "Read", "Replied"]}
+                values={[statusCounts.new, statusCounts.read, statusCounts.replied]}
+                colors={["#7C3AED", "#22D3EE", "#34d399"]}
+              />
+            ) : (
+              <div style={{ height: "100%", display: "grid", placeItems: "center", color: "var(--text-faint)", fontSize: 13 }}>No messages yet</div>
+            )}
           </div>
         </div>
       </div>
@@ -72,31 +112,44 @@ export function DashboardPage() {
             <div className="adm-card-title" style={{ marginBottom: 0 }}>Recent Messages</div>
             <Link href="/admin/messages" className="adm-btn" style={{ fontSize: 12, padding: "4px 10px" }}>View all</Link>
           </div>
-          <div className="adm-feed">
-            {messages.slice(0, 5).map((m) => (
-              <Link key={m.id} href="/admin/messages" className="adm-feed-item" style={{ cursor: "pointer", textDecoration: "none", color: "inherit" }}>
-                <div className="cms-msg-avatar" style={{ width: 32, height: 32, fontSize: 12, background: avatarColor(m.name) }}>{initials(m.name)}</div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div className="adm-feed-text"><strong>{m.name}</strong> — {m.subject}</div>
-                  <div className="adm-feed-time">{relTime(m.date)}</div>
-                </div>
-                {m.status === "new" && <span className="cms-msg-unreaddot" />}
-              </Link>
-            ))}
-          </div>
+          {messages.length ? (
+            <div className="adm-feed">
+              {[...messages]
+                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                .slice(0, 5)
+                .map((m) => (
+                  <Link key={m.id} href="/admin/messages" className="adm-feed-item" style={{ cursor: "pointer", textDecoration: "none", color: "inherit" }}>
+                    <div className="cms-msg-avatar" style={{ width: 32, height: 32, fontSize: 12, background: avatarColor(m.name) }}>{initials(m.name)}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="adm-feed-text"><strong>{m.name}</strong> — {m.subject}</div>
+                      <div className="adm-feed-time">{relTime(m.date)}</div>
+                    </div>
+                    {m.status === "new" && <span className="cms-msg-unreaddot" />}
+                  </Link>
+                ))}
+            </div>
+          ) : (
+            <EmptyState icon={<AdminIcons.mail style={{ width: 22, height: 22 }} />} title="No messages yet" sub="Contact form submissions will appear here." />
+          )}
         </div>
         <div className="adm-card">
           <div className="adm-card-title" style={{ marginBottom: 8 }}>Top Projects</div>
-          {topProjects.map((p, i) => (
-            <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: i < topProjects.length - 1 ? "1px solid var(--border)" : "none" }}>
-              <span style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 700, color: "var(--text-faint)", fontSize: 14, width: 18 }}>{i + 1}</span>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 600, fontSize: 13.5, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.title}</div>
-                <div className="adm-feed-time">{p.kind}</div>
+          {topProjects.length ? (
+            topProjects.map((p, i) => (
+              <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: i < topProjects.length - 1 ? "1px solid var(--border)" : "none" }}>
+                <span style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 700, color: "var(--text-faint)", fontSize: 14, width: 18 }}>{i + 1}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 600, fontSize: 13.5, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.title}</div>
+                  <div className="adm-feed-time">{p.kind}</div>
+                </div>
+                <span className={`adm-badge ${p.status === "published" ? "badge-green" : "badge-gray"}`}>
+                  <span className="badge-dot" />{p.featured ? "featured" : p.status}
+                </span>
               </div>
-              <span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12.5, fontWeight: 600, color: "var(--cyan)" }}>{(p.views || 0).toLocaleString()}</span>
-            </div>
-          ))}
+            ))
+          ) : (
+            <EmptyState icon={<AdminIcons.briefcase style={{ width: 22, height: 22 }} />} title="No projects yet" sub="Create your first project to get started." />
+          )}
         </div>
       </div>
     </>

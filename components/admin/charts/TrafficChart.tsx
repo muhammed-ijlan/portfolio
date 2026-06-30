@@ -4,33 +4,23 @@ import "./registry";
 import { Line } from "react-chartjs-2";
 import { useChartTheme } from "./useChartTheme";
 
-export function TrafficChart({ days, views, visitors }: { days: string[]; views: number[]; visitors: number[] }) {
+export type LineSeries = { label: string; data: number[]; color: string; fillColor?: string };
+
+export function TrafficChart({ labels, series }: { labels: string[]; series: LineSeries[] }) {
   const { textColor, gridColor, fontFamily } = useChartTheme();
 
   const data = {
-    labels: days,
-    datasets: [
-      {
-        label: "Page views",
-        data: views,
-        borderColor: "#22D3EE",
-        backgroundColor: "rgba(34,211,238,0.09)",
-        fill: true,
-        tension: 0.4,
-        pointRadius: 0,
-        borderWidth: 2,
-      },
-      {
-        label: "Unique visitors",
-        data: visitors,
-        borderColor: "#7C3AED",
-        backgroundColor: "rgba(124,58,237,0.07)",
-        fill: true,
-        tension: 0.4,
-        pointRadius: 0,
-        borderWidth: 2,
-      },
-    ],
+    labels,
+    datasets: series.map((s) => ({
+      label: s.label,
+      data: s.data,
+      borderColor: s.color,
+      backgroundColor: s.fillColor ?? "transparent",
+      fill: !!s.fillColor,
+      tension: 0.4,
+      pointRadius: 0,
+      borderWidth: 2,
+    })),
   };
 
   const options = {
@@ -50,8 +40,9 @@ export function TrafficChart({ days, views, visitors }: { days: string[]; views:
         ticks: { maxTicksLimit: 8, color: textColor, font: { family: fontFamily, size: 11 } },
       },
       y: {
+        beginAtZero: true,
         grid: { color: gridColor },
-        ticks: { color: textColor, font: { family: fontFamily, size: 11 } },
+        ticks: { precision: 0, color: textColor, font: { family: fontFamily, size: 11 } },
       },
     },
   };
