@@ -115,8 +115,6 @@ export const SEED: CmsData = {
     { id: "s5", title: "Databases", items: ["MongoDB", "MySQL", "PostgreSQL", "Firebase"], accent: false },
     { id: "s6", title: "Cloud / DevOps", items: ["AWS (EC2, S3)", "Docker", "CI/CD", "Nginx", "Turbo / pnpm"], accent: false },
   ],
-  // Real visitor messages arrive through the public contact form (`/api/contact`).
-  // Seeding starts empty so the admin never shows fabricated enquiries.
   messages: [],
   about: {
     name: "Muhammed Ijlan",
@@ -142,7 +140,6 @@ export const SEED: CmsData = {
     },
     socials: { github: "https://github.com/muhammed-ijlan", linkedin: "https://linkedin.com/in/ijlan", email: "ijlan.dev@gmail.com" },
   },
-  // Real assets are added via the Media Library upload (Cloudinary-backed).
   media: [],
   settings: {
     siteTitle: "Muhammed Ijlan — Senior Web Developer",

@@ -18,8 +18,6 @@ export type PublicProject = Omit<ProjectType, "status" | "views">;
 export type PublicExperience = ExperienceType;
 export type PublicSkill = SkillType;
 export type PublicAbout = AboutType;
-// notifyEmail / searchConsoleSite / ga4PropertyId are admin-only. ga4MeasurementId
-// is public (it ships in the page's tracking tag anyway).
 export type PublicSettings = Omit<
   SettingsType,
   "notifyEmail" | "searchConsoleSite" | "ga4PropertyId"

@@ -9,7 +9,6 @@ export function useChartTheme() {
 
   useEffect(() => {
     const cs = getComputedStyle(document.documentElement);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setVars({
       text: cs.getPropertyValue("--text-dim").trim() || "#9AA3B2",
       font: cs.getPropertyValue("--font-jetbrains-mono").trim() || "monospace",

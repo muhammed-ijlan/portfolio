@@ -5,7 +5,6 @@ const StatSchema = new Schema(
   { _id: false }
 );
 
-// Hero section — the typewriter roles, availability chip and the code-card.
 const HeroSchema = new Schema(
   {
     roles: { type: [String], default: [] },

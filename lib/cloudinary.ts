@@ -13,8 +13,6 @@ export function getCloudinary() {
   return cloudinary;
 }
 
-// Extract { publicId, resourceType } from a Cloudinary delivery URL so it can be
-// deleted. Returns null for non-Cloudinary URLs.
 function parseCloudinaryUrl(
   url: string
 ): { publicId: string; resourceType: "image" | "raw" | "video" } | null {
@@ -22,14 +20,10 @@ function parseCloudinaryUrl(
   if (!m) return null;
   const resourceType = m[1] as "image" | "raw" | "video";
   let path = m[2].split("?")[0];
-  // For image/video the extension is NOT part of the public_id; for raw it is.
   if (resourceType !== "raw") path = path.replace(/\.[^/.]+$/, "");
   return { publicId: decodeURIComponent(path), resourceType };
 }
 
-// Best-effort delete of a Cloudinary asset by its delivery URL. No-ops on empty
-// or non-Cloudinary URLs, and never throws — orphan cleanup must not fail the
-// request that triggered it.
 export async function destroyByUrl(url?: string | null): Promise<void> {
   if (!url || !url.includes("res.cloudinary.com") || !process.env.CLOUDINARY_URL) return;
   const parsed = parseCloudinaryUrl(url);

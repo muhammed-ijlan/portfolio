@@ -53,8 +53,6 @@ async function readJson(req: Request) {
   }
 }
 
-// `cloudinaryFields` lists document fields holding Cloudinary URLs. On delete the
-// assets are removed from storage; on update, a changed field's old asset is removed.
 export function crud<T>(getModel: () => Model<T>, opts?: { cloudinaryFields?: string[] }) {
   const cloudFields = opts?.cloudinaryFields ?? [];
   return {
@@ -87,7 +85,6 @@ export function crud<T>(getModel: () => Model<T>, opts?: { cloudinaryFields?: st
       await connectDB();
       const body = (await readJson(req)) as Record<string, unknown>;
       delete body.id;
-      // Snapshot the old asset URLs before the write so we can clean up replaced ones.
       const before =
         cloudFields.length > 0
           ? await getModel().findById(id).lean<Record<string, unknown>>()

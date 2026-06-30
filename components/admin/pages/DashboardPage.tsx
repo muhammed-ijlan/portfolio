@@ -22,7 +22,6 @@ export function DashboardPage() {
   if (lp || lm) return <PageLoading />;
   if (ep || em) return <PageError error={ep || em || "Failed to load dashboard"} />;
 
-  // Real 30-day series built from actual message timestamps.
   const { labels, received, avg } = messageSeries(messages.map((m) => m.date));
 
   const newMsgs = messages.filter((m) => m.status === "new").length;
@@ -32,19 +31,16 @@ export function DashboardPage() {
   const featured = projects.filter((p) => p.featured).length;
   const draft = projects.length - published;
 
-  // Message status breakdown (real).
   const statusCounts = {
     new: newMsgs,
     read: messages.filter((m) => m.status === "read").length,
     replied,
   };
 
-  // Most-used technologies across all projects (real, derived from tags).
   const tagCounts = new Map<string, number>();
   for (const p of projects) for (const t of p.tags) tagCounts.set(t, (tagCounts.get(t) || 0) + 1);
   const topTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6);
 
-  // Featured first, then published, then the rest — no fabricated view counts.
   const rank = (s: string) => (s === "published" ? 0 : 1);
   const topProjects = [...projects]
     .sort((a, b) => Number(b.featured) - Number(a.featured) || rank(a.status) - rank(b.status))

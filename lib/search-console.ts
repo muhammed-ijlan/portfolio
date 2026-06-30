@@ -57,7 +57,6 @@ export async function getSearchConsoleData(
   const client = makeJwtClient([SCOPE]);
   if (!client) return { configured: false, reason: "no_credentials" };
 
-  // Search Console data lags ~2-3 days; end a couple days back to avoid empty tails.
   const end = new Date();
   end.setUTCDate(end.getUTCDate() - 2);
   const start = new Date(end);
@@ -111,7 +110,6 @@ export async function getSearchConsoleData(
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[search-console] query failed:", message);
-    // Surface auth/permission problems distinctly so the UI can hint at the fix.
     if (/permission|403|forbidden/i.test(message)) {
       return { configured: false, reason: "no_access" };
     }

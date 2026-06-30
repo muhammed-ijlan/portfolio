@@ -68,7 +68,6 @@ export default async function Home() {
 
   if (toggles.maintenance) return <Maintenance settings={settings} />;
 
-  // GA4 only loads in production so local/dev traffic isn't counted.
   const ga4Id = process.env.NODE_ENV === "production" ? settings.ga4MeasurementId : "";
 
   return (

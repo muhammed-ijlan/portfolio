@@ -1,8 +1,6 @@
 import { Resend } from "resend";
 
 const API_KEY = process.env.RESEND_API_KEY;
-// Resend requires the `from` domain to be verified. Until you verify ijlan.dev,
-// "onboarding@resend.dev" works but can only deliver to the Resend account owner.
 const FROM = process.env.RESEND_FROM || "Portfolio <onboarding@resend.dev>";
 
 export type ContactPayload = {
