@@ -124,6 +124,9 @@ export default function RootLayout({
     <html
       lang="en"
       data-theme="dark"
+      // The theme/animation toggles are applied to <html> by an inline script
+      // before hydration, so these attributes legitimately differ from SSR.
+      suppressHydrationWarning
       className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} ${poppins.variable}`}
     >
       <body>{children}</body>
