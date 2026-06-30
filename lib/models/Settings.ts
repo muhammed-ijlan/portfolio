@@ -9,6 +9,10 @@ const SettingsSchema = new Schema(
     defaultTheme: { type: String, enum: ["dark", "light"], default: "dark" },
     seoDescription: { type: String, default: "" },
     resumeUrl: { type: String, default: "" },
+    // Where contact-form submissions are emailed. Editable from the admin.
+    notifyEmail: { type: String, default: "" },
+    // Google Search Console property, e.g. "sc-domain:ijlan.dev". Editable from the admin.
+    searchConsoleSite: { type: String, default: "" },
     toggles: {
       animations: { type: Boolean, default: true },
       customCursor: { type: Boolean, default: true },
