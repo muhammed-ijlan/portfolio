@@ -7,6 +7,7 @@ import { StatCard } from "../StatCard";
 import { TrafficChart } from "../charts/TrafficChart";
 import { ProjectViewsChart } from "../charts/ProjectViewsChart";
 import { TrafficSourcesChart } from "../charts/TrafficSourcesChart";
+import { SearchPerformance } from "../SearchPerformance";
 import { PageLoading, PageError } from "../cms/Loading";
 import { EmptyState } from "../cms/Fields";
 import { initials, avatarColor, relTime, messageSeries } from "@/lib/cms-store";
@@ -65,6 +66,8 @@ export function DashboardPage() {
         <StatCard title="Featured" value={featured} delta="shown on homepage" type="neu" icon={<span style={{ color: "#22D3EE" }}><AdminIcons.star style={{ width: 18, height: 18 }} /></span>} accent="rgba(34,211,238,0.12)" />
         <StatCard title="Response Rate" value={`${responseRate}%`} delta={`${replied} replied`} type={responseRate >= 50 ? "up" : "neu"} icon={<span style={{ color: "#fbbf24" }}><AdminIcons.reply style={{ width: 18, height: 18 }} /></span>} accent="rgba(251,191,36,0.12)" />
       </div>
+
+      <SearchPerformance />
 
       <div className="adm-card" style={{ marginBottom: 16 }}>
         <div className="adm-card-title">Messages — last 30 days</div>
