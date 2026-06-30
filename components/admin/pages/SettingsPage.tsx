@@ -86,6 +86,7 @@ export function SettingsPage() {
             <Field label="Site title"><TextInput value={draft.siteTitle} onChange={(v) => set("siteTitle", v)} /></Field>
             <Field label="Tagline"><TextInput value={draft.tagline} onChange={(v) => set("tagline", v)} /></Field>
             <Field label="SEO description" hint="Shown in search results & social shares"><TextArea value={draft.seoDescription} onChange={(v) => set("seoDescription", v)} /></Field>
+            <Field label="Contact notification email" hint="Where contact-form messages are emailed. Leave blank to use your About email."><TextInput type="email" value={draft.notifyEmail} onChange={(v) => set("notifyEmail", v)} placeholder="you@example.com" /></Field>
             <Field label="Default theme"><SelectInput value={draft.defaultTheme} onChange={(v) => set("defaultTheme", v as Settings["defaultTheme"])} options={[{ value: "dark", label: "Dark" }, { value: "light", label: "Light" }]} /></Field>
             <Field label="Accent color">
               <div style={{ display: "flex", gap: 8 }}>

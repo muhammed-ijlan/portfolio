@@ -18,7 +18,8 @@ export type PublicProject = Omit<ProjectType, "status" | "views">;
 export type PublicExperience = ExperienceType;
 export type PublicSkill = SkillType;
 export type PublicAbout = AboutType;
-export type PublicSettings = SettingsType;
+// `notifyEmail` and `searchConsoleSite` are admin-only — never exposed publicly.
+export type PublicSettings = Omit<SettingsType, "notifyEmail" | "searchConsoleSite">;
 
 function pid(d: Record<string, unknown>) {
   const { _id, __v, createdAt, updatedAt, ...rest } = d;

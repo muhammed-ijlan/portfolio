@@ -1,9 +1,26 @@
 import { connectDB } from "@/lib/db";
 import { fail, handleError, ok } from "@/lib/api-helpers";
 import { Message } from "@/lib/models/Message";
+import { Settings } from "@/lib/models/Settings";
+import { About } from "@/lib/models/About";
+import { sendContactNotification } from "@/lib/email";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+/** Recipient for contact notifications: admin setting → env → public contact email. */
+async function resolveRecipient(): Promise<string> {
+  const [settings, about] = await Promise.all([
+    Settings.findOne({ key: "singleton" }).lean<{ notifyEmail?: string }>(),
+    About.findOne({ key: "singleton" }).lean<{ email?: string }>(),
+  ]);
+  return (
+    settings?.notifyEmail?.trim() ||
+    process.env.CONTACT_NOTIFY_EMAIL?.trim() ||
+    about?.email?.trim() ||
+    ""
+  );
+}
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX = { name: 120, email: 200, subject: 160, message: 4000 };
@@ -46,7 +63,12 @@ export async function POST(req: Request) {
       date: new Date().toISOString(),
     });
 
-    return ok({ delivered: true, id: doc.id }, { status: 201 });
+    // Email the owner. Failures are logged but never fail the submission —
+    // the message is already saved and visible in the admin inbox.
+    const recipient = await resolveRecipient();
+    const mail = await sendContactNotification(recipient, { name, email, subject, message });
+
+    return ok({ delivered: true, id: doc.id, emailed: mail.sent }, { status: 201 });
   } catch (e) {
     return handleError(e);
   }
