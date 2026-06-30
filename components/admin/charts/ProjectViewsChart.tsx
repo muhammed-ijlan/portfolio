@@ -4,14 +4,14 @@ import "./registry";
 import { Bar } from "react-chartjs-2";
 import { useChartTheme } from "./useChartTheme";
 
-export function ProjectViewsChart({ labels, values }: { labels: string[]; values: number[] }) {
+export function ProjectViewsChart({ labels, values, label = "Count" }: { labels: string[]; values: number[]; label?: string }) {
   const { textColor, gridColor, fontFamily } = useChartTheme();
 
   const data = {
     labels,
     datasets: [
       {
-        label: "Views",
+        label,
         data: values,
         backgroundColor: [
           "rgba(34,211,238,0.75)",
@@ -33,7 +33,7 @@ export function ProjectViewsChart({ labels, values }: { labels: string[]; values
     plugins: { legend: { display: false } },
     scales: {
       x: { grid: { display: false }, ticks: { color: textColor, font: { family: fontFamily, size: 11 } } },
-      y: { grid: { color: gridColor }, ticks: { color: textColor, font: { family: fontFamily, size: 11 } } },
+      y: { beginAtZero: true, grid: { color: gridColor }, ticks: { precision: 0, color: textColor, font: { family: fontFamily, size: 11 } } },
     },
   };
 

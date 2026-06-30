@@ -190,7 +190,7 @@ export function ProjectsPage() {
           <div className="adm-table-wrap">
             <table className="adm-table">
               <thead>
-                <tr><th>Title</th><th>Category</th><th>Tags</th><th>Views</th><th>Status</th><th>Featured</th><th></th></tr>
+                <tr><th>Title</th><th>Category</th><th>Tags</th><th>Status</th><th>Featured</th><th></th></tr>
               </thead>
               <tbody>
                 {rows.map((p) => (
@@ -198,7 +198,6 @@ export function ProjectsPage() {
                     <td className="txt-main">{p.title}</td>
                     <td>{p.kind}</td>
                     <td>{p.tags.slice(0, 3).join(", ")}{p.tags.length > 3 ? "…" : ""}</td>
-                    <td style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>{(p.views || 0).toLocaleString()}</td>
                     <td>
                       <span className={`adm-badge ${p.status === "published" ? "badge-green" : "badge-gray"}`}><span className="badge-dot" />{p.status}</span>
                     </td>

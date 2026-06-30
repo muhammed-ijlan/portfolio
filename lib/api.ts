@@ -15,6 +15,8 @@ import type {
   PublicSettings,
   PublicSkill,
 } from "./portfolio-service";
+import type { SearchConsoleResult } from "./search-console";
+import type { GA4Result } from "./ga4";
 
 type ApiResponse<T> = { ok: true; data: T } | { ok: false; error: string };
 
@@ -96,6 +98,8 @@ export const api = {
   about: singletonResource<About>("about"),
   settings: singletonResource<Settings>("settings"),
   health: () => request<{ db: string; name: string }>("/health"),
+  searchConsole: () => request<SearchConsoleResult>("/analytics/search-console"),
+  ga4: () => request<GA4Result>("/analytics/ga4"),
 };
 
 export type UploadResult = {

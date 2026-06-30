@@ -3,12 +3,21 @@
 import { useState } from "react";
 import { AdminIcons } from "../icons";
 import { PageHead } from "../PageHead";
-import { Field, TextInput, TextArea, TagInput } from "../cms/Fields";
+import { Field, TextInput, TextArea, TagInput, Toggle } from "../cms/Fields";
 import { toast } from "../cms/Toast";
 import { PageLoading, PageError, Spinner } from "../cms/Loading";
-import { type About } from "@/lib/cms-store";
+import { type About, type Hero } from "@/lib/cms-store";
 import { api } from "@/lib/api";
 import { useSingleton } from "@/lib/use-cms";
+
+const HERO_DEFAULTS: Hero = {
+  roles: ["Web Developer", "Web3 Engineer", "Full Stack Developer"],
+  availability: "Available for senior roles",
+  focus: ["Full Stack", "Web3"],
+  stack: ["React", "Next.js", "Node"],
+  experience: "4+ years",
+  openToWork: true,
+};
 
 export function AboutPage() {
   const { data: about, loading, error, save: persist } = useSingleton(api.about);
@@ -26,6 +35,8 @@ export function AboutPage() {
     setDraft((d) => (d ? { ...d, stats: d.stats.map((s, j) => (j === i ? { ...s, [k]: v } : s)) } : d));
   const setSocial = (k: keyof About["socials"], v: string) =>
     setDraft((d) => (d ? { ...d, socials: { ...d.socials, [k]: v } } : d));
+  const setHero = <K extends keyof Hero>(k: K, v: Hero[K]) =>
+    setDraft((d) => (d ? { ...d, hero: { ...HERO_DEFAULTS, ...d.hero, [k]: v } } : d));
   const dirty = !!about && !!draft && JSON.stringify(draft) !== JSON.stringify(about);
   const save = async () => {
     if (!draft) return;
@@ -44,6 +55,7 @@ export function AboutPage() {
   if (error) return <PageError error={error} />;
 
   const cardTitle = { textTransform: "none" as const, letterSpacing: 0, fontSize: 13, fontWeight: 700, color: "var(--text)", marginBottom: 14 };
+  const hero: Hero = { ...HERO_DEFAULTS, ...draft.hero };
 
   return (
     <>
@@ -66,6 +78,25 @@ export function AboutPage() {
               <Field label="Headline" full hint="Big statement on the About section"><TextInput value={draft.headline} onChange={(v) => set("headline", v)} /></Field>
               <Field label="Bio" full><TextArea rows={6} value={draft.bio} onChange={(v) => set("bio", v)} /></Field>
               <Field label="Highlight chips" full hint="Press Enter to add"><TagInput value={draft.chips} onChange={(v) => set("chips", v)} /></Field>
+            </div>
+          </div>
+          <div className="adm-card">
+            <div className="adm-card-title" style={cardTitle}>Hero / Intro</div>
+            <div className="cms-form-grid">
+              <Field label="Rotating roles" full hint="The typewriter line under your name — press Enter to add"><TagInput value={hero.roles} onChange={(v) => setHero("roles", v)} placeholder="Web Developer…" /></Field>
+              <Field label="Availability badge" full hint="The pill shown above your name"><TextInput value={hero.availability} onChange={(v) => setHero("availability", v)} placeholder="Available for senior roles" /></Field>
+              <Field label="Code-card focus" hint="The focus array in the hero card"><TagInput value={hero.focus} onChange={(v) => setHero("focus", v)} placeholder="Full Stack…" /></Field>
+              <Field label="Code-card stack" hint="The stack array in the hero card"><TagInput value={hero.stack} onChange={(v) => setHero("stack", v)} placeholder="React…" /></Field>
+              <Field label="Experience"><TextInput value={hero.experience} onChange={(v) => setHero("experience", v)} placeholder="4+ years" /></Field>
+              <Field>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "var(--bg-elev)", border: "1px solid var(--border)", borderRadius: 9, padding: "10px 14px" }}>
+                  <div>
+                    <div className="cms-label" style={{ marginBottom: 1 }}>Open to work</div>
+                    <div className="cms-hint">Sets openToWork in the hero card</div>
+                  </div>
+                  <Toggle on={hero.openToWork} onChange={(v) => setHero("openToWork", v)} />
+                </div>
+              </Field>
             </div>
           </div>
         </div>

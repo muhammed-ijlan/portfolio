@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { AdminIcons } from "./icons";
 import { labelForPath } from "./nav";
-import { authApi } from "@/lib/api";
+import { api, authApi, type AdminUserPublic } from "@/lib/api";
 import { toast } from "./cms/Toast";
 
 export function TopBar({ setMobileOpen }: { setMobileOpen: (v: boolean | ((o: boolean) => boolean)) => void }) {
@@ -14,6 +14,8 @@ export function TopBar({ setMobileOpen }: { setMobileOpen: (v: boolean | ((o: bo
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
   const [menu, setMenu] = useState(false);
+  const [account, setAccount] = useState<AdminUserPublic | null>(null);
+  const [newCount, setNewCount] = useState(0);
   const label = labelForPath(pathname);
 
   useEffect(() => {
@@ -22,6 +24,20 @@ export function TopBar({ setMobileOpen }: { setMobileOpen: (v: boolean | ((o: bo
     window.addEventListener("click", close);
     return () => window.removeEventListener("click", close);
   }, [menu]);
+
+  useEffect(() => {
+    let active = true;
+    authApi.me().then(({ user }) => active && setAccount(user)).catch(() => {});
+    api.messages.list()
+      .then((msgs) => active && setNewCount(msgs.filter((m) => m.status === "new").length))
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [pathname]);
+
+  const accountName = account?.name || "Muhammed Ijlan";
+  const accountEmail = account?.email || "ijlan.dev@gmail.com";
 
   const onLogout = async () => {
     try {
@@ -49,10 +65,15 @@ export function TopBar({ setMobileOpen }: { setMobileOpen: (v: boolean | ((o: bo
         <Link href="/" target="_blank" rel="noreferrer" className="adm-btn" style={{ height: 36 }}>
           <AdminIcons.external style={{ width: 13, height: 13 }} /> View Site
         </Link>
-        <button className="adm-icon-btn" aria-label="Notifications">
+        <Link
+          href="/admin/messages"
+          className="adm-icon-btn"
+          aria-label={newCount > 0 ? `${newCount} new messages` : "Messages"}
+          title={newCount > 0 ? `${newCount} new message${newCount > 1 ? "s" : ""}` : "No new messages"}
+        >
           <AdminIcons.bell style={{ width: 17, height: 17 }} />
-          <span className="adm-badge-dot" />
-        </button>
+          {newCount > 0 && <span className="adm-badge-dot" />}
+        </Link>
         <button className="adm-icon-btn" onClick={toggleTheme} aria-label="Toggle theme">
           {theme === "dark" ? <AdminIcons.sun style={{ width: 17, height: 17 }} /> : <AdminIcons.moon style={{ width: 17, height: 17 }} />}
         </button>
@@ -75,7 +96,7 @@ export function TopBar({ setMobileOpen }: { setMobileOpen: (v: boolean | ((o: bo
                   MI
                 </div>
                 <div style={{ minWidth: 0 }}>
-                  <div style={{ fontWeight: 700, fontSize: 13.5, whiteSpace: "nowrap" }}>Muhammed Ijlan</div>
+                  <div style={{ fontWeight: 700, fontSize: 13.5, whiteSpace: "nowrap" }}>{accountName}</div>
                   <div
                     style={{
                       fontSize: 11.5,
@@ -86,7 +107,7 @@ export function TopBar({ setMobileOpen }: { setMobileOpen: (v: boolean | ((o: bo
                       textOverflow: "ellipsis",
                     }}
                   >
-                    ijlan.dev@gmail.com
+                    {accountEmail}
                   </div>
                 </div>
               </div>

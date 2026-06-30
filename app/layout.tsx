@@ -124,6 +124,7 @@ export default function RootLayout({
     <html
       lang="en"
       data-theme="dark"
+      suppressHydrationWarning
       className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} ${poppins.variable}`}
     >
       <body>{children}</body>

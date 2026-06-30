@@ -37,6 +37,15 @@ export type Message = {
 
 export type Stat = { value: string; label: string; sub: string };
 
+export type Hero = {
+  roles: string[];
+  availability: string;
+  focus: string[];
+  stack: string[];
+  experience: string;
+  openToWork: boolean;
+};
+
 export type About = {
   name: string;
   headline: string;
@@ -47,6 +56,7 @@ export type About = {
   bio: string;
   chips: string[];
   stats: Stat[];
+  hero: Hero;
   socials: { github: string; linkedin: string; email: string };
 };
 
@@ -59,6 +69,10 @@ export type Settings = {
   defaultTheme: "dark" | "light";
   seoDescription: string;
   resumeUrl: string;
+  notifyEmail: string;
+  searchConsoleSite: string;
+  ga4PropertyId: string;
+  ga4MeasurementId: string;
   toggles: { animations: boolean; customCursor: boolean; maintenance: boolean; showResume: boolean };
 };
 
@@ -74,10 +88,10 @@ export type CmsData = {
 
 export const SEED: CmsData = {
   projects: [
-    { id: "p1", title: "Multi-Chain Crypto Wallet", kind: "Web3 · Chrome MV3", desc: "Non-custodial Ethereum & Tron wallet as a Manifest V3 extension — WASM crypto SDK, biometric auth, on-device signing.", tags: ["React", "TypeScript", "WebAssembly", "WebAuthn", "Vite"], featured: true, live: "https://example.com", repo: "https://github.com/muhammed-ijlan", image: "", status: "published", views: 3820 },
-    { id: "p2", title: "Stack Ed — LMS", kind: "Full Stack", desc: "Learning Management System with course delivery, role-based access and analytics for thousands of learners.", tags: ["Next.js", "Node.js", "MongoDB", "SSR"], featured: false, live: "https://example.com", repo: "https://github.com/muhammed-ijlan", image: "", status: "published", views: 2140 },
-    { id: "p3", title: "Lambda Gaming — E-commerce", kind: "Full Stack", desc: "High-performance gaming storefront with cart, payments and SEO-optimized product pages.", tags: ["React", "Express", "PostgreSQL", "Stripe"], featured: false, live: "https://example.com", repo: "https://github.com/muhammed-ijlan", image: "", status: "published", views: 1760 },
-    { id: "p4", title: "Admin Analytics Platform", kind: "Dashboard", desc: "Wallet & transaction dashboards with 2FA, gas-fee controls, infinite scroll and asset-distribution analytics.", tags: ["React", "Charts", "2FA", "GraphQL"], featured: false, live: "", repo: "https://github.com/muhammed-ijlan", image: "", status: "draft", views: 980 },
+    { id: "p1", title: "Multi-Chain Crypto Wallet", kind: "Web3 · Chrome MV3", desc: "Non-custodial Ethereum & Tron wallet as a Manifest V3 extension — WASM crypto SDK, biometric auth, on-device signing.", tags: ["React", "TypeScript", "WebAssembly", "WebAuthn", "Vite"], featured: true, live: "https://example.com", repo: "https://github.com/muhammed-ijlan", image: "", status: "published", views: 0 },
+    { id: "p2", title: "Stack Ed — LMS", kind: "Full Stack", desc: "Learning Management System with course delivery, role-based access and analytics for thousands of learners.", tags: ["Next.js", "Node.js", "MongoDB", "SSR"], featured: false, live: "https://example.com", repo: "https://github.com/muhammed-ijlan", image: "", status: "published", views: 0 },
+    { id: "p3", title: "Lambda Gaming — E-commerce", kind: "Full Stack", desc: "High-performance gaming storefront with cart, payments and SEO-optimized product pages.", tags: ["React", "Express", "PostgreSQL", "Stripe"], featured: false, live: "https://example.com", repo: "https://github.com/muhammed-ijlan", image: "", status: "published", views: 0 },
+    { id: "p4", title: "Admin Analytics Platform", kind: "Dashboard", desc: "Wallet & transaction dashboards with 2FA, gas-fee controls, infinite scroll and asset-distribution analytics.", tags: ["React", "Charts", "2FA", "GraphQL"], featured: false, live: "", repo: "https://github.com/muhammed-ijlan", image: "", status: "draft", views: 0 },
   ],
   experience: [
     { id: "e1", role: "Senior Web Developer", company: "Token 13 Software LLC", place: "Dubai, UAE", period: "2025 — 2026", tags: ["React", "TypeScript", "Vite", "WebAssembly", "WebAuthn", "MV3"], points: [
@@ -101,14 +115,7 @@ export const SEED: CmsData = {
     { id: "s5", title: "Databases", items: ["MongoDB", "MySQL", "PostgreSQL", "Firebase"], accent: false },
     { id: "s6", title: "Cloud / DevOps", items: ["AWS (EC2, S3)", "Docker", "CI/CD", "Nginx", "Turbo / pnpm"], accent: false },
   ],
-  messages: [
-    { id: "m1", name: "Sarah Mitchell", email: "sarah@acmecorp.com", subject: "Senior Frontend role at Acme", message: "Hi Muhammed, we came across your portfolio and your Web3 wallet project really stood out. We're hiring a senior frontend engineer for our DeFi platform in Dubai. Would you be open to a chat this week?", status: "new", date: "2026-06-09T09:24:00", starred: true },
-    { id: "m2", name: "Raj Patel", email: "raj.patel@fintechlabs.io", subject: "Contract: React + WebAuthn", message: "We need help shipping a WebAuthn biometric flow in a Chrome extension. Saw you did exactly this at Token 13. 6-week contract, remote. Interested?", status: "new", date: "2026-06-08T16:40:00", starred: false },
-    { id: "m3", name: "Elena Rodriguez", email: "elena@designstudio.co", subject: "Collaboration opportunity", message: "Loved the Lambda Gaming storefront. We build e-commerce for gaming brands and would love to collaborate on an upcoming project. Let me know if you have bandwidth.", status: "read", date: "2026-06-07T11:15:00", starred: false },
-    { id: "m4", name: "David Kim", email: "dkim@startupx.com", subject: "Full-stack advisory", message: "Early-stage startup, need an advisor for our architecture. Equity + retainer. Your LMS experience is a great fit.", status: "replied", date: "2026-06-05T14:02:00", starred: false },
-    { id: "m5", name: "Aisha Khan", email: "aisha@recruithub.ae", subject: "Multiple Dubai opportunities", message: "I represent several Dubai-based companies looking for senior React/Web3 developers. Salary range AED 28-38k/month. Can I send you a few JDs?", status: "read", date: "2026-06-04T08:30:00", starred: true },
-    { id: "m6", name: "Tom Becker", email: "tom@web3ventures.xyz", subject: "Smart contract integration", message: "Need someone to integrate Ethereum + Tron transaction signing into our React app. Your wallet project is exactly the expertise we need.", status: "replied", date: "2026-06-02T19:48:00", starred: false },
-  ],
+  messages: [],
   about: {
     name: "Muhammed Ijlan",
     headline: "I build scalable, secure web & Web3 products.",
@@ -123,16 +130,17 @@ export const SEED: CmsData = {
       { value: "20+", label: "Projects shipped", sub: "web & web3" },
       { value: "30%", label: "Faster APIs", sub: "perf optimization" },
     ],
+    hero: {
+      roles: ["Web Developer", "Web3 Engineer", "Full Stack Developer"],
+      availability: "Available for senior roles",
+      focus: ["Full Stack", "Web3"],
+      stack: ["React", "Next.js", "Node"],
+      experience: "4+ years",
+      openToWork: true,
+    },
     socials: { github: "https://github.com/muhammed-ijlan", linkedin: "https://linkedin.com/in/ijlan", email: "ijlan.dev@gmail.com" },
   },
-  media: [
-    { id: "md1", name: "wallet-hero.png", kind: "cover", color: "linear-gradient(135deg,#22D3EE,#7C3AED)" },
-    { id: "md2", name: "lms-dashboard.png", kind: "screenshot", color: "linear-gradient(135deg,#3b82f6,#22D3EE)" },
-    { id: "md3", name: "gaming-store.png", kind: "screenshot", color: "linear-gradient(135deg,#7C3AED,#ec4899)" },
-    { id: "md4", name: "analytics-panel.png", kind: "screenshot", color: "linear-gradient(135deg,#34d399,#22D3EE)" },
-    { id: "md5", name: "profile-photo.jpg", kind: "avatar", color: "linear-gradient(135deg,#f59e0b,#ef4444)" },
-    { id: "md6", name: "og-banner.png", kind: "social", color: "linear-gradient(135deg,#6366f1,#7C3AED)" },
-  ],
+  media: [],
   settings: {
     siteTitle: "Muhammed Ijlan — Senior Web Developer",
     tagline: "Full Stack & Web3 Developer",
@@ -140,6 +148,10 @@ export const SEED: CmsData = {
     defaultTheme: "dark",
     seoDescription: "Senior Web Developer (Full Stack & Web3) in Dubai. 4+ years building production-grade, high-performance web & Web3 applications.",
     resumeUrl: "",
+    notifyEmail: "ijlan.dev@gmail.com",
+    searchConsoleSite: "sc-domain:ijlan.dev",
+    ga4PropertyId: "",
+    ga4MeasurementId: "",
     toggles: { animations: true, customCursor: false, maintenance: false, showResume: true },
   },
 };
