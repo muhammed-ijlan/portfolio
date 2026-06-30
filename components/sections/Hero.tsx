@@ -5,6 +5,28 @@ import { Magnetic } from "@/components/ui/Magnetic";
 import { Typewriter } from "@/components/ui/Typewriter";
 import { Icons } from "@/components/ui/Icons";
 import type { PublicAbout } from "@/lib/portfolio-service";
+import type { Hero as HeroData } from "@/lib/seed-data";
+
+const HERO_DEFAULTS: HeroData = {
+  roles: ["Web Developer", "Web3 Engineer", "Full Stack Developer"],
+  availability: "Available for senior roles",
+  focus: ["Full Stack", "Web3"],
+  stack: ["React", "Next.js", "Node"],
+  experience: "4+ years",
+  openToWork: true,
+};
+
+function resolveHero(hero?: Partial<HeroData>): HeroData {
+  const h = hero ?? {};
+  return {
+    roles: h.roles?.length ? h.roles : HERO_DEFAULTS.roles,
+    availability: h.availability || HERO_DEFAULTS.availability,
+    focus: h.focus?.length ? h.focus : HERO_DEFAULTS.focus,
+    stack: h.stack?.length ? h.stack : HERO_DEFAULTS.stack,
+    experience: h.experience || HERO_DEFAULTS.experience,
+    openToWork: h.openToWork ?? HERO_DEFAULTS.openToWork,
+  };
+}
 
 const L = ({ n, children, last }: { n: number; children: React.ReactNode; last?: boolean }) => (
   <div className="cl">
@@ -22,7 +44,20 @@ const S = ({ c }: { c: string }) => <span className="t-str">{c}</span>;
 const B = ({ c }: { c: string }) => <span className="t-bool">{c}</span>;
 const Pu = ({ c }: { c: string }) => <span className="t-pun">{c}</span>;
 
-function CodeCard({ about }: { about: PublicAbout }) {
+const ArrayVal = ({ items }: { items: string[] }) => (
+  <>
+    <Pu c="[" />
+    {items.map((it, i) => (
+      <span key={it + i}>
+        <S c={`"${it}"`} />
+        {i < items.length - 1 && <Pu c=", " />}
+      </span>
+    ))}
+    <Pu c="]," />
+  </>
+);
+
+function CodeCard({ about, hero }: { about: PublicAbout; hero: HeroData }) {
   return (
     <div className="code-card" style={{ willChange: "transform" }}>
       <div className="code-card-bar font-mono-custom">
@@ -38,11 +73,11 @@ function CodeCard({ about }: { about: PublicAbout }) {
         <L n={1}><K c="const" /> <V c="engineer" /> <Pu c="= {" /></L>
         <L n={2}>{"  "}<Prop c="name" /><Pu c=": " /><S c={`"${about.name}"`} /><Pu c="," /></L>
         <L n={3}>{"  "}<Prop c="role" /><Pu c=": " /><S c={`"${about.role}"`} /><Pu c="," /></L>
-        <L n={4}>{"  "}<Prop c="focus" /><Pu c=": [" /><S c={'"Full Stack"'} /><Pu c=", " /><S c={'"Web3"'} /><Pu c="]," /></L>
-        <L n={5}>{"  "}<Prop c="stack" /><Pu c=": [" /><S c={'"React"'} /><Pu c=", " /><S c={'"Next.js"'} /><Pu c=", " /><S c={'"Node"'} /><Pu c="]," /></L>
+        <L n={4}>{"  "}<Prop c="focus" /><Pu c=": " /><ArrayVal items={hero.focus} /></L>
+        <L n={5}>{"  "}<Prop c="stack" /><Pu c=": " /><ArrayVal items={hero.stack} /></L>
         <L n={6}>{"  "}<Prop c="location" /><Pu c=": " /><S c={`"${about.location}"`} /><Pu c="," /></L>
-        <L n={7}>{"  "}<Prop c="experience" /><Pu c=": " /><S c={'"4+ years"'} /><Pu c="," /></L>
-        <L n={8}>{"  "}<Prop c="openToWork" /><Pu c=": " /><B c="true" /><Pu c="," /></L>
+        <L n={7}>{"  "}<Prop c="experience" /><Pu c=": " /><S c={`"${hero.experience}"`} /><Pu c="," /></L>
+        <L n={8}>{"  "}<Prop c="openToWork" /><Pu c=": " /><B c={hero.openToWork ? "true" : "false"} /><Pu c="," /></L>
         <L n={9} last><Pu c="};" /></L>
       </div>
     </div>
@@ -52,6 +87,7 @@ function CodeCard({ about }: { about: PublicAbout }) {
 export function Hero({ about, resumeUrl }: { about: PublicAbout; resumeUrl?: string }) {
   const [firstName, ...restName] = about.name.split(" ");
   const lastName = restName.join(" ");
+  const hero = resolveHero(about.hero);
   const socials = [
     { icon: Icons.github, label: "GitHub", href: about.socials.github },
     { icon: Icons.linkedin, label: "LinkedIn", href: about.socials.linkedin },
@@ -80,7 +116,7 @@ export function Hero({ about, resumeUrl }: { about: PublicAbout; resumeUrl?: str
           <Reveal>
             <span className="chip" style={{ borderColor: "rgba(34,211,238,0.35)" }}>
               <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#34d399", boxShadow: "0 0 10px #34d399" }} />
-              Available for senior roles · {about.location}
+              {hero.availability} · {about.location}
             </span>
           </Reveal>
 
@@ -93,7 +129,7 @@ export function Hero({ about, resumeUrl }: { about: PublicAbout; resumeUrl?: str
           <Reveal>
             <p className="font-mono-custom" style={{ fontSize: "clamp(0.95rem,2vw,1.25rem)", color: "var(--text)", letterSpacing: "0.01em", minHeight: "1.6em", margin: 0 }}>
               <span className="text-faint">&gt; </span>
-              <Typewriter words={["Web Developer", "Web3 Engineer", "Full Stack Developer"]} />
+              <Typewriter words={hero.roles} />
             </p>
           </Reveal>
 
@@ -146,7 +182,7 @@ export function Hero({ about, resumeUrl }: { about: PublicAbout; resumeUrl?: str
 
         {}
         <Reveal className="hero-right">
-          <CodeCard about={about} />
+          <CodeCard about={about} hero={hero} />
         </Reveal>
       </div>
 

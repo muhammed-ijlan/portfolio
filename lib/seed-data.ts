@@ -37,6 +37,15 @@ export type Message = {
 
 export type Stat = { value: string; label: string; sub: string };
 
+export type Hero = {
+  roles: string[];
+  availability: string;
+  focus: string[];
+  stack: string[];
+  experience: string;
+  openToWork: boolean;
+};
+
 export type About = {
   name: string;
   headline: string;
@@ -47,6 +56,7 @@ export type About = {
   bio: string;
   chips: string[];
   stats: Stat[];
+  hero: Hero;
   socials: { github: string; linkedin: string; email: string };
 };
 
@@ -120,6 +130,14 @@ export const SEED: CmsData = {
       { value: "20+", label: "Projects shipped", sub: "web & web3" },
       { value: "30%", label: "Faster APIs", sub: "perf optimization" },
     ],
+    hero: {
+      roles: ["Web Developer", "Web3 Engineer", "Full Stack Developer"],
+      availability: "Available for senior roles",
+      focus: ["Full Stack", "Web3"],
+      stack: ["React", "Next.js", "Node"],
+      experience: "4+ years",
+      openToWork: true,
+    },
     socials: { github: "https://github.com/muhammed-ijlan", linkedin: "https://linkedin.com/in/ijlan", email: "ijlan.dev@gmail.com" },
   },
   // Real assets are added via the Media Library upload (Cloudinary-backed).

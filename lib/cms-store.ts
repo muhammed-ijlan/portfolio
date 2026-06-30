@@ -11,6 +11,7 @@ export type {
   Message,
   Stat,
   About,
+  Hero,
   Media,
   Settings,
   CmsData,
