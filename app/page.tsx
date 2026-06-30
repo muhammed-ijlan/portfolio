@@ -12,6 +12,7 @@ import { Skills } from "@/components/sections/Skills";
 import { Projects } from "@/components/sections/Projects";
 import { Contact } from "@/components/sections/Contact";
 import { Footer } from "@/components/sections/Footer";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { getPortfolioCached } from "@/lib/portfolio-service";
 import { SITE_URL, buildKeywords, buildJsonLd, jsonLdScript } from "@/lib/seo";
 
@@ -67,8 +68,12 @@ export default async function Home() {
 
   if (toggles.maintenance) return <Maintenance settings={settings} />;
 
+  // GA4 only loads in production so local/dev traffic isn't counted.
+  const ga4Id = process.env.NODE_ENV === "production" ? settings.ga4MeasurementId : "";
+
   return (
     <ThemeProvider defaultTheme={settings.defaultTheme} accent={settings.accent}>
+      {ga4Id && <GoogleAnalytics id={ga4Id} />}
       {}
       <script
         dangerouslySetInnerHTML={{

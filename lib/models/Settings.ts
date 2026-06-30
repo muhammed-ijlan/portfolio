@@ -13,6 +13,10 @@ const SettingsSchema = new Schema(
     notifyEmail: { type: String, default: "" },
     // Google Search Console property, e.g. "sc-domain:ijlan.dev". Editable from the admin.
     searchConsoleSite: { type: String, default: "" },
+    // GA4 numeric property id for the Data API (admin dashboard charts).
+    ga4PropertyId: { type: String, default: "" },
+    // GA4 measurement id ("G-XXXXXXXXXX") for the public tracking tag. Public.
+    ga4MeasurementId: { type: String, default: "" },
     toggles: {
       animations: { type: Boolean, default: true },
       customCursor: { type: Boolean, default: true },

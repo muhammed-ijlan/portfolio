@@ -18,8 +18,12 @@ export type PublicProject = Omit<ProjectType, "status" | "views">;
 export type PublicExperience = ExperienceType;
 export type PublicSkill = SkillType;
 export type PublicAbout = AboutType;
-// `notifyEmail` and `searchConsoleSite` are admin-only — never exposed publicly.
-export type PublicSettings = Omit<SettingsType, "notifyEmail" | "searchConsoleSite">;
+// notifyEmail / searchConsoleSite / ga4PropertyId are admin-only. ga4MeasurementId
+// is public (it ships in the page's tracking tag anyway).
+export type PublicSettings = Omit<
+  SettingsType,
+  "notifyEmail" | "searchConsoleSite" | "ga4PropertyId"
+>;
 
 function pid(d: Record<string, unknown>) {
   const { _id, __v, createdAt, updatedAt, ...rest } = d;
@@ -78,6 +82,7 @@ export async function getPublicSettings(): Promise<PublicSettings> {
     defaultTheme: src.defaultTheme,
     seoDescription: src.seoDescription,
     resumeUrl: src.resumeUrl ?? "",
+    ga4MeasurementId: src.ga4MeasurementId ?? "",
     toggles: src.toggles,
   };
 }
@@ -131,6 +136,7 @@ function seedPortfolio(): Portfolio {
       defaultTheme: settings.defaultTheme,
       seoDescription: settings.seoDescription,
       resumeUrl: settings.resumeUrl ?? "",
+      ga4MeasurementId: settings.ga4MeasurementId ?? "",
       toggles: settings.toggles,
     },
     contact: { email: about.email, phone: about.phone, socials: about.socials },
