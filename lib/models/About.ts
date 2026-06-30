@@ -5,6 +5,19 @@ const StatSchema = new Schema(
   { _id: false }
 );
 
+// Hero section — the typewriter roles, availability chip and the code-card.
+const HeroSchema = new Schema(
+  {
+    roles: { type: [String], default: [] },
+    availability: { type: String, default: "" },
+    focus: { type: [String], default: [] },
+    stack: { type: [String], default: [] },
+    experience: { type: String, default: "" },
+    openToWork: { type: Boolean, default: true },
+  },
+  { _id: false }
+);
+
 const AboutSchema = new Schema(
   {
     key: { type: String, default: "singleton", unique: true },
@@ -17,6 +30,7 @@ const AboutSchema = new Schema(
     bio: { type: String, default: "" },
     chips: { type: [String], default: [] },
     stats: { type: [StatSchema], default: [] },
+    hero: { type: HeroSchema, default: () => ({}) },
     socials: {
       github: { type: String, default: "" },
       linkedin: { type: String, default: "" },
