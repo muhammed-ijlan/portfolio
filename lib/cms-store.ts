@@ -13,6 +13,7 @@ export type {
   About,
   Hero,
   Media,
+  BlogPost,
   Settings,
   CmsData,
 } from "./seed-data";

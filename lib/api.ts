@@ -1,5 +1,6 @@
 import type {
   About,
+  BlogPost,
   Experience,
   Media,
   Message,
@@ -93,6 +94,7 @@ export const api = {
   projects: resource<Project>("projects"),
   experience: resource<Experience>("experience"),
   skills: resource<Skill>("skills"),
+  blog: resource<BlogPost>("blog"),
   messages: resource<Message>("messages"),
   media: resource<Media>("media"),
   about: singletonResource<About>("about"),
