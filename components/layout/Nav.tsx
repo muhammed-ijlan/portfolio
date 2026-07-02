@@ -6,22 +6,25 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { Icons } from "@/components/ui/Icons";
 import { Logo } from "@/components/ui/Logo";
+import type { SectionToggles } from "@/lib/seed-data";
 
-const NAV_LINKS = [
-  ["About", "/#about"],
-  ["Experience", "/#experience"],
-  ["Skills", "/#skills"],
-  ["Projects", "/#projects"],
-  ["Writing", "/blog"],
-  ["Contact", "/#contact"],
+const ALL_LINKS = [
+  ["About", "/#about", "about"],
+  ["Experience", "/#experience", "experience"],
+  ["Skills", "/#skills", "skills"],
+  ["Projects", "/#projects", "projects"],
+  ["Writing", "/blog", "blog"],
+  ["Contact", "/#contact", "contact"],
 ] as const;
 
-export function Nav() {
+export function Nav({ sections }: { sections?: SectionToggles }) {
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("home");
+
+  const NAV_LINKS = ALL_LINKS.filter(([, , key]) => sections?.[key] !== false);
 
   const isActive = (href: string) =>
     href === "/blog" ? pathname.startsWith("/blog") : pathname === "/" && active === href.split("#")[1];
@@ -86,9 +89,11 @@ export function Nav() {
           >
             {theme === "dark" ? Icons.sun() : Icons.moon()}
           </button>
-          <Link href="/#contact" className="btn btn-primary nav-cta" style={{ padding: "0.6rem 1.1rem", fontSize: "0.88rem" }}>
-            Hire me
-          </Link>
+          {sections?.contact !== false && (
+            <Link href="/#contact" className="btn btn-primary nav-cta" style={{ padding: "0.6rem 1.1rem", fontSize: "0.88rem" }}>
+              Hire me
+            </Link>
+          )}
           <button
             className="nav-burger"
             aria-label="Menu"

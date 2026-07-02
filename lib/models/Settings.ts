@@ -19,6 +19,14 @@ const SettingsSchema = new Schema(
       maintenance: { type: Boolean, default: false },
       showResume: { type: Boolean, default: true },
     },
+    sections: {
+      about: { type: Boolean, default: true },
+      experience: { type: Boolean, default: true },
+      skills: { type: Boolean, default: true },
+      projects: { type: Boolean, default: true },
+      contact: { type: Boolean, default: true },
+      blog: { type: Boolean, default: true },
+    },
   },
   {
     timestamps: true,

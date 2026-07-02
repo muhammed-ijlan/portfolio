@@ -64,7 +64,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Home() {
   const portfolio = await getPortfolioCached();
   const { about, projects, experience, skills, settings, contact } = portfolio;
-  const { toggles } = settings;
+  const { toggles, sections } = settings;
 
   if (toggles.maintenance) return <Maintenance settings={settings} />;
 
@@ -92,15 +92,15 @@ export default async function Home() {
       <div className="bg-grid" />
       <div className="bg-noise" />
 
-      <Nav />
+      <Nav sections={sections} />
 
       <main id="main" style={{ position: "relative", zIndex: 2 }}>
         <Hero about={about} resumeUrl={toggles.showResume ? settings.resumeUrl : ""} />
-        <About about={about} />
-        <Experience items={experience} />
-        <Skills groups={skills} />
-        <Projects items={projects} />
-        <Contact contact={contact} />
+        {sections.about && <About about={about} />}
+        {sections.experience && <Experience items={experience} />}
+        {sections.skills && <Skills groups={skills} />}
+        {sections.projects && <Projects items={projects} />}
+        {sections.contact && <Contact contact={contact} />}
       </main>
 
       <Footer about={about} />

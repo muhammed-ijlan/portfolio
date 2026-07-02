@@ -88,6 +88,25 @@ export type Settings = {
   ga4PropertyId: string;
   ga4MeasurementId: string;
   toggles: { animations: boolean; customCursor: boolean; maintenance: boolean; showResume: boolean };
+  sections: SectionToggles;
+};
+
+export type SectionToggles = {
+  about: boolean;
+  experience: boolean;
+  skills: boolean;
+  projects: boolean;
+  contact: boolean;
+  blog: boolean;
+};
+
+export const ALL_SECTIONS_ON: SectionToggles = {
+  about: true,
+  experience: true,
+  skills: true,
+  projects: true,
+  contact: true,
+  blog: true,
 };
 
 export type CmsData = {
@@ -260,5 +279,6 @@ export const SEED: CmsData = {
     ga4PropertyId: "",
     ga4MeasurementId: "",
     toggles: { animations: true, customCursor: false, maintenance: false, showResume: true },
+    sections: { about: true, experience: true, skills: true, projects: true, contact: true, blog: true },
   },
 };

@@ -11,7 +11,7 @@ export default async function BlogLayout({ children }: { children: React.ReactNo
       <div className="bg-grid" />
       <div className="bg-noise" />
 
-      <Nav />
+      <Nav sections={settings.sections} />
 
       <main id="main" style={{ position: "relative", zIndex: 2, minHeight: "70vh" }}>
         {children}

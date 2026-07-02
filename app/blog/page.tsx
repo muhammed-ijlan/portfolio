@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getPublicPosts } from "@/lib/blog-service";
+import { getPortfolioCached } from "@/lib/portfolio-service";
 import { BlogIndex } from "@/components/blog/BlogIndex";
 import { SITE_URL } from "@/lib/seo";
 
@@ -27,6 +29,8 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogIndexPage() {
+  const { settings } = await getPortfolioCached();
+  if (!settings.sections.blog) notFound();
   const posts = await getPublicPosts();
 
   const jsonLd = {

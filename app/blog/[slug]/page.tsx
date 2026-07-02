@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 export default async function PostPage({ params }: Params) {
   const { slug } = await params;
   const [post, portfolio] = await Promise.all([getPublicPostBySlug(slug), getPortfolioCached()]);
-  if (!post) notFound();
+  if (!post || !portfolio.settings.sections.blog) notFound();
   const { about } = portfolio;
   const html = renderMarkdown(post.content);
 

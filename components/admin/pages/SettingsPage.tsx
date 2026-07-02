@@ -7,6 +7,7 @@ import { Field, TextInput, TextArea, SelectInput, Toggle } from "../cms/Fields";
 import { toast } from "../cms/Toast";
 import { PageLoading, PageError, Spinner } from "../cms/Loading";
 import { type Settings } from "@/lib/cms-store";
+import { ALL_SECTIONS_ON, type SectionToggles } from "@/lib/seed-data";
 import { api, uploadApi } from "@/lib/api";
 import { useSingleton } from "@/lib/use-cms";
 
@@ -26,6 +27,10 @@ export function SettingsPage() {
   const set = <K extends keyof Settings>(k: K, v: Settings[K]) => setDraft((d) => (d ? { ...d, [k]: v } : d));
   const setTog = (k: keyof Settings["toggles"]) =>
     setDraft((d) => (d ? { ...d, toggles: { ...d.toggles, [k]: !d.toggles[k] } } : d));
+  // Older settings docs may predate section visibility — treat missing as all on.
+  const secOf = (d: Settings): SectionToggles => ({ ...ALL_SECTIONS_ON, ...(d.sections ?? {}) });
+  const setSec = (k: keyof SectionToggles) =>
+    setDraft((d) => (d ? { ...d, sections: { ...secOf(d), [k]: !secOf(d)[k] } } : d));
   const dirty = !!settings && !!draft && JSON.stringify(draft) !== JSON.stringify(settings);
   const accents = ["#22D3EE", "#7C3AED", "#34d399", "#f59e0b", "#ec4899"];
 
@@ -71,6 +76,15 @@ export function SettingsPage() {
     { k: "showResume", l: "Resume download", s: "Show the “Download CV” button" },
     { k: "maintenance", l: "Maintenance mode", s: "Show a maintenance page to visitors" },
   ];
+  const sectionRows: { k: keyof SectionToggles; l: string; s: string }[] = [
+    { k: "about", l: "About", s: "Bio, chips and stats section" },
+    { k: "experience", l: "Experience", s: "Work-history timeline" },
+    { k: "skills", l: "Skills", s: "Skill groups grid" },
+    { k: "projects", l: "Projects", s: "Selected work cards" },
+    { k: "contact", l: "Contact", s: "Contact form + “Hire me” button" },
+    { k: "blog", l: "Blog / Writing", s: "The /blog pages, nav link, feed and sitemap entries" },
+  ];
+  const sections = secOf(draft);
 
   return (
     <>
@@ -123,6 +137,18 @@ export function SettingsPage() {
                 <div className="adm-setting-sub">{row.s}</div>
               </div>
               <Toggle on={draft.toggles[row.k]} onChange={() => setTog(row.k)} />
+            </div>
+          ))}
+          <div className="adm-card-title" style={{ ...cardTitle, marginTop: 18, marginBottom: 6, paddingTop: 16, borderTop: "1px solid var(--border)" }}>
+            Visible sections
+          </div>
+          {sectionRows.map((row) => (
+            <div key={row.k} className="adm-setting-row">
+              <div>
+                <div className="adm-setting-label">{row.l}</div>
+                <div className="adm-setting-sub">{row.s}</div>
+              </div>
+              <Toggle on={sections[row.k]} onChange={() => setSec(row.k)} />
             </div>
           ))}
           <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--border)" }}>

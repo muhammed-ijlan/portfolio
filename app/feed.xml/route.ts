@@ -1,4 +1,5 @@
 import { getPublicPosts } from "@/lib/blog-service";
+import { getPortfolioCached } from "@/lib/portfolio-service";
 import { SITE_URL } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -7,6 +8,8 @@ const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 export async function GET() {
+  const { settings } = await getPortfolioCached();
+  if (!settings.sections.blog) return new Response("Not found", { status: 404 });
   const posts = await getPublicPosts();
   const newest = posts[0]?.date ? new Date(posts[0].date) : new Date();
 
