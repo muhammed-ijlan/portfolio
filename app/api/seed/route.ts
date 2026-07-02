@@ -6,6 +6,7 @@ import { Experience } from "@/lib/models/Experience";
 import { Skill } from "@/lib/models/Skill";
 import { Message } from "@/lib/models/Message";
 import { Media } from "@/lib/models/Media";
+import { BlogPost } from "@/lib/models/BlogPost";
 import { About } from "@/lib/models/About";
 import { Settings } from "@/lib/models/Settings";
 import { ensureDefaultAdmin } from "@/lib/auth";
@@ -38,16 +39,18 @@ export async function POST(req: Request) {
       Skill.deleteMany({}),
       Message.deleteMany({}),
       Media.deleteMany({}),
+      BlogPost.deleteMany({}),
       About.deleteMany({}),
       Settings.deleteMany({}),
     ]);
 
-    const [projects, experience, skills, messages, media] = await Promise.all([
+    const [projects, experience, skills, messages, media, posts] = await Promise.all([
       Project.insertMany(strip(SEED.projects)),
       Experience.insertMany(strip(SEED.experience)),
       Skill.insertMany(strip(SEED.skills)),
       Message.insertMany(strip(SEED.messages)),
       Media.insertMany(strip(SEED.media)),
+      BlogPost.insertMany(strip(SEED.posts)),
     ]);
 
     await About.create({ ...SEED.about, key: "singleton" });
@@ -62,6 +65,7 @@ export async function POST(req: Request) {
         skills: skills.length,
         messages: messages.length,
         media: media.length,
+        posts: posts.length,
         about: 1,
         settings: 1,
         admin: admin ? "created" : "already exists",

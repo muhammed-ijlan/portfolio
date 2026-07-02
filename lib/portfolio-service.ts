@@ -5,7 +5,7 @@ import { Experience } from "./models/Experience";
 import { Skill } from "./models/Skill";
 import { About } from "./models/About";
 import { Settings } from "./models/Settings";
-import { SEED } from "./seed-data";
+import { ALL_SECTIONS_ON, SEED } from "./seed-data";
 import type {
   About as AboutType,
   Experience as ExperienceType,
@@ -82,6 +82,8 @@ export async function getPublicSettings(): Promise<PublicSettings> {
     resumeUrl: src.resumeUrl ?? "",
     ga4MeasurementId: src.ga4MeasurementId ?? "",
     toggles: src.toggles,
+    // Older settings docs predate section visibility — treat missing as all on.
+    sections: { ...ALL_SECTIONS_ON, ...(src.sections ?? {}) },
   };
 }
 
@@ -136,6 +138,7 @@ function seedPortfolio(): Portfolio {
       resumeUrl: settings.resumeUrl ?? "",
       ga4MeasurementId: settings.ga4MeasurementId ?? "",
       toggles: settings.toggles,
+      sections: { ...ALL_SECTIONS_ON, ...(settings.sections ?? {}) },
     },
     contact: { email: about.email, phone: about.phone, socials: about.socials },
   };

@@ -26,6 +26,9 @@ export const AdminIcons = {
   code: (p?: P) => (
     <svg {...stroke(p)}><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>
   ),
+  feather: (p?: P) => (
+    <svg {...stroke(p)}><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z" /><line x1="16" y1="8" x2="2" y2="22" /><line x1="17.5" y1="15" x2="9" y2="15" /></svg>
+  ),
   userPen: (p?: P) => (
     <svg {...stroke(p)}><path d="M11.5 15H7a4 4 0 0 0-4 4v2" /><circle cx="10" cy="7" r="4" /><path d="M21.4 13.6a2 2 0 0 0-2.83-2.83L14 15.34V18h2.66z" /></svg>
   ),

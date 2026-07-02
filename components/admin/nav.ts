@@ -18,6 +18,7 @@ export const NAV: NavSection[] = [
     section: "Content",
     items: [
       { id: "projects", label: "Projects", icon: "briefcase" },
+      { id: "blog", label: "Blog", icon: "feather" },
       { id: "experience", label: "Experience", icon: "layers" },
       { id: "skills", label: "Skills", icon: "code" },
       { id: "about", label: "About / Bio", icon: "userPen" },

@@ -2,6 +2,7 @@
 
 import { notFound, useParams } from "next/navigation";
 import { ProjectsPage } from "@/components/admin/pages/ProjectsPage";
+import { BlogPage } from "@/components/admin/pages/BlogPage";
 import { ExperiencePage } from "@/components/admin/pages/ExperiencePage";
 import { SkillsPage } from "@/components/admin/pages/SkillsPage";
 import { AboutPage } from "@/components/admin/pages/AboutPage";
@@ -12,6 +13,7 @@ import { ProfilePage } from "@/components/admin/pages/ProfilePage";
 
 const PAGES: Record<string, () => React.JSX.Element> = {
   projects: ProjectsPage,
+  blog: BlogPage,
   experience: ExperiencePage,
   skills: SkillsPage,
   about: AboutPage,

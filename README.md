@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Muhammed Ijlan — Portfolio
 
-## Getting Started
+A production portfolio for a Senior Web & Web3 Developer, with a self-hosted headless CMS, a contact form wired to email, and an analytics dashboard pulling live data from Google Analytics 4 and Search Console.
 
-First, run the development server:
+Built on **Next.js 16** (App Router) + **React 19** + **TypeScript**, backed by **MongoDB**.
+
+---
+
+## Features
+
+- **Public site** — hero, about, experience, skills, projects, and contact sections rendered from CMS data (ISR, revalidated every 120s).
+- **Admin CMS** (`/admin`) — manage every section, media, and site settings behind session-cookie auth. No third-party CMS.
+- **Contact form** — submissions are stored in the DB and emailed to the owner via [Resend](https://resend.com); replies go straight back to the sender.
+- **Analytics dashboard** — GA4 traffic + Search Console performance charts via the Google Data APIs (read-only service account).
+- **Media** — image/asset uploads to [Cloudinary](https://cloudinary.com), with orphan cleanup on delete.
+- **SEO** — metadata, JSON-LD structured data, `sitemap.ts`, `robots.ts`, web manifest, and a dynamic OG image.
+- **Theming** — dark/light with a configurable accent color, optional animations and custom cursor, plus a maintenance mode.
+
+## Tech stack
+
+| Area | Choice |
+|------|--------|
+| Framework | Next.js 16 (App Router, RSC) |
+| UI | React 19, Tailwind CSS 4 |
+| Language | TypeScript |
+| Database | MongoDB + Mongoose |
+| Auth | Custom scrypt hashing + HMAC-signed session cookies |
+| Email | Resend |
+| Media | Cloudinary |
+| Charts | Chart.js + react-chartjs-2 |
+| Analytics | GA4 Data API + Search Console API (`google-auth-library`) |
+
+## Getting started
+
+### Prerequisites
+- Node.js 18+ and npm
+- A MongoDB database (Atlas or local)
+
+### Install & run
 
 ```bash
+npm install
+cp .env.example .env   # then fill in the values below
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) for the site and [http://localhost:3000/admin](http://localhost:3000/admin) for the CMS.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a `.env` file (it is gitignored). None of these are committed.
 
-## Learn More
+| Variable | Required | Purpose |
+|----------|:--------:|---------|
+| `MONGODB_URI` | ✅ | MongoDB connection string (include the DB name in the path). |
+| `AUTH_SECRET` | ✅ | Long random string used to sign admin session cookies. |
+| `ADMIN_EMAIL` | ✅ | Email for the default admin, created on first seed/login. |
+| `ADMIN_PASSWORD` | ✅ | Password for that default admin (change it after first login). |
+| `NEXT_PUBLIC_SITE_URL` | ✅ | Canonical site URL, used for SEO/OG metadata. |
+| `SEED_SECRET` | ⛔️ prod | Gate for `POST /api/seed`. Leave **unset in production** to disable seeding. |
+| `CLOUDINARY_URL` | optional | Enables media uploads. |
+| `RESEND_API_KEY` | optional | Enables contact-form email notifications. |
+| `RESEND_FROM` | optional | From-address; must be a Resend-verified domain. |
+| `CONTACT_NOTIFY_EMAIL` | optional | Fallback recipient when the admin "notification email" is blank. |
+| `GOOGLE_SERVICE_ACCOUNT_KEY` | optional | Base64 (or raw JSON) service-account key for the analytics dashboard. |
+| `GA4_PROPERTY_ID` | optional | Fallback numeric GA4 property ID (normally set in admin settings). |
 
-To learn more about Next.js, take a look at the following resources:
+> **Secrets:** generate strong values for `AUTH_SECRET` and `SEED_SECRET`, e.g. `openssl rand -base64 48`. Never reuse the dev placeholders in production.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Seeding the database
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The seed endpoint **wipes and recreates** content, about, and settings from [`lib/seed-data.ts`](lib/seed-data.ts), and creates the default admin if none exists:
 
-## Deploy on Vercel
+```bash
+curl -X POST http://localhost:3000/api/seed -H "x-seed-secret: $SEED_SECRET"
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+It returns `503` if `SEED_SECRET` is unset and `401` on a bad secret. Because it is destructive, keep `SEED_SECRET` unset in production.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project structure
+
+```
+app/            App Router — public pages, /admin panel, and /api routes
+  api/          REST endpoints (portfolio data, auth, media, analytics, contact, seed)
+components/     UI: sections/, layout/, ui/, and the admin/ CMS
+lib/            DB, auth, models, email, Cloudinary, GA4 + Search Console, SEO helpers
+types/          Shared types
+```
+
+## Analytics setup (optional)
+
+The admin dashboard reads live data through a Google Cloud **service account**:
+
+1. Create a service account and enable the **Google Analytics Data API** and **Search Console API**.
+2. Add the service-account email as a **Viewer** on the GA4 property and a **user** in Search Console.
+3. Put the service-account JSON key in `GOOGLE_SERVICE_ACCOUNT_KEY` (base64 recommended).
+4. Set the GA4 Measurement ID, GA4 Property ID, and Search Console site in **admin → Site Settings**.
+
+The public GA4 tracking tag renders only in production, using the Measurement ID from settings.
+
+## Deployment
+
+Deploy on any Node host ([Vercel](https://vercel.com/new) recommended). Set **all** the environment variables above in the host's dashboard — `.env` is not deployed. After the first deploy, log into `/admin` and change the default admin password.
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start the dev server |
+| `npm run build` | Production build |
+| `npm run start` | Serve the production build |
+| `npm run lint` | Run ESLint |
