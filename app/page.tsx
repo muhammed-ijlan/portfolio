@@ -76,7 +76,7 @@ export default async function Home() {
       {}
       <script
         dangerouslySetInnerHTML={{
-          __html: `document.documentElement.dataset.animations=${JSON.stringify(toggles.animations ? "on" : "off")}`,
+          __html: `document.documentElement.dataset.animations=${JSON.stringify(toggles.animations ? "on" : "off")};try{if(sessionStorage.getItem("mi-intro-seen")==="1")document.documentElement.dataset.intro="seen"}catch(e){}`,
         }}
       />
       {}

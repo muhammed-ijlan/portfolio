@@ -188,6 +188,8 @@ body {
 
 .intro-overlay { position: fixed; inset: 0; z-index: 90; background: var(--bg); display: flex; align-items: center; justify-content: center; transition: opacity 0.7s ease, visibility 0.7s ease; }
 .intro-overlay.gone { opacity: 0; visibility: hidden; }
+/* Splash already played this session — never show it again, not even a frame. */
+html[data-intro="seen"] .intro-overlay { display: none; }
 .intro-wordmark { font-family: var(--font-space-grotesk), sans-serif; font-weight: 700; letter-spacing: -0.02em; overflow: hidden; }
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }

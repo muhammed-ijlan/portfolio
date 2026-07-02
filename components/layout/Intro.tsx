@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 
-const prefersReducedMotion = () =>
-  typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
 const SEEN_KEY = "mi-intro-seen";
 
-const alreadySeen = () => {
+// Skip when the splash already played this session or the user prefers
+// reduced motion. Runs client-side only.
+const shouldSkip = () => {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return true;
   try {
     return sessionStorage.getItem(SEEN_KEY) === "1";
   } catch {
@@ -15,26 +15,41 @@ const alreadySeen = () => {
   }
 };
 
+// Cached per SPA session. Decided once on the first mount so React StrictMode's
+// double-invoked effects (dev) can't see their own sessionStorage write and
+// cancel the splash; flipped to "skip" once the splash has fully played.
+let decision: "play" | "skip" | null = null;
+
 export function Intro() {
-  const [gone, setGone] = useState(prefersReducedMotion);
+  // "boot" covers SSR + first paint of a genuine first visit (overlay visible,
+  // no flash of unstyled page). On repeat visits an inline script in page.tsx
+  // sets html[data-intro="seen"] before paint, which hides the overlay via CSS
+  // until this effect unmounts it entirely.
+  const [phase, setPhase] = useState<"boot" | "play" | "hide" | "off">("boot");
 
   useEffect(() => {
-    if (gone || alreadySeen()) {
-      setGone(true);
+    if (decision === null) decision = shouldSkip() ? "skip" : "play";
+    if (decision === "skip") {
+      setPhase("off");
       return;
     }
+    // Mark seen at play start so a reload mid-splash doesn't replay it.
+    try {
+      sessionStorage.setItem(SEEN_KEY, "1");
+    } catch {}
+    setPhase("play");
     const t = setTimeout(() => {
-      setGone(true);
-      try {
-        sessionStorage.setItem(SEEN_KEY, "1");
-      } catch {}
+      setPhase("hide");
+      decision = "skip";
+      document.documentElement.dataset.intro = "seen";
     }, 1500);
     return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  if (phase === "off") return null;
+
   return (
-    <div className={`intro-overlay${gone ? " gone" : ""}`} aria-hidden="true">
+    <div className={`intro-overlay${phase === "hide" ? " gone" : ""}`} aria-hidden="true">
       <div style={{ textAlign: "center" }}>
         <div className="intro-wordmark" style={{ fontSize: "clamp(2rem,7vw,4rem)" }}>
           <span style={{ display: "inline-block", animation: "introUp 0.8s cubic-bezier(0.16,1,0.3,1) both" }}>
