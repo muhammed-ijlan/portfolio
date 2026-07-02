@@ -5,12 +5,30 @@ import { useEffect, useState } from "react";
 const prefersReducedMotion = () =>
   typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+const SEEN_KEY = "mi-intro-seen";
+
+const alreadySeen = () => {
+  try {
+    return sessionStorage.getItem(SEEN_KEY) === "1";
+  } catch {
+    return false;
+  }
+};
+
 export function Intro() {
   const [gone, setGone] = useState(prefersReducedMotion);
 
   useEffect(() => {
-    if (gone) return;
-    const t = setTimeout(() => setGone(true), 1500);
+    if (gone || alreadySeen()) {
+      setGone(true);
+      return;
+    }
+    const t = setTimeout(() => {
+      setGone(true);
+      try {
+        sessionStorage.setItem(SEEN_KEY, "1");
+      } catch {}
+    }, 1500);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

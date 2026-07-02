@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { Icons } from "@/components/ui/Icons";
@@ -54,15 +55,15 @@ export function Nav() {
       }}
     >
       <div className="container-x" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 68 }}>
-        <a href="/" aria-label="ijlan.dev — home" style={{ display: "flex", alignItems: "center", textDecoration: "none", color: "var(--text)" }}>
+        <Link href="/" aria-label="ijlan.dev — home" style={{ display: "flex", alignItems: "center", textDecoration: "none", color: "var(--text)" }}>
           <Logo height={30} />
-        </a>
+        </Link>
 
         <div className="nav-links" style={{ display: "flex", gap: "0.3rem", alignItems: "center" }}>
           {NAV_LINKS.map(([label, href]) => {
             const activeLink = isActive(href);
             return (
-              <a key={href} href={href} style={{
+              <Link key={href} href={href} style={{
                 padding: "0.5rem 0.85rem", fontSize: "0.9rem", textDecoration: "none", borderRadius: 8,
                 color: activeLink ? "var(--text)" : "var(--text-dim)", fontWeight: 500,
                 transition: "color 0.25s ease", position: "relative",
@@ -71,7 +72,7 @@ export function Nav() {
                 {activeLink && (
                   <span style={{ position: "absolute", left: "0.85rem", right: "0.85rem", bottom: 2, height: 2, borderRadius: 2, background: "var(--accent-grad)" }} />
                 )}
-              </a>
+              </Link>
             );
           })}
         </div>
@@ -85,9 +86,9 @@ export function Nav() {
           >
             {theme === "dark" ? Icons.sun() : Icons.moon()}
           </button>
-          <a href="/#contact" className="btn btn-primary nav-cta" style={{ padding: "0.6rem 1.1rem", fontSize: "0.88rem" }}>
+          <Link href="/#contact" className="btn btn-primary nav-cta" style={{ padding: "0.6rem 1.1rem", fontSize: "0.88rem" }}>
             Hire me
-          </a>
+          </Link>
           <button
             className="nav-burger"
             aria-label="Menu"
@@ -110,14 +111,14 @@ export function Nav() {
       >
         <div className="container-x" style={{ display: "flex", flexDirection: "column", padding: "1rem 24px 1.4rem" }}>
           {NAV_LINKS.map(([label, href]) => (
-            <a
+            <Link
               key={href}
               href={href}
               onClick={() => setOpen(false)}
               style={{ padding: "0.85rem 0", fontSize: "1.05rem", textDecoration: "none", color: "var(--text)", borderBottom: "1px solid var(--border)" }}
             >
               {label}
-            </a>
+            </Link>
           ))}
         </div>
       </div>
