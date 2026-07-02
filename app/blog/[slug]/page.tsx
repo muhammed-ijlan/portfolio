@@ -25,21 +25,31 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPublicPostBySlug(slug);
-  if (!post) return { title: "Post not found" };
+  if (!post) notFound();
+  const ogImage = post.coverImage || `${SITE_URL}/opengraph-image`;
   return {
     title: post.title,
     description: post.excerpt,
+    keywords: [...post.tags, "Muhammed Ijlan", "Ijlan", "blog", "web development"],
+    authors: [{ name: "Muhammed Ijlan", url: SITE_URL }],
     alternates: { canonical: `/blog/${post.slug}` },
     openGraph: {
       title: post.title,
       description: post.excerpt,
       url: `${SITE_URL}/blog/${post.slug}`,
+      siteName: "Muhammed Ijlan",
       type: "article",
       publishedTime: post.date,
+      authors: [SITE_URL],
       tags: post.tags,
-      ...(post.coverImage ? { images: [post.coverImage] } : {}),
+      images: [{ url: ogImage, width: 1200, height: 630, alt: post.title }],
     },
-    twitter: { card: "summary_large_image", title: post.title, description: post.excerpt },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt,
+      images: [ogImage],
+    },
   };
 }
 
@@ -52,14 +62,31 @@ export default async function PostPage({ params }: Params) {
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.title,
-    description: post.excerpt,
-    datePublished: post.date,
-    keywords: post.tags.join(", "),
-    author: { "@type": "Person", name: about.name, url: SITE_URL },
-    mainEntityOfPage: `${SITE_URL}/blog/${post.slug}`,
-    ...(post.coverImage ? { image: post.coverImage } : {}),
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        "@id": `${SITE_URL}/blog/${post.slug}#article`,
+        headline: post.title,
+        description: post.excerpt,
+        datePublished: post.date,
+        dateModified: post.date,
+        keywords: post.tags.join(", "),
+        inLanguage: "en",
+        isPartOf: { "@id": `${SITE_URL}/blog#blog` },
+        author: { "@type": "Person", "@id": `${SITE_URL}/#person`, name: about.name, url: SITE_URL },
+        publisher: { "@type": "Person", "@id": `${SITE_URL}/#person`, name: about.name },
+        mainEntityOfPage: `${SITE_URL}/blog/${post.slug}`,
+        image: post.coverImage || `${SITE_URL}/opengraph-image`,
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: "Writing", item: `${SITE_URL}/blog` },
+          { "@type": "ListItem", position: 3, name: post.title, item: `${SITE_URL}/blog/${post.slug}` },
+        ],
+      },
+    ],
   };
 
   return (

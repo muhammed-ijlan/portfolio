@@ -56,15 +56,19 @@ test.describe("Blog — API", () => {
     expect(create.status()).toBe(201);
     const id = (await create.json()).data.id;
 
-    const get = await authed.get(`/api/blog/${id}`);
-    expect((await get.json()).data.title).toBe("E2E Post");
+    try {
+      const get = await authed.get(`/api/blog/${id}`);
+      expect((await get.json()).data.title).toBe("E2E Post");
 
-    const upd = await authed.put(`/api/blog/${id}`, { data: { status: "published", title: "E2E Post (edited)" } });
-    const updated = (await upd.json()).data;
-    expect(updated.status).toBe("published");
-    expect(updated.title).toBe("E2E Post (edited)");
-
-    expect((await authed.delete(`/api/blog/${id}`)).ok()).toBeTruthy();
+      const upd = await authed.put(`/api/blog/${id}`, { data: { status: "published", title: "E2E Post (edited)" } });
+      const updated = (await upd.json()).data;
+      expect(updated.status).toBe("published");
+      expect(updated.title).toBe("E2E Post (edited)");
+    } finally {
+      // Always remove the test post — a leaked published post would show up
+      // on the live blog and in the sitemap.
+      await authed.delete(`/api/blog/${id}`);
+    }
     expect((await authed.get(`/api/blog/${id}`)).status()).toBe(404);
   });
 });

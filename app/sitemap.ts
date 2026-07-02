@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/seo";
-import { getPublicPostSlugs } from "@/lib/blog-service";
+import { getPublicPosts } from "@/lib/blog-service";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const slugs = await getPublicPostSlugs();
+  const posts = await getPublicPosts();
+  const newest = posts[0]?.date ? new Date(posts[0].date) : new Date();
   return [
     {
       url: SITE_URL,
@@ -13,15 +14,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: `${SITE_URL}/blog`,
-      lastModified: new Date(),
+      lastModified: newest,
       changeFrequency: "weekly",
       priority: 0.8,
     },
-    ...slugs.map((slug) => ({
-      url: `${SITE_URL}/blog/${slug}`,
-      lastModified: new Date(),
+    ...posts.map((p) => ({
+      url: `${SITE_URL}/blog/${p.slug}`,
+      lastModified: p.date ? new Date(p.date) : new Date(),
       changeFrequency: "monthly" as const,
-      priority: 0.6,
+      priority: p.featured ? 0.7 : 0.6,
     })),
   ];
 }
