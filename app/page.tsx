@@ -92,7 +92,6 @@ export default async function Home() {
       <div className="bg-grid" />
       <div className="bg-noise" />
 
-      <a href="#about" className="skip-link">Skip to content</a>
       <Nav />
 
       <main id="main" style={{ position: "relative", zIndex: 2 }}>

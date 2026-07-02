@@ -11,7 +11,6 @@ export default async function BlogLayout({ children }: { children: React.ReactNo
       <div className="bg-grid" />
       <div className="bg-noise" />
 
-      <a href="#main" className="skip-link">Skip to content</a>
       <Nav />
 
       <main id="main" style={{ position: "relative", zIndex: 2, minHeight: "70vh" }}>
