@@ -1,23 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { Icons } from "@/components/ui/Icons";
 import { Logo } from "@/components/ui/Logo";
 
 const NAV_LINKS = [
-  ["About", "#about"],
-  ["Experience", "#experience"],
-  ["Skills", "#skills"],
-  ["Projects", "#projects"],
-  ["Contact", "#contact"],
+  ["About", "/#about"],
+  ["Experience", "/#experience"],
+  ["Skills", "/#skills"],
+  ["Projects", "/#projects"],
+  ["Writing", "/blog"],
+  ["Contact", "/#contact"],
 ] as const;
 
 export function Nav() {
   const { theme, toggleTheme } = useTheme();
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("home");
+
+  const isActive = (href: string) =>
+    href === "/blog" ? pathname.startsWith("/blog") : pathname === "/" && active === href.split("#")[1];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -48,23 +54,26 @@ export function Nav() {
       }}
     >
       <div className="container-x" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 68 }}>
-        <a href="#home" aria-label="ijlan.dev — home" style={{ display: "flex", alignItems: "center", textDecoration: "none", color: "var(--text)" }}>
+        <a href="/" aria-label="ijlan.dev — home" style={{ display: "flex", alignItems: "center", textDecoration: "none", color: "var(--text)" }}>
           <Logo height={30} />
         </a>
 
         <div className="nav-links" style={{ display: "flex", gap: "0.3rem", alignItems: "center" }}>
-          {NAV_LINKS.map(([label, href]) => (
-            <a key={href} href={href} style={{
-              padding: "0.5rem 0.85rem", fontSize: "0.9rem", textDecoration: "none", borderRadius: 8,
-              color: active === href.slice(1) ? "var(--text)" : "var(--text-dim)", fontWeight: 500,
-              transition: "color 0.25s ease", position: "relative",
-            }}>
-              {label}
-              {active === href.slice(1) && (
-                <span style={{ position: "absolute", left: "0.85rem", right: "0.85rem", bottom: 2, height: 2, borderRadius: 2, background: "var(--accent-grad)" }} />
-              )}
-            </a>
-          ))}
+          {NAV_LINKS.map(([label, href]) => {
+            const activeLink = isActive(href);
+            return (
+              <a key={href} href={href} style={{
+                padding: "0.5rem 0.85rem", fontSize: "0.9rem", textDecoration: "none", borderRadius: 8,
+                color: activeLink ? "var(--text)" : "var(--text-dim)", fontWeight: 500,
+                transition: "color 0.25s ease", position: "relative",
+              }}>
+                {label}
+                {activeLink && (
+                  <span style={{ position: "absolute", left: "0.85rem", right: "0.85rem", bottom: 2, height: 2, borderRadius: 2, background: "var(--accent-grad)" }} />
+                )}
+              </a>
+            );
+          })}
         </div>
 
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
@@ -76,7 +85,7 @@ export function Nav() {
           >
             {theme === "dark" ? Icons.sun() : Icons.moon()}
           </button>
-          <a href="#contact" className="btn btn-primary nav-cta" style={{ padding: "0.6rem 1.1rem", fontSize: "0.88rem" }}>
+          <a href="/#contact" className="btn btn-primary nav-cta" style={{ padding: "0.6rem 1.1rem", fontSize: "0.88rem" }}>
             Hire me
           </a>
           <button
