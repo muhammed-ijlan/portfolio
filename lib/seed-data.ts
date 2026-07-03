@@ -213,7 +213,7 @@ export const SEED: CmsData = {
       readTime: "6 min",
       status: "published",
       featured: true,
-      date: "2026-05-18T09:00:00.000Z",
+      date: "2026-07-02T08:26:00.000Z",
     },
     {
       id: "b2",
@@ -228,7 +228,7 @@ export const SEED: CmsData = {
       readTime: "5 min",
       status: "published",
       featured: false,
-      date: "2026-04-02T09:00:00.000Z",
+      date: "2026-07-02T08:25:00.000Z",
     },
     {
       id: "b3",
@@ -243,7 +243,7 @@ export const SEED: CmsData = {
       readTime: "4 min",
       status: "published",
       featured: false,
-      date: "2026-02-20T09:00:00.000Z",
+      date: "2026-07-02T08:24:00.000Z",
     },
     {
       id: "b4",
@@ -258,7 +258,7 @@ export const SEED: CmsData = {
       readTime: "5 min",
       status: "published",
       featured: false,
-      date: "2026-01-12T09:00:00.000Z",
+      date: "2026-07-02T08:23:00.000Z",
     },
     {
       id: "b5",
@@ -273,7 +273,7 @@ export const SEED: CmsData = {
       readTime: "4 min",
       status: "published",
       featured: false,
-      date: "2025-11-28T09:00:00.000Z",
+      date: "2026-07-02T08:22:00.000Z",
     },
     {
       id: "b6",
@@ -288,7 +288,7 @@ export const SEED: CmsData = {
       readTime: "6 min",
       status: "published",
       featured: false,
-      date: "2025-10-15T09:00:00.000Z",
+      date: "2026-07-02T08:21:00.000Z",
     },
   ],
   settings: {
