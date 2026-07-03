@@ -46,6 +46,8 @@ export type Hero = {
   openToWork: boolean;
 };
 
+export type FocusCard = { title: string; desc: string };
+
 export type About = {
   name: string;
   headline: string;
@@ -54,6 +56,9 @@ export type About = {
   email: string;
   phone: string;
   bio: string;
+  story: string[];
+  focus: FocusCard[];
+  highlights: string[];
   chips: string[];
   stats: Stat[];
   hero: Hero;
@@ -158,6 +163,25 @@ export const SEED: CmsData = {
     email: "ijlan.dev@gmail.com",
     phone: "+971 56 766 9737",
     bio: "Senior Full Stack & Web3 Developer with 4+ years building scalable, secure web apps in React, Next.js, TypeScript, Node.js, Express and SQL/NoSQL. Recently shipped a non-custodial multi-chain crypto wallet (Ethereum & Tron) as a Chrome MV3 extension — with biometric authentication and on-device transaction signing.",
+    story: [
+      "I started out in Calicut building full-stack products for startups — LMS platforms, e-commerce storefronts and dashboards that had to survive real users from day one. Shipping under those constraints taught me the habits I still lean on: measure first, keep the architecture boring, and make performance a feature.",
+      "These days I work from Dubai on the sharper end of the stack — a non-custodial multi-chain crypto wallet shipped as a Chrome MV3 extension, where a WebAssembly crypto core signs transactions on-device and a WebAuthn biometric flow guards every unlock. When your users hold their own keys, 'it mostly works' isn't a bar you can clear.",
+      "Outside of feature work I care about the multiplier things: mentoring juniors through code reviews, extracting reusable component systems, and leaving every codebase easier to change than I found it.",
+    ],
+    focus: [
+      { title: "Full-stack product engineering", desc: "End-to-end features across React, Next.js, Node.js and SQL/NoSQL — from schema design to pixel-perfect UI, shipped behind clean, versioned APIs." },
+      { title: "Web3 & wallet security", desc: "Non-custodial wallets, on-device signing, WebAuthn biometrics and MV3 service-worker security models. Keys never leave the device." },
+      { title: "Performance & SEO", desc: "SSR/SSG rendering strategy, Core Web Vitals budgets, structured data and query tuning — the unglamorous work that makes products fast and findable." },
+      { title: "Architecture & mentoring", desc: "Monorepos with Turbo/pnpm, reusable component systems and code review culture that raises the whole team's throughput." },
+    ],
+    highlights: [
+      "Shipped a non-custodial Ethereum & Tron wallet as a Chrome MV3 extension",
+      "Cut API response times by up to 30% through profiling and query shape",
+      "Built an LMS serving thousands of learners with role-based access",
+      "Integrated a WebAssembly cryptography SDK — BIP39, HD keys, AES-GCM",
+      "Raised maintainability ~25% with reusable component systems",
+      "Mentored junior developers through reviews and perf-optimization practice",
+    ],
     chips: ["Scalable architecture", "Secure APIs", "Blockchain / Web3", "Cloud-ready", "Performance"],
     stats: [
       { value: "4+", label: "Years experience", sub: "production systems" },

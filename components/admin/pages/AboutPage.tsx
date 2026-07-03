@@ -7,6 +7,7 @@ import { Field, TextInput, TextArea, TagInput, Toggle } from "../cms/Fields";
 import { toast } from "../cms/Toast";
 import { PageLoading, PageError, Spinner } from "../cms/Loading";
 import { type About, type Hero } from "@/lib/cms-store";
+import type { FocusCard } from "@/lib/seed-data";
 import { api } from "@/lib/api";
 import { useSingleton } from "@/lib/use-cms";
 
@@ -37,6 +38,19 @@ export function AboutPage() {
     setDraft((d) => (d ? { ...d, socials: { ...d.socials, [k]: v } } : d));
   const setHero = <K extends keyof Hero>(k: K, v: Hero[K]) =>
     setDraft((d) => (d ? { ...d, hero: { ...HERO_DEFAULTS, ...d.hero, [k]: v } } : d));
+  // story/focus/highlights may be missing on docs saved before these fields existed
+  const focus = draft?.focus ?? [];
+  const highlights = draft?.highlights ?? [];
+  const setFocus = (i: number, k: keyof FocusCard, v: string) =>
+    setDraft((d) => (d ? { ...d, focus: (d.focus ?? []).map((f, j) => (j === i ? { ...f, [k]: v } : f)) } : d));
+  const addFocus = () => setDraft((d) => (d ? { ...d, focus: [...(d.focus ?? []), { title: "", desc: "" }] } : d));
+  const removeFocus = (i: number) =>
+    setDraft((d) => (d ? { ...d, focus: (d.focus ?? []).filter((_, j) => j !== i) } : d));
+  const setHighlight = (i: number, v: string) =>
+    setDraft((d) => (d ? { ...d, highlights: (d.highlights ?? []).map((h, j) => (j === i ? v : h)) } : d));
+  const addHighlight = () => setDraft((d) => (d ? { ...d, highlights: [...(d.highlights ?? []), ""] } : d));
+  const removeHighlight = (i: number) =>
+    setDraft((d) => (d ? { ...d, highlights: (d.highlights ?? []).filter((_, j) => j !== i) } : d));
   const dirty = !!about && !!draft && JSON.stringify(draft) !== JSON.stringify(about);
   const save = async () => {
     if (!draft) return;
@@ -78,6 +92,54 @@ export function AboutPage() {
               <Field label="Headline" full hint="Big statement on the About section"><TextInput value={draft.headline} onChange={(v) => set("headline", v)} /></Field>
               <Field label="Bio" full><TextArea rows={6} value={draft.bio} onChange={(v) => set("bio", v)} /></Field>
               <Field label="Highlight chips" full hint="Press Enter to add"><TagInput value={draft.chips} onChange={(v) => set("chips", v)} /></Field>
+            </div>
+          </div>
+          <div className="adm-card">
+            <div className="adm-card-title" style={cardTitle}>Story &amp; content</div>
+            <div style={{ display: "grid", gap: 14 }}>
+              <Field label="My story" hint="Extra paragraphs shown under the bio — separate paragraphs with a blank line">
+                <TextArea
+                  rows={8}
+                  value={(draft.story ?? []).join("\n\n")}
+                  onChange={(v) => set("story", v.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean))}
+                  placeholder={"First paragraph…\n\nSecond paragraph…"}
+                />
+              </Field>
+              <div>
+                <div className="cms-label" style={{ marginBottom: 8 }}>“What I do” cards</div>
+                <div style={{ display: "grid", gap: 10 }}>
+                  {focus.map((f, i) => (
+                    <div key={i} style={{ display: "grid", gap: 6, border: "1px solid var(--border)", borderRadius: 9, padding: "10px 12px", background: "var(--bg-elev)" }}>
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <input className="cms-input" value={f.title} onChange={(e) => setFocus(i, "title", e.target.value)} placeholder="Card title" />
+                        <button type="button" className="cms-card-action danger" onClick={() => removeFocus(i)} title="Remove card" style={{ flexShrink: 0 }}>
+                          <AdminIcons.trash style={{ width: 13, height: 13 }} />
+                        </button>
+                      </div>
+                      <textarea className="cms-input cms-textarea" rows={2} value={f.desc} onChange={(e) => setFocus(i, "desc", e.target.value)} placeholder="Short description" />
+                    </div>
+                  ))}
+                  <button type="button" className="adm-btn" onClick={addFocus} style={{ justifySelf: "start" }}>
+                    <AdminIcons.plus style={{ width: 13, height: 13 }} /> Add card
+                  </button>
+                </div>
+              </div>
+              <div>
+                <div className="cms-label" style={{ marginBottom: 8 }}>Highlights</div>
+                <div style={{ display: "grid", gap: 8 }}>
+                  {highlights.map((h, i) => (
+                    <div key={i} style={{ display: "flex", gap: 8 }}>
+                      <input className="cms-input" value={h} onChange={(e) => setHighlight(i, e.target.value)} placeholder="Shipped a…" />
+                      <button type="button" className="cms-card-action danger" onClick={() => removeHighlight(i)} title="Remove highlight" style={{ flexShrink: 0 }}>
+                        <AdminIcons.trash style={{ width: 13, height: 13 }} />
+                      </button>
+                    </div>
+                  ))}
+                  <button type="button" className="adm-btn" onClick={addHighlight} style={{ justifySelf: "start" }}>
+                    <AdminIcons.plus style={{ width: 13, height: 13 }} /> Add highlight
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
           <div className="adm-card">
