@@ -17,6 +17,11 @@ const HeroSchema = new Schema(
   { _id: false }
 );
 
+const FocusCardSchema = new Schema(
+  { title: String, desc: String },
+  { _id: false }
+);
+
 const AboutSchema = new Schema(
   {
     key: { type: String, default: "singleton", unique: true },
@@ -27,6 +32,9 @@ const AboutSchema = new Schema(
     email: { type: String, default: "" },
     phone: { type: String, default: "" },
     bio: { type: String, default: "" },
+    story: { type: [String], default: [] },
+    focus: { type: [FocusCardSchema], default: [] },
+    highlights: { type: [String], default: [] },
     chips: { type: [String], default: [] },
     stats: { type: [StatSchema], default: [] },
     hero: { type: HeroSchema, default: () => ({}) },
