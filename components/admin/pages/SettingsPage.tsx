@@ -32,7 +32,7 @@ export function SettingsPage() {
   const setSec = (k: keyof SectionToggles) =>
     setDraft((d) => (d ? { ...d, sections: { ...secOf(d), [k]: !secOf(d)[k] } } : d));
   const dirty = !!settings && !!draft && JSON.stringify(draft) !== JSON.stringify(settings);
-  const accents = ["#22D3EE", "#7C3AED", "#34d399", "#f59e0b", "#ec4899"];
+  const accents = ["#2563EB", "#22D3EE", "#7C3AED", "#34d399", "#f59e0b", "#ec4899"];
 
   const onResumeFile = async (file?: File) => {
     if (!file) return;

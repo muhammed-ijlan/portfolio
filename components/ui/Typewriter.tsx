@@ -20,14 +20,14 @@ export function Typewriter({ words, className = "" }: TypewriterProps) {
     const current = words[idx % words.length];
     let t: ReturnType<typeof setTimeout>;
     if (!deleting && text === current) {
-      t = setTimeout(() => setDeleting(true), 1500);
+      t = setTimeout(() => setDeleting(true), 2400);
     } else if (deleting && text === "") {
       setDeleting(false);
       setIdx((v) => v + 1);
     } else {
       t = setTimeout(() => {
         setText(deleting ? current.slice(0, text.length - 1) : current.slice(0, text.length + 1));
-      }, deleting ? 45 : 85);
+      }, deleting ? 30 : 65);
     }
     return () => clearTimeout(t);
   }, [text, deleting, idx, words]);
@@ -35,7 +35,18 @@ export function Typewriter({ words, className = "" }: TypewriterProps) {
   return (
     <span className={className}>
       {text}
-      <span className="blink" style={{ color: "var(--cyan)", fontWeight: 400 }}>|</span>
+      <span
+        className="blink"
+        aria-hidden="true"
+        style={{
+          display: "inline-block",
+          width: 9,
+          height: 18,
+          background: "var(--cyan)",
+          marginLeft: 3,
+          verticalAlign: -3,
+        }}
+      />
     </span>
   );
 }

@@ -189,7 +189,11 @@ export const SEED: CmsData = {
       { value: "30%", label: "Faster APIs", sub: "perf optimization" },
     ],
     hero: {
-      roles: ["Web Developer", "Web3 Engineer", "Full Stack Developer"],
+      roles: [
+        "Senior Full Stack & Web3 Developer",
+        "React · Next.js · TypeScript · Node",
+        "Non-custodial wallets · MV3 · WebAuthn",
+      ],
       availability: "Available for senior roles",
       focus: ["Full Stack", "Web3"],
       stack: ["React", "Next.js", "Node"],
@@ -294,7 +298,7 @@ export const SEED: CmsData = {
   settings: {
     siteTitle: "Muhammed Ijlan — Senior Web Developer",
     tagline: "Full Stack & Web3 Developer",
-    accent: "#22D3EE",
+    accent: "#2563EB",
     defaultTheme: "dark",
     seoDescription: "Senior Web Developer (Full Stack & Web3) in Dubai. 4+ years building production-grade, high-performance web & Web3 applications.",
     resumeUrl: "",

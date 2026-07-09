@@ -1,90 +1,73 @@
-import { useId } from "react";
-
-const STOPS = (
-  <>
-    <stop offset="0" stopColor="#fc167e" />
-    <stop offset="0.5" stopColor="#f95e51" />
-    <stop offset="1" stopColor="#fbb336" />
-  </>
-);
-
 /**
- * ijlan.dev wordmark (design v8). The "ij" is a gradient monoline ligature —
- * two stems + two dots — and "lan.dev" continues in matching Space Grotesk so
- * the whole thing reads as one word. Text colours use theme variables, so a
- * single SVG works on both dark and light backgrounds.
+ * ijlan.dev logos (Logos.dc.html design import).
+ * Logo    — direction 1a: terminal wordmark in JetBrains Mono with an accent
+ *           ".dev" and a blinking cursor block.
+ * LogoMark — direction 1b: monogram tile — rounded dark square, two accent
+ *           dots over an "ij" ligature.
  */
-export function Logo({ height = 30, className }: { height?: number; className?: string }) {
-  const gid = `wm-${useId().replace(/:/g, "")}`;
+
+export function Logo({
+  height = 30,
+  cursor = false,
+  className,
+}: {
+  height?: number;
+  cursor?: boolean;
+  className?: string;
+}) {
+  const fontSize = Math.round(height * 0.55);
   return (
-    <svg
-      viewBox="10 22 291 104"
-      height={height}
-      width={height * (291 / 104)}
-      fill="none"
+    <span
       role="img"
       aria-label="ijlan.dev"
       className={className}
-      style={{ display: "block" }}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        height,
+        fontFamily: "var(--font-jetbrains-mono), monospace",
+        fontSize,
+        fontWeight: 500,
+        color: "var(--text)",
+        whiteSpace: "nowrap",
+        lineHeight: 1,
+      }}
     >
-      <defs>
-        <linearGradient id={gid} x1="18" y1="34" x2="70" y2="118" gradientUnits="userSpaceOnUse">
-          {STOPS}
-        </linearGradient>
-      </defs>
-      <g stroke={`url(#${gid})`} strokeWidth="16" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M 26 58 V 92" />
-        <path d="M 58 58 V 100 Q 58 116 42 116 L 30 116" />
-      </g>
-      <g fill={`url(#${gid})`}>
-        <circle cx="26" cy="40" r="9" />
-        <circle cx="58" cy="40" r="9" />
-      </g>
-      <text
-        x="74"
-        y="92"
-        fontSize="66"
-        letterSpacing="-1.5"
-        style={{ fontFamily: "var(--font-space-grotesk), sans-serif" }}
-      >
-        <tspan fontWeight={600} style={{ fill: "var(--text)" }}>
-          lan
-        </tspan>
-        <tspan fontWeight={500} style={{ fill: "var(--text-dim)" }}>
-          .dev
-        </tspan>
-      </text>
-    </svg>
+      ijlan<span style={{ color: "var(--cyan)" }}>.dev</span>
+      {cursor && (
+        <span
+          aria-hidden="true"
+          className="blink"
+          style={{
+            display: "inline-block",
+            width: Math.max(5, Math.round(fontSize * 0.45)),
+            height: Math.round(fontSize * 0.95),
+            background: "var(--cyan)",
+            marginLeft: Math.max(3, Math.round(fontSize * 0.18)),
+          }}
+        />
+      )}
+    </span>
   );
 }
 
-/** Icon-only "ij" ligature mark — for favicons, footer, and tight spaces. */
+/** Icon-only monogram tile — for the footer, favicons and tight spaces. */
 export function LogoMark({ size = 28, className }: { size?: number; className?: string }) {
-  const gid = `mk-${useId().replace(/:/g, "")}`;
   return (
     <svg
-      viewBox="0 0 128 128"
+      viewBox="0 0 120 120"
       width={size}
       height={size}
-      fill="none"
       role="img"
       aria-label="ijlan.dev"
       className={className}
       style={{ display: "block" }}
     >
-      <defs>
-        <linearGradient id={gid} x1="40" y1="22" x2="92" y2="110" gradientUnits="userSpaceOnUse">
-          {STOPS}
-        </linearGradient>
-      </defs>
-      <g stroke={`url(#${gid})`} strokeWidth="15" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M 47 50 V 82" />
-        <path d="M 81 50 V 88 Q 81 104 65 104 L 51 104" />
-      </g>
-      <g fill={`url(#${gid})`}>
-        <circle cx="47" cy="29" r="8.5" />
-        <circle cx="81" cy="29" r="8.5" />
-      </g>
+      <rect width="120" height="120" rx="28" fill="#0D0F1A" />
+      <circle cx="47" cy="36" r="7.5" fill="var(--cyan, #22D3EE)" />
+      <circle cx="73" cy="36" r="7.5" fill="var(--cyan, #22D3EE)" />
+      <rect x="40.5" y="52" width="13" height="38" rx="6.5" fill="#EDEFF7" />
+      <path d="M66.5 52 L79.5 52 L79.5 86 C79.5 97 71 103 60 101 L60 89.5 C64.5 90.5 66.5 88.5 66.5 84.5 Z" fill="#EDEFF7" />
     </svg>
   );
 }

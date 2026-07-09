@@ -1,14 +1,16 @@
 "use client";
 
-import { Reveal } from "@/components/ui/Reveal";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { Typewriter } from "@/components/ui/Typewriter";
-import { Icons } from "@/components/ui/Icons";
 import type { PublicAbout } from "@/lib/portfolio-service";
 import type { Hero as HeroData } from "@/lib/seed-data";
 
 const HERO_DEFAULTS: HeroData = {
-  roles: ["Web Developer", "Web3 Engineer", "Full Stack Developer"],
+  roles: [
+    "Senior Full Stack & Web3 Developer",
+    "React · Next.js · TypeScript · Node",
+    "Non-custodial wallets · MV3 · WebAuthn",
+  ],
   availability: "Available for senior roles",
   focus: ["Full Stack", "Web3"],
   stack: ["React", "Next.js", "Node"],
@@ -59,7 +61,7 @@ const ArrayVal = ({ items }: { items: string[] }) => (
 
 function CodeCard({ about, hero }: { about: PublicAbout; hero: HeroData }) {
   return (
-    <div className="code-card" style={{ willChange: "transform" }}>
+    <div className="code-card code-card-float" style={{ willChange: "transform" }}>
       <div className="code-card-bar font-mono-custom">
         <span className="dot" style={{ background: "#ff5f57" }} />
         <span className="dot" style={{ background: "#febc2e" }} />
@@ -84,28 +86,26 @@ function CodeCard({ about, hero }: { about: PublicAbout; hero: HeroData }) {
   );
 }
 
+const stripScheme = (url: string) => url.replace(/^https?:\/\/(www\.)?/, "");
+
 export function Hero({ about, resumeUrl }: { about: PublicAbout; resumeUrl?: string }) {
   const [firstName, ...restName] = about.name.split(" ");
   const lastName = restName.join(" ");
   const hero = resolveHero(about.hero);
-  const socials = [
-    { icon: Icons.github, label: "GitHub", href: about.socials.github },
-    { icon: Icons.linkedin, label: "LinkedIn", href: about.socials.linkedin },
-    { icon: Icons.mail, label: "Email", href: `mailto:${about.email}` },
-  ].filter((s) => s.href);
+  // Floating stat badges: first stat top-right, the last one bottom-left.
+  const badgeA = about.stats[0];
+  const badgeB = about.stats.length > 1 ? about.stats[about.stats.length - 1] : undefined;
 
   return (
     <header
       id="home"
-      className="section"
+      className="section hero-v3"
       style={{ position: "relative", minHeight: "100vh", display: "flex", alignItems: "center", overflow: "hidden" }}
     >
       {}
-      <div className="aurora" aria-hidden="true">
-        <span className="aurora-blob a1" />
-        <span className="aurora-blob a2" />
-        <span className="aurora-blob a3" />
-      </div>
+      <div className="hero-dots" aria-hidden="true" />
+      <div className="hero-glow-a" aria-hidden="true" />
+      <div className="hero-glow-b" aria-hidden="true" />
 
       <div
         className="container-x hero-grid"
@@ -113,86 +113,113 @@ export function Hero({ about, resumeUrl }: { about: PublicAbout; resumeUrl?: str
       >
         {}
         <div className="hero-left">
-          <Reveal>
-            <span className="chip" style={{ borderColor: "rgba(34,211,238,0.35)" }}>
-              <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#34d399", boxShadow: "0 0 10px #34d399" }} />
-              {hero.availability} · {about.location}
-            </span>
-          </Reveal>
-
-          <Reveal>
-            <h1 className="display-xl" style={{ fontSize: "clamp(2.6rem,6vw,5rem)", margin: "1.3rem 0 0.5rem" }}>
-              {firstName}<br /><span className="grad-text">{lastName || firstName}</span>
-            </h1>
-          </Reveal>
-
-          <Reveal>
-            <p className="font-mono-custom" style={{ fontSize: "clamp(0.95rem,2vw,1.25rem)", color: "var(--text)", letterSpacing: "0.01em", minHeight: "1.6em", margin: 0 }}>
-              <span className="text-faint">&gt; </span>
-              <Typewriter words={hero.roles} />
-            </p>
-          </Reveal>
-
-          <Reveal>
-            <p className="text-dim" style={{ maxWidth: 480, marginTop: "1.3rem", fontSize: "clamp(1rem,1.4vw,1.12rem)", lineHeight: 1.65 }}>
-              {about.bio}
-            </p>
-          </Reveal>
-
-          <Reveal>
-            <div style={{ display: "flex", gap: "0.8rem", flexWrap: "wrap", marginTop: "1.9rem" }}>
-              <Magnetic>
-                <a href="#projects" className="btn btn-primary">View Work {Icons.arrow()}</a>
-              </Magnetic>
-              <Magnetic>
-                <a href="#contact" className="btn btn-ghost">Get in Touch</a>
-              </Magnetic>
-              {resumeUrl && (
-                <Magnetic>
-                  <a href={resumeUrl} target="_blank" rel="noreferrer" className="btn btn-ghost">
-                    Résumé {Icons.external()}
-                  </a>
-                </Magnetic>
-              )}
-            </div>
-          </Reveal>
-
-          <Reveal>
-            <div style={{ display: "flex", gap: "0.6rem", alignItems: "center", marginTop: "1.9rem" }}>
-              {socials.map((s) => (
-                <Magnetic key={s.label} strength={0.5}>
-                  <a
-                    href={s.href}
-                    target={s.href.startsWith("http") ? "_blank" : undefined}
-                    rel="noreferrer"
-                    aria-label={s.label}
-                    className="glass"
-                    style={{ width: 44, height: 44, display: "grid", placeItems: "center", color: "var(--text-dim)", borderRadius: 11 }}
-                  >
-                    {s.icon()}
-                  </a>
-                </Magnetic>
-              ))}
-              <span className="text-faint font-mono-custom" style={{ fontSize: "0.78rem", marginLeft: "0.4rem" }}>
-                {about.email}
+          <div className="fade-up" style={{ animationDelay: "0.08s" }}>
+            <span className="hero-availability">
+              <span className="pulse" />
+              <span style={{ fontSize: "clamp(12px, 1.6vw, 13px)", fontWeight: 500, color: "var(--hero-ink-mid)" }}>
+                {hero.availability} · {about.location}
               </span>
-            </div>
-          </Reveal>
+            </span>
+          </div>
+
+          <h1
+            className="fade-up"
+            style={{
+              fontSize: "clamp(42px, 8.5vw, 88px)",
+              lineHeight: 1.02,
+              letterSpacing: "-0.035em",
+              fontWeight: 800,
+              margin: "clamp(20px, 3vw, 28px) 0 18px",
+              animationDelay: "0.15s",
+            }}
+          >
+            {firstName}
+            <br />
+            {lastName || firstName}
+            <span style={{ color: "var(--cyan)" }}>.</span>
+          </h1>
+
+          <p
+            className="font-mono-custom hero-typed fade-up"
+            style={{
+              fontSize: "clamp(13.5px, 2vw, 16px)",
+              fontWeight: 500,
+              minHeight: 24,
+              margin: "0 0 20px",
+              animationDelay: "0.22s",
+            }}
+          >
+            <Typewriter words={hero.roles} />
+          </p>
+
+          <p
+            className="fade-up"
+            style={{
+              margin: "0 0 32px",
+              maxWidth: 540,
+              fontSize: "clamp(15px, 2vw, 16.5px)",
+              lineHeight: 1.7,
+              color: "var(--hero-ink-soft)",
+              textWrap: "pretty",
+              animationDelay: "0.28s",
+            }}
+          >
+            {about.bio}
+          </p>
+
+          <div
+            className="fade-up"
+            style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 32, animationDelay: "0.34s" }}
+          >
+            <Magnetic>
+              <a href="#projects" className="hero-cta-primary">View work →</a>
+            </Magnetic>
+            <Magnetic>
+              <a href="#contact" className="hero-cta-ghost">Get in touch</a>
+            </Magnetic>
+            {resumeUrl && (
+              <a href={resumeUrl} target="_blank" rel="noreferrer" className="hero-cta-text">Résumé ↓</a>
+            )}
+          </div>
+
+          <div
+            className="font-mono-custom fade-up"
+            style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap", fontSize: 13, animationDelay: "0.4s" }}
+          >
+            {about.socials.github && (
+              <a href={about.socials.github} target="_blank" rel="noreferrer" className="hero-social-link">
+                {stripScheme(about.socials.github).replace(/\/.*$/, "")} ↗
+              </a>
+            )}
+            {about.socials.linkedin && (
+              <a href={about.socials.linkedin} target="_blank" rel="noreferrer" className="hero-social-link">
+                linkedin ↗
+              </a>
+            )}
+            {about.email && (
+              <a href={`mailto:${about.email}`} className="hero-social-link">
+                {about.email}
+              </a>
+            )}
+          </div>
         </div>
 
         {}
-        <Reveal className="hero-right">
+        <div className="hero-right fade-up" style={{ position: "relative", animationDelay: "0.3s", maxWidth: 560, width: "100%", justifySelf: "center" }}>
           <CodeCard about={about} hero={hero} />
-        </Reveal>
-      </div>
 
-      {}
-      <div
-        style={{ position: "absolute", bottom: 24, left: "50%", transform: "translateX(-50%)", zIndex: 2 }}
-        className="hidden-touch"
-      >
-        <div style={{ width: 24, height: 38, border: "1px solid var(--border-strong)", borderRadius: 14, display: "flex", justifyContent: "center", paddingTop: 7 }}>
-          <span style={{ width: 3, height: 8, borderRadius: 3, background: "var(--cyan)", animation: "float-slow 1.6s ease-in-out infinite" }} />
+          {badgeA && (
+            <div className="hero-stat-badge" style={{ top: -18, right: -10 }}>
+              <span className="val">{badgeA.value} {badgeA.label.toLowerCase().includes("year") ? "yrs" : badgeA.label}</span>
+              <span className="sub">{badgeA.sub}</span>
+            </div>
+          )}
+          {badgeB && (
+            <div className="hero-stat-badge" style={{ bottom: -20, left: -14 }}>
+              <span className="val accent">{badgeB.value} {badgeB.label.toLowerCase().includes("faster") ? "faster" : badgeB.label}</span>
+              <span className="sub">{badgeB.sub}</span>
+            </div>
+          )}
         </div>
       </div>
     </header>
