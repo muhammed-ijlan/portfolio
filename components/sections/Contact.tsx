@@ -119,7 +119,7 @@ export function Contact({ contact }: { contact: Portfolio["contact"] }) {
             {status === "sent" ? (
               <div style={{ textAlign: "center", padding: "2.5rem 1rem" }} role="status" aria-live="polite">
                 <div
-                  style={{ width: 64, height: 64, borderRadius: "50%", margin: "0 auto 1.2rem", display: "grid", placeItems: "center", color: "#04060a", background: "var(--accent-grad)", animation: "float-slow 2s ease-in-out infinite" }}
+                  style={{ width: 64, height: 64, borderRadius: "50%", margin: "0 auto 1.2rem", display: "grid", placeItems: "center", color: "#ffffff", background: "var(--accent-grad)", animation: "float-slow 2s ease-in-out infinite" }}
                 >
                   {Icons.check({ width: 30, height: 30 })}
                 </div>

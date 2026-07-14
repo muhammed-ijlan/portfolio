@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Inter, JetBrains_Mono, Poppins } from "next/font/google";
+import { Space_Grotesk, Schibsted_Grotesk, Inter, JetBrains_Mono, Poppins } from "next/font/google";
 import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
@@ -7,6 +7,12 @@ const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+});
+
+const schibstedGrotesk = Schibsted_Grotesk({
+  variable: "--font-schibsted",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const poppins = Poppins({
@@ -31,7 +37,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#06070A" },
+    { media: "(prefers-color-scheme: dark)", color: "#0D0F1A" },
     { media: "(prefers-color-scheme: light)", color: "#F4F5F8" },
   ],
 };
@@ -125,7 +131,7 @@ export default function RootLayout({
       lang="en"
       data-theme="dark"
       suppressHydrationWarning
-      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} ${poppins.variable}`}
+      className={`${spaceGrotesk.variable} ${schibstedGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} ${poppins.variable}`}
     >
       <body>{children}</body>
     </html>

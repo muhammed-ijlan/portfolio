@@ -12,7 +12,11 @@ import { api } from "@/lib/api";
 import { useSingleton } from "@/lib/use-cms";
 
 const HERO_DEFAULTS: Hero = {
-  roles: ["Web Developer", "Web3 Engineer", "Full Stack Developer"],
+  roles: [
+    "Senior Full Stack & Web3 Developer",
+    "React · Next.js · TypeScript · Node",
+    "Non-custodial wallets · MV3 · WebAuthn",
+  ],
   availability: "Available for senior roles",
   focus: ["Full Stack", "Web3"],
   stack: ["React", "Next.js", "Node"],

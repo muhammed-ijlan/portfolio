@@ -19,7 +19,7 @@ export function About({ about }: { about: PublicAbout }) {
         style={{
           position: "absolute", top: -160, left: "50%", transform: "translateX(-50%)",
           width: "min(1000px, 92vw)", height: 360, pointerEvents: "none", zIndex: 0,
-          background: "radial-gradient(ellipse at center, rgba(34,211,238,0.12), rgba(124,58,237,0.08) 42%, transparent 70%)",
+          background: "radial-gradient(ellipse at center, rgba(37,99,235,0.12), rgba(124,58,237,0.08) 42%, transparent 70%)",
           filter: "blur(28px)",
         }}
       />
@@ -60,7 +60,7 @@ export function About({ about }: { about: PublicAbout }) {
                     style={{
                       padding: "1.4rem 1.5rem", position: "relative", overflow: "hidden",
                       background: accent
-                        ? "linear-gradient(150deg, rgba(34,211,238,0.12), rgba(124,58,237,0.12))"
+                        ? "linear-gradient(150deg, rgba(37,99,235,0.12), rgba(124,58,237,0.12))"
                         : "var(--bg-elev)",
                     }}
                   >
