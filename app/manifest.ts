@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "Portfolio of Muhammed Ijlan, a Senior Web & Web3 Developer in Dubai building production-grade web applications.",
     start_url: "/",
     display: "standalone",
-    background_color: "#06070A",
-    theme_color: "#06070A",
+    background_color: "#0D0F1A",
+    theme_color: "#0D0F1A",
     categories: ["portfolio", "technology", "development"],
     icons: [
       { src: "/logo-mark.svg", sizes: "any", type: "image/svg+xml" },

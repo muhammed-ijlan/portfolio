@@ -92,7 +92,7 @@ export function ProfilePage() {
       <div className="adm-grid-2">
         <div className="adm-card">
           <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 18, paddingBottom: 16, borderBottom: "1px solid var(--border)" }}>
-            <div style={{ width: 60, height: 60, borderRadius: "50%", background: "var(--accent-grad)", display: "grid", placeItems: "center", fontFamily: "var(--font-space-grotesk)", fontWeight: 700, fontSize: 20, color: "#04060a" }}>MI</div>
+            <div style={{ width: 60, height: 60, borderRadius: "50%", background: "var(--accent-grad)", display: "grid", placeItems: "center", fontFamily: "var(--font-space-grotesk)", fontWeight: 700, fontSize: 20, color: "#ffffff" }}>MI</div>
             <div>
               <div style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 700, fontSize: 16 }}>{account?.name ?? about.name}</div>
               <div style={{ color: "var(--text-dim)", fontSize: 13 }}>Owner · {about.location}</div>
