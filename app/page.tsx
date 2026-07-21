@@ -98,8 +98,8 @@ export default async function Home() {
         <Hero about={about} resumeUrl={toggles.showResume ? settings.resumeUrl : ""} />
         {sections.about && <About about={about} />}
         {sections.experience && <Experience items={experience} />}
-        {sections.skills && <Skills groups={skills} />}
         {sections.projects && <Projects items={projects} />}
+        {sections.skills && <Skills groups={skills} />}
         {sections.contact && <Contact contact={contact} />}
       </main>
 
