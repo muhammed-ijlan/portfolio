@@ -80,13 +80,7 @@ export default async function Home() {
   return (
     <ThemeProvider defaultTheme={settings.defaultTheme} accent={settings.accent}>
       {ga4Id && <GoogleAnalytics id={ga4Id} />}
-      {}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `document.documentElement.dataset.animations=${JSON.stringify(toggles.animations ? "on" : "off")};try{if(sessionStorage.getItem("mi-intro-seen")==="1")document.documentElement.dataset.intro="seen"}catch(e){}`,
-        }}
-      />
-      {}
+      {/* Theme, animation and intro bootstrapping live in the root layout head. */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdScript(buildJsonLd(portfolio)) }}
