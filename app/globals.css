@@ -213,6 +213,9 @@ body {
 @media (max-width: 900px) and (min-width: 561px) { .stat-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 560px) { .services-grid { grid-template-columns: 1fr; } }
 
+.exp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: stretch; }
+@media (max-width: 900px) { .exp-grid { grid-template-columns: 1fr; } }
+
 .timeline-line { background: linear-gradient(180deg, rgba(37,99,235,0.7), rgba(124,58,237,0.5), transparent); }
 .timeline-dot { background: var(--bg); border: 2px solid var(--cyan); box-shadow: 0 0 0 4px rgba(37,99,235,0.12), 0 0 18px rgba(37,99,235,0.5); }
 
