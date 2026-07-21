@@ -4,23 +4,28 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "@/components/ui/ThemeProvider";
-import { Icons } from "@/components/ui/Icons";
-import { Logo } from "@/components/ui/Logo";
 import type { SectionToggles } from "@/lib/seed-data";
 
 const ALL_LINKS = [
   ["About", "/#about", "about"],
   ["Experience", "/#experience", "experience"],
-  ["Skills", "/#skills", "skills"],
   ["Projects", "/#projects", "projects"],
+  ["Skills", "/#skills", "skills"],
   ["Writing", "/blog", "blog"],
   ["Contact", "/#contact", "contact"],
 ] as const;
 
+function Wordmark() {
+  return (
+    <span className="font-mono-custom" style={{ fontSize: 16, fontWeight: 500, whiteSpace: "nowrap" }}>
+      ijlan<span style={{ color: "var(--cyan)" }}>.dev</span>
+    </span>
+  );
+}
+
 export function Nav({ sections }: { sections?: SectionToggles }) {
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
-  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("home");
 
@@ -30,14 +35,7 @@ export function Nav({ sections }: { sections?: SectionToggles }) {
     href === "/blog" ? pathname.startsWith("/blog") : pathname === "/" && active === href.split("#")[1];
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    const ids = ["home", "about", "experience", "skills", "projects", "contact"];
+    const ids = ["home", "about", "experience", "projects", "skills", "contact"];
     const io = new IntersectionObserver(
       (entries) => entries.forEach((e) => { if (e.isIntersecting) setActive(e.target.id); }),
       { rootMargin: "-45% 0px -50% 0px" }
@@ -46,87 +44,118 @@ export function Nav({ sections }: { sections?: SectionToggles }) {
     return () => io.disconnect();
   }, []);
 
+  const squareBtn: React.CSSProperties = {
+    display: "inline-flex", alignItems: "center", justifyContent: "center",
+    width: 40, height: 40, background: "var(--surface)", border: "1px solid var(--border)",
+    borderRadius: 12, cursor: "pointer", fontSize: 16, color: "var(--text)", lineHeight: 1,
+  };
+
   return (
-    <nav
-      style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
-        transition: "all 0.4s ease",
-        background: scrolled ? "color-mix(in oklab, var(--bg) 72%, transparent)" : "transparent",
-        backdropFilter: scrolled ? "blur(16px) saturate(140%)" : "none",
-        WebkitBackdropFilter: scrolled ? "blur(16px) saturate(140%)" : "none",
-        borderBottom: scrolled ? "1px solid var(--border)" : "1px solid transparent",
-      }}
-    >
-      <div className="container-x" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 68 }}>
-        <Link href="/" aria-label="ijlan.dev — home" style={{ display: "flex", alignItems: "center", textDecoration: "none", color: "var(--text)" }}>
-          <Logo height={30} />
+    <>
+      <nav
+        style={{
+          position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
+          display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
+          padding: "14px clamp(20px, 5vw, 72px)",
+          background: "var(--nav-bg)",
+          backdropFilter: "blur(20px) saturate(1.4)",
+          WebkitBackdropFilter: "blur(20px) saturate(1.4)",
+          borderBottom: "1px solid var(--border)",
+        }}
+      >
+        <Link href="/" aria-label="ijlan.dev — home" style={{ textDecoration: "none", color: "var(--text)" }}>
+          <Wordmark />
         </Link>
 
-        <div className="nav-links" style={{ display: "flex", gap: "0.3rem", alignItems: "center" }}>
-          {NAV_LINKS.map(([label, href]) => {
-            const activeLink = isActive(href);
-            return (
-              <Link key={href} href={href} style={{
-                padding: "0.5rem 0.85rem", fontSize: "0.9rem", textDecoration: "none", borderRadius: 8,
-                color: activeLink ? "var(--text)" : "var(--text-dim)", fontWeight: 500,
-                transition: "color 0.25s ease", position: "relative",
-              }}>
-                {label}
-                {activeLink && (
-                  <span style={{ position: "absolute", left: "0.85rem", right: "0.85rem", bottom: 2, height: 2, borderRadius: 2, background: "var(--accent-grad)" }} />
-                )}
-              </Link>
-            );
-          })}
+        <div className="nav-links" style={{ display: "flex", alignItems: "center", gap: 26 }}>
+          {NAV_LINKS.map(([label, href]) => (
+            <Link
+              key={href}
+              href={href}
+              style={{
+                fontSize: 14, fontWeight: 500, textDecoration: "none",
+                color: isActive(href) ? "var(--text)" : "var(--ink-soft)",
+                transition: "color 0.2s ease",
+              }}
+            >
+              {label}
+            </Link>
+          ))}
         </div>
 
-        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-          <button
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-            className="glass"
-            style={{ width: 40, height: 40, display: "grid", placeItems: "center", color: "var(--text)", borderRadius: 10, cursor: "pointer", background: "var(--glass)" }}
-          >
-            {theme === "dark" ? Icons.sun() : Icons.moon()}
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <button onClick={toggleTheme} aria-label="Toggle dark / light mode" title="Toggle theme" style={squareBtn}>
+            {theme === "dark" ? "☀" : "☾"}
           </button>
           {sections?.contact !== false && (
-            <Link href="/#contact" className="btn btn-primary nav-cta" style={{ padding: "0.6rem 1.1rem", fontSize: "0.88rem" }}>
+            <Link
+              href="/#contact"
+              className="nav-cta nav-hire"
+              style={{
+                fontSize: 14, fontWeight: 600, color: "var(--bg)", background: "var(--text)",
+                padding: "11px 24px", borderRadius: 100, textDecoration: "none", whiteSpace: "nowrap",
+                transition: "background-color 0.25s ease, color 0.25s ease",
+              }}
+            >
               Hire me
             </Link>
           )}
           <button
             className="nav-burger"
             aria-label="Menu"
+            aria-expanded={open}
             onClick={() => setOpen((o) => !o)}
-            style={{ display: "none", background: "none", border: "none", color: "var(--text)", cursor: "pointer" }}
+            style={{
+              display: "none", flexDirection: "column", justifyContent: "center", gap: 5,
+              width: 40, height: 40, padding: 10, background: "var(--surface)",
+              border: "1px solid var(--border)", borderRadius: 12, cursor: "pointer",
+            }}
           >
-            {open ? Icons.close() : Icons.menu()}
+            <span style={{ display: "block", height: 2, borderRadius: 2, background: "var(--text)" }} />
+            <span style={{ display: "block", height: 2, borderRadius: 2, background: "var(--text)" }} />
+            <span style={{ display: "block", height: 2, borderRadius: 2, background: "var(--text)" }} />
           </button>
         </div>
-      </div>
+      </nav>
 
-      {}
-      <div
-        style={{
-          display: open ? "block" : "none",
-          borderTop: "1px solid var(--border)",
-          background: "color-mix(in oklab, var(--bg) 92%, transparent)",
-          backdropFilter: "blur(16px)",
-        }}
-      >
-        <div className="container-x" style={{ display: "flex", flexDirection: "column", padding: "1rem 24px 1.4rem" }}>
+      {open && (
+        <div
+          style={{
+            position: "fixed", top: 80, left: 16, right: 16, zIndex: 60,
+            background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 18,
+            padding: 12, boxShadow: "0 24px 64px rgba(0,0,0,0.35)",
+            display: "flex", flexDirection: "column", gap: 2,
+            animation: "fadeUp 0.3s cubic-bezier(0.22,1,0.36,1) both",
+          }}
+        >
           {NAV_LINKS.map(([label, href]) => (
             <Link
               key={href}
               href={href}
               onClick={() => setOpen(false)}
-              style={{ padding: "0.85rem 0", fontSize: "1.05rem", textDecoration: "none", color: "var(--text)", borderBottom: "1px solid var(--border)" }}
+              className="nav-menu-item"
+              style={{
+                color: "var(--text)", fontSize: 16, fontWeight: 600, textDecoration: "none",
+                padding: "14px 16px", borderRadius: 12,
+              }}
             >
               {label}
             </Link>
           ))}
+          {sections?.contact !== false && (
+            <Link
+              href="/#contact"
+              onClick={() => setOpen(false)}
+              style={{
+                marginTop: 8, textAlign: "center", fontSize: 15, fontWeight: 600, color: "#ffffff",
+                background: "var(--cyan)", padding: "14px 16px", borderRadius: 12, textDecoration: "none",
+              }}
+            >
+              Hire me
+            </Link>
+          )}
         </div>
-      </div>
-    </nav>
+      )}
+    </>
   );
 }

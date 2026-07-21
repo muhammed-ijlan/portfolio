@@ -1,7 +1,6 @@
 "use client";
 
 import { Reveal } from "@/components/ui/Reveal";
-import { Tilt } from "@/components/ui/Tilt";
 import { Counter } from "@/components/ui/Counter";
 import type { PublicAbout } from "@/lib/portfolio-service";
 
@@ -10,126 +9,81 @@ function parseStat(value: string): { num: number; suffix: string } | null {
   return m ? { num: parseFloat(m[1]), suffix: m[2] } : null;
 }
 
+// Service icons from the design, cycled by card index.
+const SERVICE_ICONS = [
+  "M8 4 L3 12 L8 20 M16 4 L21 12 L16 20",
+  "M12 3 L20 6 V11 C20 16.5 16.6 20 12 21.5 C7.4 20 4 16.5 4 11 V6 Z M9 12 L11 14 L15 9.5",
+  "M5 16.5 A8 8 0 1 1 19 16.5 M12 14.5 L16.5 10",
+  "M12 11 A3.5 3.5 0 1 0 12 4 A3.5 3.5 0 0 0 12 11 M16 19.5 C16 17.3 14.2 15.5 12 15.5 C9.8 15.5 8 17.3 8 19.5 M19.5 19.5 C19.5 17.6 18.4 16.2 16.9 15.7 M4.5 19.5 C4.5 17.6 5.6 16.2 7.1 15.7",
+];
+
 export function About({ about }: { about: PublicAbout }) {
+  const paragraphs = [about.bio, ...(about.story ?? [])].filter(Boolean);
+
   return (
-    <section id="about" className="section container-x" style={{ paddingTop: "7rem", paddingBottom: "3rem" }}>
-      {}
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute", top: -160, left: "50%", transform: "translateX(-50%)",
-          width: "min(1000px, 92vw)", height: 360, pointerEvents: "none", zIndex: 0,
-          background: "radial-gradient(ellipse at center, rgba(37,99,235,0.12), rgba(124,58,237,0.08) 42%, transparent 70%)",
-          filter: "blur(28px)",
-        }}
-      />
-      <div style={{ position: "relative", zIndex: 1 }}>
-        <Reveal><span className="eyebrow">01 — About</span></Reveal>
+    <section id="about" className="section-block">
+      <div className="container-x">
+        <div className="section-label">01 — About</div>
 
-        <div
-          className="about-grid"
-          style={{ display: "grid", gridTemplateColumns: "minmax(0,1.4fr) minmax(0,1fr)", gap: "3rem", marginTop: "1.6rem", alignItems: "start" }}
-        >
-          <Reveal>
-            <h2 className="display-xl grad-text" style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", marginBottom: "1.3rem" }}>
-              {about.headline}
-            </h2>
-            <p className="text-dim" style={{ fontSize: "1.08rem", lineHeight: 1.75 }}>
-              {about.bio}
-            </p>
-            {(about.story ?? []).map((p, i) => (
-              <p key={i} className="text-dim" style={{ fontSize: "0.98rem", lineHeight: 1.75, marginTop: "1rem" }}>
-                {p}
-              </p>
-            ))}
-            <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "1.6rem" }}>
-              {about.chips.map((t) => <span key={t} className="chip">{t}</span>)}
+        <Reveal>
+          <div className="about-grid" style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: "clamp(32px, 5vw, 72px)", alignItems: "start" }}>
+            <div>
+              <h2 className="h2-display" style={{ marginBottom: 24, maxWidth: 640, textWrap: "pretty" }}>
+                {about.headline}
+              </h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: 18, maxWidth: 640, fontSize: "clamp(15px, 1.8vw, 16.5px)", lineHeight: 1.75, color: "var(--ink-soft)" }}>
+                {paragraphs.map((p, i) => (
+                  <p key={i} style={{ margin: 0, textWrap: "pretty" }}>{p}</p>
+                ))}
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 28 }}>
+                {about.chips.map((t) => <span key={t} className="pill-tag">{t}</span>)}
+              </div>
             </div>
-          </Reveal>
 
-          <Reveal>
-            <div style={{ display: "grid", gap: "1rem" }}>
+            <div className="stat-grid">
               {about.stats.map((s, i) => {
                 const parsed = parseStat(s.value);
-                const accent = i === about.stats.length - 1;
                 return (
-                  <Tilt
-                    key={i}
-                    max={5}
-                    className="grad-border"
-                    style={{
-                      padding: "1.4rem 1.5rem", position: "relative", overflow: "hidden",
-                      background: accent
-                        ? "linear-gradient(150deg, rgba(37,99,235,0.12), rgba(124,58,237,0.12))"
-                        : "var(--bg-elev)",
-                    }}
-                  >
-                    <div className="display-xl grad-text" style={{ fontSize: "2.6rem", lineHeight: 1 }}>
+                  <div key={i} className="card-surface" style={{ borderRadius: 18, padding: "24px 26px", display: "flex", flexDirection: "column", gap: 4 }}>
+                    <span style={{ fontWeight: 800, fontSize: "clamp(30px, 3.5vw, 40px)", letterSpacing: "-0.03em", color: "var(--accent-text)" }}>
                       {parsed ? <Counter to={parsed.num} suffix={parsed.suffix} /> : s.value}
-                    </div>
-                    <div style={{ fontWeight: 600, marginTop: "0.5rem" }}>{s.label}</div>
-                    <div className="text-faint font-mono-custom" style={{ fontSize: "0.78rem", marginTop: "0.25rem" }}>{s.sub}</div>
-                  </Tilt>
+                    </span>
+                    <span style={{ fontSize: 15, fontWeight: 600, color: "var(--text)" }}>{s.label}</span>
+                    <span style={{ fontSize: 13, color: "var(--ink-faint)" }}>{s.sub}</span>
+                  </div>
                 );
               })}
             </div>
-          </Reveal>
-        </div>
+          </div>
+        </Reveal>
 
         {(about.focus ?? []).length > 0 && (
-          <Reveal>
-            <div style={{ marginTop: "4rem" }}>
-              <span className="eyebrow">What I do</span>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-                  gap: "1.1rem",
-                  marginTop: "1.3rem",
-                }}
-              >
+          <div style={{ marginTop: "clamp(56px, 8vw, 88px)" }}>
+            <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-faint)", marginBottom: 22 }}>
+              What I do
+            </div>
+            <Reveal>
+              <div className="services-grid">
                 {(about.focus ?? []).map((f, i) => (
-                  <Tilt key={i} max={4} className="grad-border" style={{ padding: "1.4rem 1.5rem" }}>
-                    <div className="font-mono-custom grad-text" style={{ fontSize: "0.78rem", fontWeight: 700, letterSpacing: "0.1em" }}>
-                      {String(i + 1).padStart(2, "0")}
+                  <div key={i} className="card-surface card-hover" style={{ borderRadius: 18, padding: 26, display: "flex", flexDirection: "column", gap: 14 }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+                      <span className="icon-chip">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                          <path d={SERVICE_ICONS[i % SERVICE_ICONS.length]} />
+                        </svg>
+                      </span>
+                      <span className="font-mono-custom" style={{ fontSize: 12.5, color: "var(--ink-faint)" }}>
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
                     </div>
-                    <div className="font-display" style={{ fontWeight: 700, fontSize: "1.05rem", marginTop: "0.6rem", letterSpacing: "-0.01em" }}>
-                      {f.title}
-                    </div>
-                    <p className="text-dim" style={{ fontSize: "0.9rem", lineHeight: 1.65, marginTop: "0.5rem" }}>
-                      {f.desc}
-                    </p>
-                  </Tilt>
+                    <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: "-0.01em" }}>{f.title}</span>
+                    <span style={{ fontSize: 14, lineHeight: 1.65, color: "var(--ink-soft)", textWrap: "pretty" }}>{f.desc}</span>
+                  </div>
                 ))}
               </div>
-            </div>
-          </Reveal>
-        )}
-
-        {(about.highlights ?? []).length > 0 && (
-          <Reveal>
-            <div className="grad-border" style={{ marginTop: "2.2rem", padding: "1.6rem 1.8rem" }}>
-              <span className="eyebrow">Highlights</span>
-              <ul
-                className="about-highlights"
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                  gap: "0.75rem 2rem",
-                  marginTop: "1.1rem",
-                  listStyle: "none",
-                  padding: 0,
-                }}
-              >
-                {(about.highlights ?? []).map((h, i) => (
-                  <li key={i} style={{ display: "flex", gap: "0.7rem", alignItems: "baseline" }}>
-                    <span className="grad-text font-mono-custom" style={{ fontSize: "0.85rem", flexShrink: 0 }}>▸</span>
-                    <span className="text-dim" style={{ fontSize: "0.93rem", lineHeight: 1.6 }}>{h}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Reveal>
+            </Reveal>
+          </div>
         )}
       </div>
     </section>
