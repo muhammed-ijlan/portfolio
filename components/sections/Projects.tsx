@@ -5,11 +5,11 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Icons } from "@/components/ui/Icons";
 import type { PublicProject } from "@/lib/portfolio-service";
 
-export function Projects({ items }: { items: PublicProject[] }) {
+export function Projects({ items, index = "03" }: { items: PublicProject[]; index?: string }) {
   return (
     <section id="projects" className="section-block">
       <div className="container-x">
-        <div className="section-label">03 — Projects</div>
+        <div className="section-label">{index} — Projects</div>
         <h2 className="h2-display" style={{ marginBottom: "clamp(32px, 5vw, 48px)" }}>
           Featured projects
         </h2>

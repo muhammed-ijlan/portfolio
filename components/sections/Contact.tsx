@@ -20,7 +20,7 @@ function validate(f: FormState): Errors {
   return e;
 }
 
-export function Contact({ contact }: { contact: Portfolio["contact"] }) {
+export function Contact({ contact, index = "05" }: { contact: Portfolio["contact"]; index?: string }) {
   const [form, setForm] = useState<FormState>({ name: "", email: "", subject: "", message: "" });
   const [errors, setErrors] = useState<Errors>({});
   const [touched, setTouched] = useState<Partial<Record<keyof FormState, boolean>>>({});
@@ -112,7 +112,7 @@ export function Contact({ contact }: { contact: Portfolio["contact"] }) {
         <Reveal>
           <div className="contact-grid" style={{ position: "relative", display: "grid", gridTemplateColumns: "1fr 1.1fr", gap: "clamp(32px, 5vw, 72px)", alignItems: "start" }}>
             <div>
-              <div className="section-label">05 — Contact</div>
+              <div className="section-label">{index} — Contact</div>
               <h2 className="h2-display" style={{ fontSize: "clamp(32px, 5vw, 56px)", lineHeight: 1.05, marginBottom: 18 }}>
                 Let&apos;s build<br />something fast<span style={{ color: "var(--cyan)" }}>.</span>
               </h2>

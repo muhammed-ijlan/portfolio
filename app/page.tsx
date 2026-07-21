@@ -70,6 +70,13 @@ export default async function Home() {
 
   const ga4Id = process.env.NODE_ENV === "production" ? settings.ga4MeasurementId : "";
 
+  // Section eyebrows are numbered by their position among the *enabled* sections,
+  // so hiding one from the admin never leaves a gap in the sequence.
+  const order = (["about", "experience", "projects", "skills", "contact"] as const).filter(
+    (k) => sections[k]
+  );
+  const num = (id: (typeof order)[number]) => String(order.indexOf(id) + 1).padStart(2, "0");
+
   return (
     <ThemeProvider defaultTheme={settings.defaultTheme} accent={settings.accent}>
       {ga4Id && <GoogleAnalytics id={ga4Id} />}
@@ -96,11 +103,11 @@ export default async function Home() {
 
       <main id="main" style={{ position: "relative", zIndex: 2 }}>
         <Hero about={about} resumeUrl={toggles.showResume ? settings.resumeUrl : ""} />
-        {sections.about && <About about={about} />}
-        {sections.experience && <Experience items={experience} />}
-        {sections.projects && <Projects items={projects} />}
-        {sections.skills && <Skills groups={skills} />}
-        {sections.contact && <Contact contact={contact} />}
+        {sections.about && <About about={about} index={num("about")} />}
+        {sections.experience && <Experience items={experience} index={num("experience")} />}
+        {sections.projects && <Projects items={projects} index={num("projects")} />}
+        {sections.skills && <Skills groups={skills} index={num("skills")} />}
+        {sections.contact && <Contact contact={contact} index={num("contact")} />}
       </main>
 
       <Footer about={about} />

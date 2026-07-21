@@ -40,14 +40,14 @@ function resolveIcon(label: string, mono: string): { slug: string; color: string
   return null;
 }
 
-export function Skills({ groups }: { groups: PublicSkill[] }) {
+export function Skills({ groups, index = "04" }: { groups: PublicSkill[]; index?: string }) {
   const { theme } = useTheme();
   const mono = theme === "dark" ? "EDEFF7" : "0F1222";
 
   return (
     <section id="skills" className="section-block">
       <div className="container-x">
-        <div className="section-label">04 — Skills</div>
+        <div className="section-label">{index} — Skills</div>
         <h2 className="h2-display" style={{ marginBottom: "clamp(32px, 5vw, 48px)" }}>
           The stack I build with
         </h2>
