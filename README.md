@@ -63,7 +63,9 @@ Create a `.env` file (it is gitignored). None of these are committed.
 | `RESEND_FROM` | optional | From-address; must be a Resend-verified domain. |
 | `CONTACT_NOTIFY_EMAIL` | optional | Fallback recipient when the admin "notification email" is blank. |
 | `GOOGLE_SERVICE_ACCOUNT_KEY` | optional | Base64 (or raw JSON) service-account key for the analytics dashboard. |
-| `GA4_PROPERTY_ID` | optional | Fallback numeric GA4 property ID (normally set in admin settings). |
+| `GA4_PROPERTY_ID` | optional | Numeric GA4 property ID — dashboard traffic charts. |
+| `GOOGLE_SEARCH_CONSOLE_SITE` | optional | Search Console property, e.g. `sc-domain:example.com` — dashboard search charts. |
+| `GA4_MEASUREMENT_ID` | optional | `G-XXXXXXXXXX` tracking tag for the public site (production only). |
 
 > **Secrets:** generate strong values for `AUTH_SECRET` and `SEED_SECRET`, e.g. `openssl rand -base64 48`. Never reuse the dev placeholders in production.
 
@@ -94,9 +96,12 @@ The admin dashboard reads live data through a Google Cloud **service account**:
 1. Create a service account and enable the **Google Analytics Data API** and **Search Console API**.
 2. Add the service-account email as a **Viewer** on the GA4 property and a **user** in Search Console.
 3. Put the service-account JSON key in `GOOGLE_SERVICE_ACCOUNT_KEY` (base64 recommended).
-4. Set the GA4 Measurement ID, GA4 Property ID, and Search Console site in **admin → Site Settings**.
+4. Set `GA4_PROPERTY_ID`, `GOOGLE_SEARCH_CONSOLE_SITE` and `GA4_MEASUREMENT_ID` in your environment.
 
-The public GA4 tracking tag renders only in production, using the Measurement ID from settings.
+These are deploy-time configuration rather than editable content, so they live in
+env alongside the service-account key instead of in the CMS. Every analytics
+surface degrades gracefully when they are unset. The public GA4 tracking tag
+renders only in production, so local traffic never reaches analytics.
 
 ## Deployment
 

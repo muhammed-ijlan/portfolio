@@ -18,10 +18,7 @@ export type PublicProject = Omit<ProjectType, "status" | "views">;
 export type PublicExperience = ExperienceType;
 export type PublicSkill = SkillType;
 export type PublicAbout = AboutType;
-export type PublicSettings = Omit<
-  SettingsType,
-  "notifyEmail" | "searchConsoleSite" | "ga4PropertyId"
->;
+export type PublicSettings = Omit<SettingsType, "notifyEmail">;
 
 function pid(d: Record<string, unknown>) {
   const { _id, __v, createdAt, updatedAt, ...rest } = d;
@@ -80,7 +77,6 @@ export async function getPublicSettings(): Promise<PublicSettings> {
     defaultTheme: src.defaultTheme,
     seoDescription: src.seoDescription,
     resumeUrl: src.resumeUrl ?? "",
-    ga4MeasurementId: src.ga4MeasurementId ?? "",
     toggles: src.toggles,
     // Older settings docs predate section visibility — treat missing as all on.
     sections: { ...ALL_SECTIONS_ON, ...(src.sections ?? {}) },
@@ -136,7 +132,6 @@ function seedPortfolio(): Portfolio {
       defaultTheme: settings.defaultTheme,
       seoDescription: settings.seoDescription,
       resumeUrl: settings.resumeUrl ?? "",
-      ga4MeasurementId: settings.ga4MeasurementId ?? "",
       toggles: settings.toggles,
       sections: { ...ALL_SECTIONS_ON, ...(settings.sections ?? {}) },
     },

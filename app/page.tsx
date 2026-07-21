@@ -68,7 +68,9 @@ export default async function Home() {
 
   if (toggles.maintenance) return <Maintenance settings={settings} />;
 
-  const ga4Id = process.env.NODE_ENV === "production" ? settings.ga4MeasurementId : "";
+  // Deploy-time config; kept out of the CMS. Tag renders in production only so
+  // local traffic never pollutes analytics.
+  const ga4Id = process.env.NODE_ENV === "production" ? process.env.GA4_MEASUREMENT_ID || "" : "";
 
   // Section eyebrows are numbered by their position among the *enabled* sections,
   // so hiding one from the admin never leaves a gap in the sequence.

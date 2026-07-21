@@ -103,9 +103,6 @@ export function SettingsPage() {
             <Field label="Tagline" hint="The line under your name on the generated social share image."><TextInput value={draft.tagline} onChange={(v) => set("tagline", v)} /></Field>
             <Field label="SEO description" hint="Shown in search results & social shares, sitewide."><TextArea value={draft.seoDescription} onChange={(v) => set("seoDescription", v)} /></Field>
             <Field label="Contact notification email" hint="Where contact-form messages are emailed. Leave blank to use your About email."><TextInput type="email" value={draft.notifyEmail} onChange={(v) => set("notifyEmail", v)} placeholder="you@example.com" /></Field>
-            <Field label="Search Console property" hint="Used for the dashboard search-performance charts. e.g. sc-domain:ijlan.dev"><TextInput value={draft.searchConsoleSite} onChange={(v) => set("searchConsoleSite", v)} placeholder="sc-domain:ijlan.dev" /></Field>
-            <Field label="GA4 measurement ID" hint="Tracking tag on the public site. e.g. G-XXXXXXXXXX"><TextInput value={draft.ga4MeasurementId} onChange={(v) => set("ga4MeasurementId", v)} placeholder="G-XXXXXXXXXX" /></Field>
-            <Field label="GA4 property ID" hint="Numeric ID for the dashboard traffic charts. Admin → Property Settings."><TextInput value={draft.ga4PropertyId} onChange={(v) => set("ga4PropertyId", v)} placeholder="123456789" /></Field>
             <Field label="Default theme"><SelectInput value={draft.defaultTheme} onChange={(v) => set("defaultTheme", v as Settings["defaultTheme"])} options={[{ value: "dark", label: "Dark" }, { value: "light", label: "Light" }]} /></Field>
             <Field label="Accent color">
               <div style={{ display: "flex", gap: 8 }}>

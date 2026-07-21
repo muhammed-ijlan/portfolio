@@ -10,9 +10,6 @@ const SettingsSchema = new Schema(
     seoDescription: { type: String, default: "" },
     resumeUrl: { type: String, default: "" },
     notifyEmail: { type: String, default: "" },
-    searchConsoleSite: { type: String, default: "" },
-    ga4PropertyId: { type: String, default: "" },
-    ga4MeasurementId: { type: String, default: "" },
     toggles: {
       animations: { type: Boolean, default: true },
       customCursor: { type: Boolean, default: true },
