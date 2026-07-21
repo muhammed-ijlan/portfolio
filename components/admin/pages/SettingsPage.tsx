@@ -119,7 +119,7 @@ export function SettingsPage() {
                 </button>
                 {draft.resumeUrl && (
                   <>
-                    <a className="adm-btn" href={draft.resumeUrl} target="_blank" rel="noreferrer"><AdminIcons.external style={{ width: 13, height: 13 }} /> View</a>
+                    <a className="adm-btn" href={`/api/resume?src=${encodeURIComponent(draft.resumeUrl)}`} target="_blank" rel="noreferrer"><AdminIcons.external style={{ width: 13, height: 13 }} /> View</a>
                     <button type="button" className="adm-btn" style={{ color: "#f87171" }} onClick={() => set("resumeUrl", "")}><AdminIcons.trash style={{ width: 13, height: 13 }} /> Remove</button>
                   </>
                 )}

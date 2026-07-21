@@ -178,7 +178,9 @@ export function Hero({ about, resumeUrl }: { about: PublicAbout; resumeUrl?: str
               <a href="#contact" className="hero-cta-ghost">Get in touch</a>
             </Magnetic>
             {resumeUrl && (
-              <a href={resumeUrl} target="_blank" rel="noreferrer" className="hero-cta-text">Résumé ↓</a>
+              // Served through our own route so the link survives the PDF being
+              // replaced and sidesteps Cloudinary's PDF delivery restriction.
+              <a href="/api/resume" className="hero-cta-text">Résumé ↓</a>
             )}
           </div>
 
