@@ -1,10 +1,10 @@
-import { crud, handleError } from "@/lib/api-helpers";
+import { crud, handleError, SITE_PATHS } from "@/lib/api-helpers";
 import { Project } from "@/lib/models/Project";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const c = crud(() => Project, { cloudinaryFields: ["image"] });
+const c = crud(() => Project, { cloudinaryFields: ["image"], revalidate: SITE_PATHS });
 type Ctx = { params: Promise<{ id: string }> };
 
 export async function GET(_req: Request, { params }: Ctx) {
