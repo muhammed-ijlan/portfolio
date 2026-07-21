@@ -1,5 +1,6 @@
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { Nav } from "@/components/layout/Nav";
+import { CursorGlow } from "@/components/layout/CursorGlow";
 import { Footer } from "@/components/sections/Footer";
 import { getPortfolioCached } from "@/lib/portfolio-service";
 
@@ -7,6 +8,8 @@ export default async function BlogLayout({ children }: { children: React.ReactNo
   const { about, settings } = await getPortfolioCached();
   return (
     <ThemeProvider defaultTheme={settings.defaultTheme} accent={settings.accent}>
+      {settings.toggles.customCursor && <CursorGlow />}
+
       <div className="bg-atmosphere" />
       <div className="bg-grid" />
       <div className="bg-noise" />
