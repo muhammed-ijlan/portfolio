@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Schibsted_Grotesk, Inter, JetBrains_Mono, Poppins } from "next/font/google";
 import { SITE_URL, buildKeywords } from "@/lib/seo";
 import { getPublicSettings, getPortfolioCached } from "@/lib/portfolio-service";
+import { WebAnalytics } from "@/components/analytics/WebAnalytics";
 import "./globals.css";
 
 /** Server-render the admin's default theme so Light mode isn't a post-hydration flash. */
@@ -147,7 +148,10 @@ export default async function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: bootScript(boot.animations) }} />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <WebAnalytics />
+      </body>
     </html>
   );
 }
