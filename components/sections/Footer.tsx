@@ -1,52 +1,39 @@
 "use client";
 
-import { Magnetic } from "@/components/ui/Magnetic";
-import { Icons } from "@/components/ui/Icons";
-import { LogoMark } from "@/components/ui/Logo";
 import type { PublicAbout } from "@/lib/portfolio-service";
 
 export function Footer({ about }: { about: PublicAbout }) {
-  const socials = [
-    { icon: Icons.github, href: about.socials.github, label: "GitHub" },
-    { icon: Icons.linkedin, href: about.socials.linkedin, label: "LinkedIn" },
-    { icon: Icons.mail, href: `mailto:${about.email}`, label: "Email" },
+  const links = [
+    { label: "github", href: about.socials.github },
+    { label: "linkedin", href: about.socials.linkedin },
+    { label: "email", href: about.email ? `mailto:${about.email}` : "" },
   ].filter((s) => s.href);
 
-  const toTop = () =>
-    window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-
   return (
-    <footer className="section container-x" style={{ paddingTop: "4rem", paddingBottom: "2.5rem" }}>
-      <div className="divider" style={{ marginBottom: "2rem" }} />
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1.2rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
-          <LogoMark size={38} />
-          <div>
-            <div className="font-display" style={{ fontWeight: 700, fontSize: "1.2rem", color: "var(--text)" }}>{about.name}</div>
-            <div className="text-faint font-mono-custom" style={{ fontSize: "0.78rem", marginTop: "0.3rem" }}>
-              Built in Dubai · © {new Date().getFullYear()}
-            </div>
-          </div>
-        </div>
-        <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
-          {socials.map((s) => (
+    <footer style={{ position: "relative", zIndex: 2, borderTop: "1px solid var(--border)" }}>
+      <div
+        className="container-x"
+        style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap", paddingTop: 28, paddingBottom: 28 }}
+      >
+        <span className="font-mono-custom" style={{ fontSize: 13.5, color: "var(--text)" }}>
+          ijlan<span style={{ color: "var(--cyan)" }}>.dev</span>
+        </span>
+        <span style={{ fontSize: 13, color: "var(--ink-faint)" }}>
+          Built in Dubai · © {new Date().getFullYear()}
+        </span>
+        <div style={{ display: "flex", gap: 16, fontFamily: "var(--font-jetbrains-mono), monospace", fontSize: 12.5 }}>
+          {links.map((s) => (
             <a
               key={s.label}
               href={s.href}
               target={s.href.startsWith("http") ? "_blank" : undefined}
               rel="noreferrer"
-              aria-label={s.label}
-              className="glass"
-              style={{ width: 42, height: 42, display: "grid", placeItems: "center", color: "var(--text-dim)", borderRadius: 11 }}
+              className="mono-link"
+              style={{ color: "var(--ink-faint)" }}
             >
-              {s.icon()}
+              {s.label}
             </a>
           ))}
-          <Magnetic strength={0.4}>
-            <button onClick={toTop} aria-label="Back to top" className="btn btn-ghost" style={{ padding: "0.7rem" }}>
-              {Icons.up()}
-            </button>
-          </Magnetic>
         </div>
       </div>
     </footer>
