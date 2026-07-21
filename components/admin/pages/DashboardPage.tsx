@@ -9,6 +9,7 @@ import { ProjectViewsChart } from "../charts/ProjectViewsChart";
 import { TrafficSourcesChart } from "../charts/TrafficSourcesChart";
 import { SearchPerformance } from "../SearchPerformance";
 import { SiteTraffic } from "../SiteTraffic";
+import { VercelTraffic } from "../VercelTraffic";
 import { PageLoading, PageError } from "../cms/Loading";
 import { EmptyState } from "../cms/Fields";
 import { initials, avatarColor, relTime, messageSeries } from "@/lib/cms-store";
@@ -65,6 +66,8 @@ export function DashboardPage() {
       </div>
 
       <SiteTraffic />
+
+      <VercelTraffic />
 
       <SearchPerformance />
 

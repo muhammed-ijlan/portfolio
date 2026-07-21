@@ -66,6 +66,9 @@ Create a `.env` file (it is gitignored). None of these are committed.
 | `GA4_PROPERTY_ID` | optional | Numeric GA4 property ID — dashboard traffic charts. |
 | `GOOGLE_SEARCH_CONSOLE_SITE` | optional | Search Console property, e.g. `sc-domain:example.com` — dashboard search charts. |
 | `GA4_MEASUREMENT_ID` | optional | `G-XXXXXXXXXX` tracking tag for the public site (production only). |
+| `VERCEL_ANALYTICS_TOKEN` | optional | Vercel access token — reads Web Analytics into the admin dashboard. |
+| `VERCEL_PROJECT_ID` | optional | Vercel project id for the Web Analytics query. |
+| `VERCEL_TEAM_ID` | optional | Only for team-owned Vercel projects. |
 
 > **Secrets:** generate strong values for `AUTH_SECRET` and `SEED_SECRET`, e.g. `openssl rand -base64 48`. Never reuse the dev placeholders in production.
 
