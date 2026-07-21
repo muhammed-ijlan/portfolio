@@ -68,18 +68,21 @@ export default async function Home() {
 
   if (toggles.maintenance) return <Maintenance settings={settings} />;
 
-  const ga4Id = process.env.NODE_ENV === "production" ? settings.ga4MeasurementId : "";
+  // Deploy-time config; kept out of the CMS. Tag renders in production only so
+  // local traffic never pollutes analytics.
+  const ga4Id = process.env.NODE_ENV === "production" ? process.env.GA4_MEASUREMENT_ID || "" : "";
+
+  // Section eyebrows are numbered by their position among the *enabled* sections,
+  // so hiding one from the admin never leaves a gap in the sequence.
+  const order = (["about", "experience", "projects", "skills", "contact"] as const).filter(
+    (k) => sections[k]
+  );
+  const num = (id: (typeof order)[number]) => String(order.indexOf(id) + 1).padStart(2, "0");
 
   return (
     <ThemeProvider defaultTheme={settings.defaultTheme} accent={settings.accent}>
       {ga4Id && <GoogleAnalytics id={ga4Id} />}
-      {}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `document.documentElement.dataset.animations=${JSON.stringify(toggles.animations ? "on" : "off")};try{if(sessionStorage.getItem("mi-intro-seen")==="1")document.documentElement.dataset.intro="seen"}catch(e){}`,
-        }}
-      />
-      {}
+      {/* Theme, animation and intro bootstrapping live in the root layout head. */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdScript(buildJsonLd(portfolio)) }}
@@ -96,11 +99,11 @@ export default async function Home() {
 
       <main id="main" style={{ position: "relative", zIndex: 2 }}>
         <Hero about={about} resumeUrl={toggles.showResume ? settings.resumeUrl : ""} />
-        {sections.about && <About about={about} />}
-        {sections.experience && <Experience items={experience} />}
-        {sections.projects && <Projects items={projects} />}
-        {sections.skills && <Skills groups={skills} />}
-        {sections.contact && <Contact contact={contact} />}
+        {sections.about && <About about={about} index={num("about")} />}
+        {sections.experience && <Experience items={experience} index={num("experience")} />}
+        {sections.projects && <Projects items={projects} index={num("projects")} />}
+        {sections.skills && <Skills groups={skills} index={num("skills")} />}
+        {sections.contact && <Contact contact={contact} index={num("contact")} />}
       </main>
 
       <Footer about={about} />

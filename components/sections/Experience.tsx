@@ -3,11 +3,11 @@
 import { Reveal } from "@/components/ui/Reveal";
 import type { PublicExperience } from "@/lib/portfolio-service";
 
-export function Experience({ items }: { items: PublicExperience[] }) {
+export function Experience({ items, index = "02" }: { items: PublicExperience[]; index?: string }) {
   return (
     <section id="experience" className="section-block">
       <div className="container-x">
-        <div className="section-label">02 — Experience</div>
+        <div className="section-label">{index} — Experience</div>
         <h2 className="h2-display" style={{ marginBottom: "clamp(32px, 5vw, 48px)" }}>
           Where I&apos;ve shipped
         </h2>

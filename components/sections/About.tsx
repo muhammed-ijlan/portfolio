@@ -17,13 +17,13 @@ const SERVICE_ICONS = [
   "M12 11 A3.5 3.5 0 1 0 12 4 A3.5 3.5 0 0 0 12 11 M16 19.5 C16 17.3 14.2 15.5 12 15.5 C9.8 15.5 8 17.3 8 19.5 M19.5 19.5 C19.5 17.6 18.4 16.2 16.9 15.7 M4.5 19.5 C4.5 17.6 5.6 16.2 7.1 15.7",
 ];
 
-export function About({ about }: { about: PublicAbout }) {
+export function About({ about, index = "01" }: { about: PublicAbout; index?: string }) {
   const paragraphs = [about.bio, ...(about.story ?? [])].filter(Boolean);
 
   return (
     <section id="about" className="section-block">
       <div className="container-x">
-        <div className="section-label">01 — About</div>
+        <div className="section-label">{index} — About</div>
 
         <Reveal>
           <div className="about-grid" style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: "clamp(32px, 5vw, 72px)", alignItems: "start" }}>
@@ -84,6 +84,24 @@ export function About({ about }: { about: PublicAbout }) {
               </div>
             </Reveal>
           </div>
+        )}
+
+        {(about.highlights ?? []).length > 0 && (
+          <Reveal>
+            <div className="card-surface" style={{ marginTop: 18, padding: "clamp(24px, 3.5vw, 32px)" }}>
+              <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-faint)", marginBottom: 18 }}>
+                Highlights
+              </div>
+              <ul className="highlights-grid">
+                {(about.highlights ?? []).map((h, i) => (
+                  <li key={i} style={{ display: "flex", gap: 12, fontSize: 14.5, lineHeight: 1.65, color: "var(--ink-soft)" }}>
+                    <span style={{ color: "var(--accent-text)", flexShrink: 0 }}>▸</span>
+                    <span style={{ textWrap: "pretty" }}>{h}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Reveal>
         )}
       </div>
     </section>

@@ -32,7 +32,9 @@ export function SettingsPage() {
   const setSec = (k: keyof SectionToggles) =>
     setDraft((d) => (d ? { ...d, sections: { ...secOf(d), [k]: !secOf(d)[k] } } : d));
   const dirty = !!settings && !!draft && JSON.stringify(draft) !== JSON.stringify(settings);
-  const accents = ["#2563EB", "#22D3EE", "#7C3AED", "#34d399", "#f59e0b", "#ec4899"];
+  // The accent set the site design is built around; each drives both solid
+  // fills and the lightened accent text derived from it.
+  const accents = ["#2563EB", "#7C5CFF", "#0EA5A4", "#E5484D"];
 
   const onResumeFile = async (file?: File) => {
     if (!file) return;
@@ -71,16 +73,16 @@ export function SettingsPage() {
 
   const cardTitle = { textTransform: "none" as const, letterSpacing: 0, fontSize: 13, fontWeight: 700, color: "var(--text)" };
   const rows: { k: keyof Settings["toggles"]; l: string; s: string }[] = [
-    { k: "animations", l: "Scroll animations", s: "Enable reveal & parallax motion" },
-    { k: "customCursor", l: "Custom cursor", s: "Show the glowing cursor on desktop" },
-    { k: "showResume", l: "Resume download", s: "Show the “Download CV” button" },
-    { k: "maintenance", l: "Maintenance mode", s: "Show a maintenance page to visitors" },
+    { k: "animations", l: "Scroll animations", s: "Reveal motion on scroll, sitewide" },
+    { k: "customCursor", l: "Custom cursor", s: "Glowing cursor on desktop, sitewide" },
+    { k: "showResume", l: "Résumé download", s: "Show the “Résumé ↓” link in the hero" },
+    { k: "maintenance", l: "Maintenance mode", s: "Replace the homepage with a maintenance notice" },
   ];
   const sectionRows: { k: keyof SectionToggles; l: string; s: string }[] = [
-    { k: "about", l: "About", s: "Bio, chips and stats section" },
-    { k: "experience", l: "Experience", s: "Work-history timeline" },
+    { k: "about", l: "About", s: "Bio, stats, “What I do” cards and highlights" },
+    { k: "experience", l: "Experience", s: "Work-history cards" },
     { k: "skills", l: "Skills", s: "Skill groups grid" },
-    { k: "projects", l: "Projects", s: "Selected work cards" },
+    { k: "projects", l: "Projects", s: "Featured project cards" },
     { k: "contact", l: "Contact", s: "Contact form + “Hire me” button" },
     { k: "blog", l: "Blog / Writing", s: "The /blog pages, nav link, feed and sitemap entries" },
   ];
@@ -97,13 +99,10 @@ export function SettingsPage() {
         <div className="adm-card">
           <div className="adm-card-title" style={{ ...cardTitle, marginBottom: 14 }}>General &amp; SEO</div>
           <div style={{ display: "grid", gap: 14 }}>
-            <Field label="Site title"><TextInput value={draft.siteTitle} onChange={(v) => set("siteTitle", v)} /></Field>
-            <Field label="Tagline"><TextInput value={draft.tagline} onChange={(v) => set("tagline", v)} /></Field>
-            <Field label="SEO description" hint="Shown in search results & social shares"><TextArea value={draft.seoDescription} onChange={(v) => set("seoDescription", v)} /></Field>
+            <Field label="Site title" hint="Browser tab title and the default title for search & social sharing."><TextInput value={draft.siteTitle} onChange={(v) => set("siteTitle", v)} /></Field>
+            <Field label="Tagline" hint="The line under your name on the generated social share image."><TextInput value={draft.tagline} onChange={(v) => set("tagline", v)} /></Field>
+            <Field label="SEO description" hint="Shown in search results & social shares, sitewide."><TextArea value={draft.seoDescription} onChange={(v) => set("seoDescription", v)} /></Field>
             <Field label="Contact notification email" hint="Where contact-form messages are emailed. Leave blank to use your About email."><TextInput type="email" value={draft.notifyEmail} onChange={(v) => set("notifyEmail", v)} placeholder="you@example.com" /></Field>
-            <Field label="Search Console property" hint="Used for the dashboard search-performance charts. e.g. sc-domain:ijlan.dev"><TextInput value={draft.searchConsoleSite} onChange={(v) => set("searchConsoleSite", v)} placeholder="sc-domain:ijlan.dev" /></Field>
-            <Field label="GA4 measurement ID" hint="Tracking tag on the public site. e.g. G-XXXXXXXXXX"><TextInput value={draft.ga4MeasurementId} onChange={(v) => set("ga4MeasurementId", v)} placeholder="G-XXXXXXXXXX" /></Field>
-            <Field label="GA4 property ID" hint="Numeric ID for the dashboard traffic charts. Admin → Property Settings."><TextInput value={draft.ga4PropertyId} onChange={(v) => set("ga4PropertyId", v)} placeholder="123456789" /></Field>
             <Field label="Default theme"><SelectInput value={draft.defaultTheme} onChange={(v) => set("defaultTheme", v as Settings["defaultTheme"])} options={[{ value: "dark", label: "Dark" }, { value: "light", label: "Light" }]} /></Field>
             <Field label="Accent color">
               <div style={{ display: "flex", gap: 8 }}>
@@ -119,7 +118,7 @@ export function SettingsPage() {
                 </button>
                 {draft.resumeUrl && (
                   <>
-                    <a className="adm-btn" href={draft.resumeUrl} target="_blank" rel="noreferrer"><AdminIcons.external style={{ width: 13, height: 13 }} /> View</a>
+                    <a className="adm-btn" href={`/api/resume?src=${encodeURIComponent(draft.resumeUrl)}`} target="_blank" rel="noreferrer"><AdminIcons.external style={{ width: 13, height: 13 }} /> View</a>
                     <button type="button" className="adm-btn" style={{ color: "#f87171" }} onClick={() => set("resumeUrl", "")}><AdminIcons.trash style={{ width: 13, height: 13 }} /> Remove</button>
                   </>
                 )}

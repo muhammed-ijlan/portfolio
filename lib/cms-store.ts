@@ -1,9 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { SEED, type CmsData } from "./seed-data";
+/**
+ * Shared types and presentation helpers for the admin UI.
+ *
+ * This module used to also hold a localStorage-backed mock CMS from before the
+ * MongoDB API existed. The admin now reads and writes exclusively through
+ * `lib/api.ts`, so that store has been removed to keep a single source of truth.
+ */
 
-export { SEED };
 export type {
   Project,
   Experience,
@@ -17,70 +21,6 @@ export type {
   Settings,
   CmsData,
 } from "./seed-data";
-
-const CMS_LS = "mi-cms-v1";
-
-function cmsLoad(): CmsData {
-  if (typeof window === "undefined") return structuredClone(SEED);
-  try {
-    const saved = JSON.parse(localStorage.getItem(CMS_LS) || "{}");
-    return { ...structuredClone(SEED), ...saved };
-  } catch {
-    return structuredClone(SEED);
-  }
-}
-
-let _cms: CmsData = cmsLoad();
-const _subs = new Set<() => void>();
-
-export const CMS = {
-  get<K extends keyof CmsData>(key: K): CmsData[K] {
-    return _cms[key];
-  },
-  set<K extends keyof CmsData>(key: K, val: CmsData[K] | ((prev: CmsData[K]) => CmsData[K])) {
-    const next = typeof val === "function" ? (val as (p: CmsData[K]) => CmsData[K])(_cms[key]) : val;
-    _cms = { ..._cms, [key]: next };
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem(CMS_LS, JSON.stringify(_cms));
-      } catch {}
-    }
-    _subs.forEach((fn) => fn());
-  },
-  reset() {
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.removeItem(CMS_LS);
-      } catch {}
-    }
-    _cms = structuredClone(SEED);
-    _subs.forEach((fn) => fn());
-  },
-  subscribe(fn: () => void) {
-    _subs.add(fn);
-    return () => {
-      _subs.delete(fn);
-    };
-  },
-};
-
-export function useStore<K extends keyof CmsData>(
-  key: K
-): [CmsData[K], (val: CmsData[K] | ((prev: CmsData[K]) => CmsData[K])) => void] {
-  const [state, setState] = useState<CmsData[K]>(() => SEED[key]);
-
-  useEffect(() => {
-    setState(CMS.get(key));
-    return CMS.subscribe(() => setState(CMS.get(key)));
-  }, [key]);
-
-  const set = useCallback(
-    (val: CmsData[K] | ((prev: CmsData[K]) => CmsData[K])) => CMS.set(key, val),
-    [key]
-  );
-
-  return [state, set];
-}
 
 export const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 

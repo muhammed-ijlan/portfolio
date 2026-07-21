@@ -1,7 +1,36 @@
 import type { Model, QueryFilter } from "mongoose";
+import { revalidatePath } from "next/cache";
 import { connectDB } from "./db";
 import { requireAuth } from "./auth";
 import { destroyByUrl } from "./cloudinary";
+
+/**
+ * The public pages are ISR'd (`export const revalidate`), so without an explicit
+ * purge a CMS edit would not surface until the window elapsed. Every mutation
+ * marks the affected public paths stale so the next visit renders fresh content.
+ */
+export function revalidatePublic(paths: PublicPath[]) {
+  for (const p of paths) {
+    try {
+      if (p === "/blog/[slug]") revalidatePath(p, "page");
+      else revalidatePath(p);
+    } catch {
+      // Best-effort: a failed purge must never fail the write itself.
+    }
+  }
+}
+
+export type PublicPath = "/" | "/blog" | "/blog/[slug]" | "/sitemap.xml" | "/feed.xml";
+
+/** Content that renders on the homepage also feeds the sitemap. */
+export const SITE_PATHS: PublicPath[] = ["/", "/sitemap.xml"];
+export const BLOG_PATHS: PublicPath[] = [
+  "/",
+  "/blog",
+  "/blog/[slug]",
+  "/sitemap.xml",
+  "/feed.xml",
+];
 
 export function ok(data: unknown, init?: ResponseInit) {
   return Response.json({ ok: true, data }, init);
@@ -53,8 +82,12 @@ async function readJson(req: Request) {
   }
 }
 
-export function crud<T>(getModel: () => Model<T>, opts?: { cloudinaryFields?: string[] }) {
+export function crud<T>(
+  getModel: () => Model<T>,
+  opts?: { cloudinaryFields?: string[]; revalidate?: PublicPath[] }
+) {
   const cloudFields = opts?.cloudinaryFields ?? [];
+  const purge = () => revalidatePublic(opts?.revalidate ?? []);
   return {
     async list() {
       await requireAuth();
@@ -69,6 +102,7 @@ export function crud<T>(getModel: () => Model<T>, opts?: { cloudinaryFields?: st
       await connectDB();
       const body = await readJson(req);
       const doc = await getModel().create(body);
+      purge();
       return ok(doc.toJSON(), { status: 201 });
     },
 
@@ -103,6 +137,7 @@ export function crud<T>(getModel: () => Model<T>, opts?: { cloudinaryFields?: st
           }
         }
       }
+      purge();
       return ok(doc.toJSON());
     },
 
@@ -115,12 +150,17 @@ export function crud<T>(getModel: () => Model<T>, opts?: { cloudinaryFields?: st
       for (const f of cloudFields) {
         if (typeof data[f] === "string") await destroyByUrl(data[f] as string);
       }
+      purge();
       return ok({ id });
     },
   };
 }
 
-export function singleton<T>(getModel: () => Model<T>, defaults: Partial<T>) {
+export function singleton<T>(
+  getModel: () => Model<T>,
+  defaults: Partial<T>,
+  opts?: { revalidate?: PublicPath[] }
+) {
   const filter = { key: "singleton" } as unknown as QueryFilter<T>;
   return {
     async get() {
@@ -144,6 +184,7 @@ export function singleton<T>(getModel: () => Model<T>, defaults: Partial<T>) {
         { $set: body },
         { new: true, upsert: true, runValidators: true }
       );
+      revalidatePublic(opts?.revalidate ?? []);
       return ok(doc!.toJSON());
     },
   };

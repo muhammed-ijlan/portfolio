@@ -89,9 +89,6 @@ export type Settings = {
   seoDescription: string;
   resumeUrl: string;
   notifyEmail: string;
-  searchConsoleSite: string;
-  ga4PropertyId: string;
-  ga4MeasurementId: string;
   toggles: { animations: boolean; customCursor: boolean; maintenance: boolean; showResume: boolean };
   sections: SectionToggles;
 };
@@ -303,9 +300,6 @@ export const SEED: CmsData = {
     seoDescription: "Senior Web Developer (Full Stack & Web3) in Dubai. 4+ years building production-grade, high-performance web & Web3 applications.",
     resumeUrl: "",
     notifyEmail: "ijlan.dev@gmail.com",
-    searchConsoleSite: "sc-domain:ijlan.dev",
-    ga4PropertyId: "",
-    ga4MeasurementId: "",
     toggles: { animations: true, customCursor: false, maintenance: false, showResume: true },
     sections: { about: true, experience: true, skills: true, projects: true, contact: true, blog: true },
   },

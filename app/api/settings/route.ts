@@ -1,4 +1,4 @@
-import { singleton, handleError, ok } from "@/lib/api-helpers";
+import { singleton, handleError, ok, revalidatePublic, BLOG_PATHS } from "@/lib/api-helpers";
 import { requireAuth } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import { destroyByUrl } from "@/lib/cloudinary";
@@ -37,6 +37,9 @@ export async function PUT(req: Request) {
     if (typeof oldResume === "string" && oldResume && oldResume !== newResume) {
       await destroyByUrl(oldResume);
     }
+
+    // Settings drive section visibility, theme, accent and blog exposure sitewide.
+    revalidatePublic(BLOG_PATHS);
 
     return ok(doc!.toJSON());
   } catch (e) {

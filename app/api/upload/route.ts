@@ -21,7 +21,10 @@ export async function POST(req: Request) {
   try {
     await requireAuth();
 
-    const form = await req.formData();
+    // A non-multipart body makes formData() throw a raw framework error; surface a clean 400.
+    const form = await req.formData().catch(() => null);
+    if (!form) return fail("Expected a multipart/form-data upload", 400);
+
     const file = form.get("file");
     if (!(file instanceof File)) return fail("No file provided", 400);
     if (file.size === 0) return fail("Empty file", 400);

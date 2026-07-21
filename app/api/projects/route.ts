@@ -1,10 +1,10 @@
-import { crud, handleError } from "@/lib/api-helpers";
+import { crud, handleError, SITE_PATHS } from "@/lib/api-helpers";
 import { Project } from "@/lib/models/Project";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const c = crud(() => Project);
+const c = crud(() => Project, { revalidate: SITE_PATHS });
 
 export async function GET() {
   try {
